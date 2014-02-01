@@ -1,0 +1,31 @@
+/*
+    The Nixy Library
+    Code covered by the MIT License
+
+    Author: mutouyun (http://darkc.at)
+*/
+
+#pragma once
+
+#include "typemanip/typedefs.h"
+#include "typemanip/typedetect.h"
+
+#include "general/general.h"
+
+//////////////////////////////////////////////////////////////////////////
+NX_BEG
+//////////////////////////////////////////////////////////////////////////
+
+#include "al/typemanip/typeof.hxx"
+
+#ifndef nx_typeof
+#define nx_typeof(...) nx::null_t
+#endif
+
+#ifndef nx_auto
+#define nx_auto(name, ...) nx_typeof(__VA_ARGS__) name((__VA_ARGS__))
+#endif
+
+//////////////////////////////////////////////////////////////////////////
+NX_END
+//////////////////////////////////////////////////////////////////////////

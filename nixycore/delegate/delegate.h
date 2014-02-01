@@ -1,0 +1,16 @@
+/*
+    The Nixy Library
+    Code covered by the MIT License
+
+    Author: mutouyun (http://darkc.at)
+*/
+
+#pragma once
+
+//////////////////////////////////////////////////////////////////////////
+
+#include "delegate/functiontraits.h"
+#include "delegate/functor.h"
+#include "delegate/bind.h"
+
+//////////////////////////////////////////////////////////////////////////
