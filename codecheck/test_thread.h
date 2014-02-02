@@ -266,6 +266,63 @@ void testSemaphore(void)
 
 //////////////////////////////////////////////////////////////////////////
 
+namespace test_waiter
+{
+    nx::waiter consumer_waiter;
+
+    NX_THREAD_PROC(test_proc, idptr)
+    {
+        unsigned id = nx::horrible_cast<unsigned>(idptr);
+
+        // print a starting message
+        {
+            nx_lock_sole(nx::spin_lock);
+            strout << "[tester " << id << "]\tis waiting..." << endl;
+        }
+
+        consumer_waiter.wait();
+
+        // print a ending message
+        {
+            nx_lock_sole(nx::spin_lock);
+            strout << "[tester " << id << "]\tis ending..." << endl;
+        }
+
+        return 0;
+    }
+
+}
+
+void testWaiter(void)
+{
+    TEST_CASE();
+
+    using namespace test_waiter;
+
+    // start the test threads
+    nx::thread_ops::handle_t pd[10] = {0};
+    nx_foreach(i, nx_countof(pd)) pd[i] = nx::thread_ops::create(test_proc, (nx::pvoid)(i + 1));
+
+    // test for notify
+    nx::thread_ops::sleep(1000);
+    strout << endl << "test for notify" << endl;
+    for(int i = 0; i < 3; ++i)
+    {
+        nx::thread_ops::sleep(1000);
+        consumer_waiter.notify();
+    }
+
+    // test for broadcast
+    nx::thread_ops::sleep(1000);
+    strout << endl << "test for broadcast" << endl;
+    nx::thread_ops::sleep(1000);
+    consumer_waiter.broadcast();
+
+    nx_foreach(i, nx_countof(pd)) nx::thread_ops::join(pd[i]);
+}
+
+//////////////////////////////////////////////////////////////////////////
+
 namespace test_tlsptr
 {
     void dest(void* p)
@@ -371,6 +428,7 @@ void testThread(void)
     //testThreadOps();
     //testCondition();
     //testSemaphore();
+    testWaiter();
     //testTlsPtr();
-    testThreadDetail();
+    //testThreadDetail();
 }

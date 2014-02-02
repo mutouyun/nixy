@@ -20,40 +20,59 @@ NX_BEG
 
 class waiter : nx::NonCopyable
 {
-protected:
     mutable mutex lock_;
     condition     cond_;
-    long          counter_;
+
+    enum
+    {
+        RESTING, 
+        EXCITED, 
+        AUTORET
+    } signaled_;
 
 public:
-    waiter(long init_count = 1)
+    waiter(void)
         : cond_(lock_)
-        , counter_(init_count)
+        , signaled_(RESTING)
     {}
 
-    long count(void) const
+    bool is_signaled(void) const
     {
         nx_lock_scope(lock_);
-        return counter_;
+        return (signaled_ != RESTING);
+    }
+
+    void reset(void)
+    {
+        nx_lock_scope(lock_);
+        signaled_ = RESTING;
     }
 
 public:
     bool wait(int tm_ms = -1)
     {
         nx_lock_scope(lock_);
-        while (counter_ > 0)
+        while (signaled_ == RESTING)
         {
             bool ret = cond_.wait(tm_ms);
             if (!ret) return false;
         }
+        if (signaled_ == AUTORET) signaled_ = RESTING;
         return true;
     }
 
-    void post(long count = 1)
+    void notify(void)
     {
         nx_lock_scope(lock_);
-        counter_ -= count;
-        if (counter_ == 0) cond_.broadcast();
+        signaled_ = AUTORET;
+        cond_.broadcast();
+    }
+
+    void broadcast(void)
+    {
+        nx_lock_scope(lock_);
+        signaled_ = EXCITED;
+        cond_.broadcast();
     }
 };
 

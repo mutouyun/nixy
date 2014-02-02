@@ -20,7 +20,6 @@ NX_BEG
 
 class semaphore : nx::NonCopyable
 {
-protected:
     mutable mutex lock_;
     condition     cond_;
     long          counter_;
