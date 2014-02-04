@@ -473,6 +473,9 @@ void testTuple(void)
 
     nx::tuple<int, char, char> td2(4, '5', '6');
     strout << *td2 << " " << td2.at<char>() /*<< " " << td2.at<double>()*/ << " " << endl;
+
+    nx::tuple<> xx;
+    strout << xx.length() << endl;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -488,7 +491,7 @@ void testUtility(void)
     //testLimitOf();
     //testSafeBool();
     //testRefer();
-    testRvalue();
+    //testRvalue();
     //testValid();
-    //testTuple();
+    testTuple();
 }

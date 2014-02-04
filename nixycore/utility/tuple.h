@@ -89,6 +89,16 @@ namespace private_tuple
             nx::swap(head_, r.head_);
         }
     };
+
+    template <>
+    struct detail<nx::null_t, nx::null_t>
+    {
+        typedef nx::null_t base_t;
+
+        detail(void) {}
+
+        void swap(detail& /*r*/) {}
+    };
 }
 
 /*

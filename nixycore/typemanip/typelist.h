@@ -53,6 +53,12 @@ struct types_len<null_t>
     NX_STATIC_VALUE(int, 0);
 };
 
+template <template <typename, typename> class L_>
+struct types_len<L_<null_t, null_t> >
+{
+    NX_STATIC_VALUE(int, 0);
+};
+
 template <typename T, typename U, 
 template <typename, typename> class L_>
 struct types_len<L_<T, U> >
@@ -478,10 +484,11 @@ struct types<>
     NX_SPECIAL_TYPES_2(types_replace, typename, typename, spl_class, __VA_ARGS__) \
     NX_SPECIAL_TYPES_0(types_reverse                    , spl_class, __VA_ARGS__) \
     NX_SPECIAL_TYPES_1(types_sub    , typename          , spl_class, __VA_ARGS__) \
-    NX_SPECIAL_TYPES_0(types_sort                       , spl_class, __VA_ARGS__) \
-    NX_SPECIAL_TYPES_1(types_join   , typename          , spl_class, __VA_ARGS__) \
-    NX_SPECIAL_TYPES_R(types_join   , typename          , spl_class, __VA_ARGS__) \
-    NX_SPECIAL_TYPES_D(types_join                       , spl_class, __VA_ARGS__)
+    NX_SPECIAL_TYPES_0(types_sort                       , spl_class, __VA_ARGS__)/* \
+//  this may get an ambiguous class template instantiation
+//  NX_SPECIAL_TYPES_1(types_join   , typename          , spl_class, __VA_ARGS__) \
+//  NX_SPECIAL_TYPES_R(types_join   , typename          , spl_class, __VA_ARGS__) \
+//  NX_SPECIAL_TYPES_D(types_join                       , spl_class, __VA_ARGS__)*/
 
 //////////////////////////////////////////////////////////////////////////
 NX_END
