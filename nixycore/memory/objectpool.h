@@ -10,10 +10,15 @@
 #include "memory/fixedpool.h"
 #include "memory/construct.h"
 
+#include "delegate/functor.h"
+#include "delegate/bind.h"
+
 #include "bugfix/assert.h"
 
 #include "general/general.h"
+#include "preprocessor/preprocessor.h"
 #include "typemanip/typemanip.h"
+#include "utility/utility.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -21,153 +26,186 @@ NX_BEG
 
 namespace private_object_pool
 {
-    template <typename T, size_t MinSize_, size_t MaxSize_, class FixedAlloc_>
-    class detail
+    template <typename T, typename Tuple_, size_t = types_len<Tuple_>::value>
+    struct helper;
+
+    template <typename T, typename Tuple_>
+    struct helper<T, Tuple_, 0>
     {
-    public:
-        typedef T type_t;
-
-    private:
-        FixedAlloc_ allocator_;
-
-        struct alloc_t
+        static T* construct(pvoid p, Tuple_& /*tp*/)
         {
-            nx::byte data_[sizeof(type_t)];
-            alloc_t* next_;
-        };
-
-        alloc_t* free_head_;
-        alloc_t* free_tail_;
-        
-        size_t size_;
-
-    public:
-        detail(void)
-            : allocator_(sizeof(alloc_t))
-            , free_head_(nx::nulptr)
-            , free_tail_(nx::nulptr)
-            , size_(0)
-        {}
-
-        ~detail()
-        {
-            while(free_head_)
-            {
-                alloc_t* p = free_head_;
-                free_head_ = free_head_->next_;
-                nx_destruct(reinterpret_cast<type_t*>(p), type_t);
-                allocator_.free(p);
-            }
+            return nx_construct(p, T);
         }
-
-    private:
-        pvoid create(void)
-        {
-            alloc_t* p = static_cast<alloc_t*>(allocator_.alloc());
-            nx_assert(p);
-            p->next_ = nx::nulptr;
-            return p->data_;
-        }
-
-    public:
-        void make(void)
-        {
-            free(nx_construct(create(), type_t));
-        }
-
-#   define NX_OBJECT_POOL_MAKE_(n) \
-        template <NX_PP_TYPE_1(n, typename P)> \
-        void make(NX_PP_TYPE_2(n, P, par)) \
-        { \
-            free(nx_construct(create(), type_t, NX_PP_TYPE_1(n, par))); \
-        }
-        NX_PP_MULT_MAX(NX_OBJECT_POOL_MAKE_)
-#   undef NX_OBJECT_POOL_MAKE_
-
-        type_t* alloc(void)
-        {
-            if (!free_head_) make();
-            nx_assert(free_head_);
-            alloc_t* p = free_head_;
-            free_head_ = free_head_->next_;
-            if (free_head_)
-                p->next_ = nx::nulptr;
-            else
-                free_tail_ = free_head_;
-            -- size_;
-            return reinterpret_cast<type_t*>(p->data_);
-        }
-
-        void free(type_t* objc)
-        {
-            if (!objc) return;
-            alloc_t* p = reinterpret_cast<alloc_t*>(objc);
-            nx_assert(!(p->next_));
-            if (p->next_) return;
-            if (size_ < MaxSize_)
-            {
-                if (free_tail_)
-                    free_tail_->next_ = p;
-                free_tail_ = p;
-                if (!free_head_) free_head_ = free_tail_;
-                ++ size_;
-            }
-            else
-            {
-                nx_destruct(objc, type_t);
-                allocator_.free(p);
-            }
-        }
-
-        void clear(void)
-        {
-            while(free_head_ && (size_ > MinSize_))
-            {
-                alloc_t* p = free_head_;
-                free_head_ = free_head_->next_;
-                -- size_;
-                nx_destruct(reinterpret_cast<type_t*>(p), type_t);
-                allocator_.free(p);
-            }
-            if (!free_head_) free_tail_ = free_head_;
-        }
-
-        size_t size(void) const { return size_; }
     };
+
+#define NX_OBJECT_POOL_HELPER_AT_(n, ...) , tp.template at<n - 1>()
+#define NX_OBJECT_POOL_HELPER_(n) \
+    template <typename T, typename Tuple_> \
+    struct helper<T, Tuple_, n> \
+    { \
+        static T* construct(pvoid p, Tuple_& tp) \
+        { \
+            return nx_construct(p, T, NX_PP_B1(NX_PP_REPEAT(n, NX_OBJECT_POOL_HELPER_AT_))); \
+        } \
+    };
+    NX_PP_MULT_MAX(NX_OBJECT_POOL_HELPER_)
+#undef NX_OBJECT_POOL_HELPER_
+#undef NX_OBJECT_POOL_HELPER_AT_
 }
 
-template
-<
-    typename T, 
-    size_t MinSize_ = 0, 
-    size_t MaxSize_ = (size_t)~0, 
-    class FixedAlloc_ = fixed_pool<>
->
-class object_pool
-    : public private_object_pool::detail<T, MinSize_, MaxSize_, FixedAlloc_>
+template <typename T, class FixedAlloc_ = fixed_pool<> >
+class object_pool : NonCopyable
 {
-    nx_assert_static(MaxSize_);
-    nx_assert_static(MinSize_ <= MaxSize_);
+public:
+    typedef T type_t;
 
-    typedef private_object_pool::detail<T, MinSize_, MaxSize_, FixedAlloc_> base_t;
+private:
+    FixedAlloc_ allocator_;
+
+    functor<type_t*(pvoid)> constructor_;
+
+    struct alloc_t
+    {
+        nx::byte data_[sizeof(type_t)];
+        alloc_t* next_;
+    };
+
+    alloc_t* free_head_;
+    alloc_t* free_tail_;
+
+    size_t min_size_;
+    size_t max_size_;
+    size_t size_;
 
 public:
-    object_pool(void)
-    { for(size_t i = 0; i < MinSize_; ++i) base_t::make(); }
+    object_pool(size_t min_sz = 0, size_t max_sz = (size_t)~0)
+        : allocator_(sizeof(alloc_t))
+        , free_head_(nx::nulptr)
+        , free_tail_(nx::nulptr)
+        , min_size_(0)
+        , max_size_(0)
+        , size_(0)
+    {
+        constructor_ = bind(&private_object_pool::helper<type_t, tuple<> >::construct, _1, tuple<>());
+        limit(min_sz, max_sz);
+    }
 
 #define NX_OBJECT_POOL_(n) \
     template <NX_PP_TYPE_1(n, typename P)> \
-    object_pool(NX_PP_TYPE_2(n, P, par)) \
-    { for(size_t i = 0; i < MinSize_; ++i) base_t::make(NX_PP_TYPE_1(n, par)); }
+    object_pool(NX_PP_TYPE_2(n, P, par), size_t min_sz = 0, size_t max_sz = (size_t)~0) \
+        : allocator_(sizeof(alloc_t)) \
+        , free_head_(nx::nulptr) \
+        , free_tail_(nx::nulptr) \
+        , min_size_(0) \
+        , max_size_(0) \
+        , size_(0) \
+    { \
+        constructor_ = bind(&private_object_pool::helper<type_t, tuple<NX_PP_TYPE_1(n, P)> >::construct, _1 \
+                                                               , tuple<NX_PP_TYPE_1(n, P)>(NX_PP_TYPE_1(n, par))); \
+        limit(min_sz, max_sz); \
+    }
     NX_PP_MULT_MAX(NX_OBJECT_POOL_)
 #undef NX_OBJECT_POOL_
-};
 
-template <typename T, size_t MaxSize_, class FixedAlloc_>
-class object_pool<T, 0, MaxSize_, FixedAlloc_>
-    : public private_object_pool::detail<T, 0, MaxSize_, FixedAlloc_>
-{
-    nx_assert_static(MaxSize_);
+    ~object_pool()
+    {
+        while(free_head_) destroy();
+    }
+
+private:
+    type_t* create(void)
+    {
+        alloc_t* p = static_cast<alloc_t*>(allocator_.alloc());
+        nx_assert(p);
+        p->next_ = nx::nulptr;
+        return constructor_(p->data_);
+    }
+
+    void destroy(void)
+    {
+        nx_assert(free_head_);
+        alloc_t* p = free_head_;
+        free_head_ = free_head_->next_;
+        -- size_;
+        nx_destruct(reinterpret_cast<type_t*>(p), type_t);
+        allocator_.free(p);
+    }
+
+    type_t* pick(void)
+    {
+        nx_assert(free_head_);
+        alloc_t* p = free_head_;
+        free_head_ = free_head_->next_;
+        if (free_head_)
+            p->next_ = nx::nulptr;
+        else
+            free_tail_ = free_head_;
+        -- size_;
+        return reinterpret_cast<type_t*>(p->data_);
+    }
+
+public:
+    void limit(size_t min_sz = 0, size_t max_sz = (size_t)~0)
+    {
+        nx_assert(max_sz);
+        nx_assert(min_sz <= max_sz);
+        min_size_ = min_sz;
+        max_size_ = max_sz;
+        if (size_ > max_size_)
+        {
+            do
+            {
+                destroy();
+            }
+            while (size_ > max_size_);
+        }
+        else
+        {
+            while (size_ < min_size_)
+            {
+                free(create());
+            }
+        }
+    }
+
+    size_t min_size(void) const { return min_size_; }
+    size_t max_size(void) const { return max_size_; }
+
+    size_t size(void) const { return size_; }
+
+public:
+    type_t* alloc(void)
+    {
+        if(!free_head_) free(create());
+        return pick();
+    }
+
+    void free(type_t* objc)
+    {
+        if (!objc) return;
+        alloc_t* p = reinterpret_cast<alloc_t*>(objc);
+        nx_assert(!(p->next_));
+        if (p->next_) return;
+        if (size_ < max_size_)
+        {
+            if (free_tail_)
+                free_tail_->next_ = p;
+            free_tail_ = p;
+            if (!free_head_) free_head_ = free_tail_;
+            ++ size_;
+        }
+        else
+        {
+            nx_destruct(objc, type_t);
+            allocator_.free(p);
+        }
+    }
+
+    void clear(void)
+    {
+        while(free_head_ && (size_ > min_size_)) destroy();
+        if (!free_head_) free_tail_ = free_head_;
+    }
 };
 
 //////////////////////////////////////////////////////////////////////////

@@ -269,15 +269,25 @@ void testObjectPool(void)
     TEST_CASE();
 
     using namespace test_memguard;
-
-    nx::object_pool<A> pool;
-    A* p0 = pool.alloc();
-    pool.make(1);
-    A* p1 = pool.alloc();
-    strout << "p0->a_ == " << p0->a_ << endl;
-    strout << "p1->a_ == " << p1->a_ << endl;
-    pool.free(p0);
-    pool.free(p1);
+    {
+        nx::object_pool<A> pool;
+        A* p0 = pool.alloc();
+        A* p1 = pool.alloc();
+        strout << "p0->a_ == " << p0->a_ << endl;
+        strout << "p1->a_ == " << p1->a_ << endl;
+        pool.free(p0);
+        pool.free(p1);
+    }
+    strout << "================" << endl;
+    {
+        nx::object_pool<A> pool(123);
+        A* p0 = pool.alloc();
+        A* p1 = pool.alloc();
+        strout << "p0->a_ == " << p0->a_ << endl;
+        strout << "p1->a_ == " << p1->a_ << endl;
+        pool.free(p0);
+        pool.free(p1);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////
