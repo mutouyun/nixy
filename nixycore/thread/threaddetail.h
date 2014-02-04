@@ -35,39 +35,39 @@ class thread : NonCopyable
     struct data
     {
         task_t proc_;
-        blocking_queue<task_t> task_queue_;
+        blocking_queue<task_t>* task_queue_;
     };
 
     data* thr_dat_;
-    spin_lock lock_;
 
     static NX_THREAD_PROC(onThreadProc, args)
     {
         data* thr_dat = static_cast<data*>(args);
         nx_assert(thr_dat);
         nx_guard_scope(thr_dat);
-        if (thr_dat->proc_)
-            thr_dat->proc_();
-        else nx_forever()
+        if (thr_dat->task_queue_)
         {
-            task_t task = thr_dat->task_queue_.take(); // wait for a new task
-            if (task) task();
-            else break;
+            nx_guard_scope(thr_dat->task_queue_);
+            nx_forever()
+            {
+                task_t task = thr_dat->task_queue_->take(); // wait for a new task
+                if (task) task();
+                else break;
+            }
         }
+        else thr_dat->proc_();
         return 0;
     }
 
-    void start(const task_t& t)
+    template <typename T>
+    void start(const T& t)
     {
         nx_verify(thr_dat_ = nx::alloc<data>());
         thr_dat_->proc_ = t;
-        handle_ = thread_ops::create(onThreadProc, thr_dat_, &id_);
-    }
-
-    void start(task_t& t)
-    {
-        nx_verify(thr_dat_ = nx::alloc<data>());
-        thr_dat_->proc_.swap(t);
+        if (!(thr_dat_->proc_))
+            nx_verify(thr_dat_->task_queue_ = nx::alloc<blocking_queue<task_t> >());
+        else
+            thr_dat_->task_queue_ = nx::nulptr;
         handle_ = thread_ops::create(onThreadProc, thr_dat_, &id_);
     }
 
@@ -117,16 +117,16 @@ public:
 
     void post(const task_t& t)
     {
-        if (thr_dat_)
-            thr_dat_->task_queue_.put(t);
+        if (thr_dat_ && thr_dat_->task_queue_)
+            thr_dat_->task_queue_->put(t);
     }
 
 #define NX_THREAD_CONSTRUCT_(n) \
     template <typename F, NX_PP_TYPE_1(n, typename P)> \
     void post(const F& f, NX_PP_TYPE_2(n, P, par)) \
     { \
-        if (thr_dat_) \
-            thr_dat_->task_queue_.put(bind<void>(f, NX_PP_TYPE_1(n, par))); \
+        if (thr_dat_ && thr_dat_->task_queue_) \
+            thr_dat_->task_queue_->put(bind<void>(f, NX_PP_TYPE_1(n, par))); \
     }
     NX_PP_MULT_MAX(NX_THREAD_CONSTRUCT_)
 #undef NX_THREAD_CONSTRUCT_

@@ -392,7 +392,7 @@ namespace test_threaddetail
 
     nx::thread thr1_;
 
-    void* thread_proc_2(void)
+    void* thread_proc_2(int)
     {
         strout << NX__FUNCTION__ << endl;
 
@@ -412,7 +412,7 @@ void testThreadDetail(void)
 
     using namespace test_threaddetail;
     {
-        nx::thread NX_UNUSED thr(&thread_proc_2);
+        nx::thread NX_UNUSED thr(&thread_proc_2, 123);
     }
     thr1_.join();
 }
@@ -428,7 +428,7 @@ void testThread(void)
     //testThreadOps();
     //testCondition();
     //testSemaphore();
-    testWaiter();
+    //testWaiter();
     //testTlsPtr();
-    //testThreadDetail();
+    testThreadDetail();
 }
