@@ -15,6 +15,7 @@
 
 #include "general/general.h"
 #include "typemanip/typemanip.h"
+#include "utility/utility.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -133,7 +134,7 @@ public:
 */
 
 template <class Stack_>
-class CenterPool : Stack_
+class CenterPool : Stack_, NonCopyable
 {
 public:
     typedef Stack_ stack_t;

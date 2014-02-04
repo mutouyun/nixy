@@ -13,6 +13,7 @@
 #include "typemanip/typedefs.h"
 
 #include "general/general.h"
+#include "utility/utility.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -33,7 +34,7 @@ template
     class  Alloc_     = NX_DEFAULT_ALLOC,
     size_t BlockSize_ = NX_UNFIXEDPOOL_BLOCKSIZE
 >
-class unfixed_pool
+class unfixed_pool : NonCopyable
 {
     struct block_t
     {
