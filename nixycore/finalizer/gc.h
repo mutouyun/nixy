@@ -478,6 +478,7 @@ namespace private_gc
 }
 
 //////////////////////////////////////////////////////////////////////////
+#include "al/general/disable_warnings.hxx"
 
 /*
     Execute gc when the enclosing scope exits
@@ -518,6 +519,9 @@ public:
         return private_gc::assigner<T>(gc_, rh, parent_res_);
     }
 };
+
+#include "al/general/disable_warnings.hxx"
+//////////////////////////////////////////////////////////////////////////
 
 /*
     -->

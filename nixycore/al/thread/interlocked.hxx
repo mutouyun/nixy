@@ -6,13 +6,7 @@
 */
 
 //////////////////////////////////////////////////////////////////////////
-
-#if defined(NX_CC_MSVC)
-#   pragma warning(push)
-#   pragma warning(disable: 4800) // forcing value to bool 'true' or 'false' (performance warning)
-#   pragma warning(disable: 4311) // pointer truncation from 'type1' to 'type2'
-#   pragma warning(disable: 4312) // conversion from 'type1' to 'type2' of greater size
-#endif
+#include "al/general/disable_warnings.hxx"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -99,10 +93,5 @@ NX_END
 #   include "al/thread/interlocked_gnuc.hxx"
 #endif
 
-//////////////////////////////////////////////////////////////////////////
-
-#if defined(NX_CC_MSVC)
-#   pragma warning(pop)
-#endif
-
+#include "al/general/disable_warnings.hxx"
 //////////////////////////////////////////////////////////////////////////
