@@ -5,8 +5,6 @@
     Author: mutouyun (http://darkc.at)
 */
 
-#pragma once
-
 //////////////////////////////////////////////////////////////////////////
 /*
     The compiler, must be one of: (NX_CC_XX)

@@ -28,6 +28,8 @@ else
     var prj = Projects.create("nixycore")
     prj.type = "lib"
     prj.heads = "\
+        'nixycore/al/general/platdetect.hxx' \
+        'nixycore/al/general/global_functions.hxx' \
         'nixycore/al/typemanip/nx_friend_class.hxx' \
         'nixycore/al/typemanip/private_is_pod.hxx' \
         'nixycore/al/typemanip/typeof.hxx' \
@@ -53,7 +55,6 @@ else
         'nixycore/al/thread/threadops.hxx' \
         'nixycore/al/thread/threadops_linux.hxx' \
         'nixycore/al/thread/threadops_win.hxx' \
-        'nixycore/al/platdetect.h' \
         'nixycore/general/general.h' \
         'nixycore/preprocessor/ppmacros.h' \
         'nixycore/preprocessor/ppcount.h' \

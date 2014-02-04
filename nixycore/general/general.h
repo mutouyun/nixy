@@ -33,11 +33,11 @@
 */
 
 // NX_OS, NX_CC, NDEBUG, ...
-#include "al/platdetect.h"
+#include "al/general/platdetect.hxx"
 
 //////////////////////////////////////////////////////////////////////////
 
-// Namespace Define
+// namespace define
 
 #define NX_BEG              namespace nx {
 #define NX_END              }
@@ -46,7 +46,7 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-// Global Types
+// global types
 
 typedef unsigned char       uchar;
 typedef unsigned short      ushort;
@@ -78,6 +78,10 @@ typedef int                 sint32;
 typedef uint                uint32;
 typedef llong               sint64;
 typedef ullong              uint64;
+
+// global functions
+
+#include "al/general/global_functions.hxx"
 
 //////////////////////////////////////////////////////////////////////////
 NX_END
