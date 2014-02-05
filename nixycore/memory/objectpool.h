@@ -26,31 +26,20 @@ NX_BEG
 
 namespace private_object_pool
 {
-    template <typename T, typename Tuple_, size_t = types_len<Tuple_>::value>
-    struct helper;
-
-    template <typename T, typename Tuple_>
-    struct helper<T, Tuple_, 0>
+    template <typename T>
+    T* construct(pvoid p)
     {
-        static T* construct(pvoid p, Tuple_& /*tp*/)
-        {
-            return nx_construct(p, T);
-        }
-    };
+        return nx_construct(p, T);
+    }
 
-#define NX_OBJECT_POOL_HELPER_AT_(n, ...) , tp.template at<n - 1>()
 #define NX_OBJECT_POOL_HELPER_(n) \
-    template <typename T, typename Tuple_> \
-    struct helper<T, Tuple_, n> \
+    template <typename T, NX_PP_TYPE_1(n, typename P)> \
+    T* construct(pvoid p, NX_PP_TYPE_2(n, P, par)) \
     { \
-        static T* construct(pvoid p, Tuple_& tp) \
-        { \
-            return nx_construct(p, T, NX_PP_B1(NX_PP_REPEAT(n, NX_OBJECT_POOL_HELPER_AT_))); \
-        } \
-    };
+        return nx_construct(p, T, NX_PP_TYPE_1(n, par)); \
+    }
     NX_PP_MULT_MAX(NX_OBJECT_POOL_HELPER_)
 #undef NX_OBJECT_POOL_HELPER_
-#undef NX_OBJECT_POOL_HELPER_AT_
 }
 
 template <typename T, class FixedAlloc_ = fixed_pool<> >
@@ -86,7 +75,7 @@ public:
         , max_size_(0)
         , size_(0)
     {
-        constructor_ = bind(&private_object_pool::helper<type_t, tuple<> >::construct, _1, tuple<>());
+        constructor_ = static_cast<type_t*(*)(pvoid)>(&private_object_pool::construct<type_t>);
         limit(min_sz, max_sz);
     }
 
@@ -100,8 +89,8 @@ public:
         , max_size_(0) \
         , size_(0) \
     { \
-        constructor_ = bind(&private_object_pool::helper<type_t, tuple<NX_PP_TYPE_1(n, P)> >::construct, _1 \
-                                                               , tuple<NX_PP_TYPE_1(n, P)>(NX_PP_TYPE_1(n, par))); \
+        constructor_ = bind(&private_object_pool::construct<type_t, NX_PP_TYPE_1(n, P)>, \
+                                                                _1, NX_PP_TYPE_1(n, par)); \
         limit(min_sz, max_sz); \
     }
     NX_PP_MULT_MAX(NX_OBJECT_POOL_)
