@@ -9,6 +9,7 @@
 #include "policy_vc9.h"
 #include "policy_vc10.h"
 #include "policy_vc11.h"
+#include "policy_vc12.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -20,15 +21,24 @@ struct Platform::Impl_
     Impl_(Config& cfg)
         : config_(cfg), plat_(NULL)
     {
-        if      (cfg.cc() == "vc8" || cfg.cc() == "vc08" || cfg.cc() == "vc2005")
+        if (cfg.cc() == "vc8" ||
+            cfg.cc() == "vc08" || cfg.cc() == "vc2005" || cfg.cc() == "vs2005")
             plat_ = new PlatformVC<PolicyVC8>;
-        else if (cfg.cc() == "vc9" || cfg.cc() == "vc09" || cfg.cc() == "vc2008")
+        else
+        if (cfg.cc() == "vc9" ||
+            cfg.cc() == "vc09" || cfg.cc() == "vc2008" || cfg.cc() == "vs2008")
             plat_ = new PlatformVC<PolicyVC9>;
-        else if (cfg.cc() == "vc10" || cfg.cc() == "vc2010")
+        else
+        if (cfg.cc() == "vc10" || cfg.cc() == "vc2010" || cfg.cc() == "vs2010")
             plat_ = new PlatformVC<PolicyVC10>;
-        else if (cfg.cc() == "vc11" || cfg.cc() == "vc2012")
+        else
+        if (cfg.cc() == "vc11" || cfg.cc() == "vc2012" || cfg.cc() == "vs2012")
             plat_ = new PlatformVC<PolicyVC11>;
-        else /* (cfg.cc() == "gcc") */
+        else
+        if (cfg.cc() == "vc12" || cfg.cc() == "vc2013" || cfg.cc() == "vs2013")
+            plat_ = new PlatformVC<PolicyVC12>;
+        else
+        /* (cfg.cc() == "gcc") */
             plat_ = new PlatformGCC;
     }
 

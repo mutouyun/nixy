@@ -37,4 +37,5 @@ HEADERS += \
     policy_vc8.h \
     policy_vc9.h \
     policy_vc_base.h \
-    policy_vc11.h
+    policy_vc11.h \
+    policy_vc12.h
