@@ -34,10 +34,9 @@ NX_BEG
 
 // Static Assert
 
+#ifndef nx_assert_static
 template <bool, int> struct Static_Assert_Failure;
 template <int Line_> struct Static_Assert_Failure<true, Line_> {};
-
-#ifndef nx_assert_static
 #define nx_assert_static(...) \
     enum \
     { \
