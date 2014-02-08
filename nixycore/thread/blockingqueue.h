@@ -26,6 +26,7 @@ template <typename Type_, class Alloc_ = NX_DEFAULT_ALLOC>
 class blocking_queue : NonCopyable
 {
     mutable mutex        lock_;
+    condition            task_coming_;
     condition            until_empty_;
     deque<Type_, Alloc_> queue_;
 
@@ -33,31 +34,51 @@ public:
     typedef Type_ type_t;
 
     blocking_queue(void)
-        : until_empty_(lock_)
+        : task_coming_(lock_)
+        , until_empty_(lock_)
     {}
 
     void put(const type_t& v)
     {
         nx_lock_scope(lock_);
         queue_.push_back(v);
-        until_empty_.notify();
+        task_coming_.notify();
     }
 
     rvalue<type_t> take(void)
     {
         nx_lock_scope(lock_);
         while (queue_.empty()) // used to avoid spurious wakeups
-            until_empty_.wait();
+            task_coming_.wait();
         nx_assert(!queue_.empty());
         type_t ret(nx::move(queue_.front()));
         queue_.pop_front();
+        if (queue_.empty())
+            until_empty_.notify();
         return ret;
+    }
+
+    bool wait_empty(int tm_ms = -1)
+    {
+        nx_lock_scope(lock_);
+        while (!queue_.empty()) // used to avoid spurious wakeups
+        {
+            bool ret = until_empty_.wait(tm_ms);
+            if (!ret) return false;
+        }
+        return true;
     }
 
     size_t size(void) const
     {
         nx_lock_scope(lock_);
         return queue_.size();
+    }
+
+    bool is_empty(void) const
+    {
+        nx_lock_scope(lock_);
+        return queue_.empty();
     }
 };
 
