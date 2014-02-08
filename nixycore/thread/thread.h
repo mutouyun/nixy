@@ -22,5 +22,6 @@
 #include "thread/threadops.h"
 #include "thread/threadmodel.h"
 #include "thread/threaddetail.h"
+#include "thread/threadpool.h"
 
 //////////////////////////////////////////////////////////////////////////

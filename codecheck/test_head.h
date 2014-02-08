@@ -48,8 +48,8 @@ void testAll(void)
     //testTime();
     //testDelegate();
     //testFinalizer();
-    //testThread();
-    testMemory();
+    testThread();
+    //testMemory();
 
     TEST_FUNCTION(<< "Finished ");
 }

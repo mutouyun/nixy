@@ -390,17 +390,12 @@ namespace test_threaddetail
         strout << NX__FUNCTION__ << " " << pa->a_ << endl;
     }
 
-    nx::thread thr1_;
-
     void* thread_proc_2(int)
     {
         strout << NX__FUNCTION__ << endl;
 
         nx::pointer<A> pa = nx::alloc<A>(2);
         nx::thread thr(&thread_proc_1, pa);
-
-        thr1_.post(&hello_world);
-        thr1_.post(nx::none); // exit this thread
 
         return 0;
     }
@@ -411,10 +406,44 @@ void testThreadDetail(void)
     TEST_CASE();
 
     using namespace test_threaddetail;
+
+    nx::thread NX_UNUSED thr1;
+    nx::thread NX_UNUSED thr2(&thread_proc_2, 123);
+
+    thr1.start();
+    thr1.post(&hello_world);
+    thr1.post(nx::none); // exit this thread
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+namespace test_threadpool
+{
+    void test_proc(int i)
     {
-        nx::thread NX_UNUSED thr(&thread_proc_2, 123);
+        {
+            nx_lock_sole(nx::spin_lock);
+            strout << "Test thread: " << i << endl;
+        }
+        nx::thread_ops::sleep(1000);
+        {
+            nx_lock_sole(nx::spin_lock);
+            strout << "Test thread: " << i << " Finish..." << endl;
+        }
     }
-    thr1_.join();
+}
+
+void testThreadPool(void)
+{
+    TEST_CASE();
+
+    using namespace test_threadpool;
+
+    nx::thread_pool pool(0, 10);
+    for(int i = 0; i < 10; ++i)
+        pool.put(&test_proc, i);
+
+    pool.wait_finish();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -430,5 +459,6 @@ void testThread(void)
     //testSemaphore();
     //testWaiter();
     //testTlsPtr();
-    testThreadDetail();
+    //testThreadDetail();
+    testThreadPool();
 }
