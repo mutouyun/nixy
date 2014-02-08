@@ -23,19 +23,6 @@ NX_BEG
 namespace private_functor
 {
     /*
-        The tags of function type
-    */
-
-    struct fun_ptr_tag {};
-    struct obj_ptr_tag {};
-
-    template <typename Func_, bool = is_function<Func_>::value>
-    struct tag_traits;
-
-    template <typename Func_> struct tag_traits<Func_, true > { typedef fun_ptr_tag tag; };
-    template <typename Func_> struct tag_traits<Func_, false> { typedef obj_ptr_tag tag; };
-
-    /*
         The handler for storing a function
     */
 
@@ -323,14 +310,16 @@ public:
 
 protected:
     template <typename Func_>
-    void assign_to(Func_ f, private_functor::fun_ptr_tag)
+    typename enable_if<is_function<Func_>::value
+    >::type_t assign_to(Func_ f)
     {
         handler_.fun_ptr = reinterpret_cast<void(*)()>(f);
         invoker_ = &private_functor::invoker<style_type, Func_>::invoke;
     }
 
     template <typename Func_>
-    void assign_to(Func_ f, private_functor::obj_ptr_tag)
+    typename enable_if<!is_function<Func_>::value
+    >::type_t assign_to(Func_ f)
     {
         std::memcpy(&(handler_.obj_ptr), &f, sizeof(pvoid)); // f may be not a pointer
         invoker_ = &private_functor::invoker<style_type, Func_>::invoke;
@@ -349,7 +338,7 @@ public:
     typename nx::enable_if<is_pointer<Func_>::value || (sizeof(Func_) <= sizeof(pvoid)),
     functor_type&>::type_t bind(Func_ f)
     {
-        assign_to(f, typename private_functor::tag_traits<Func_>::tag());
+        assign_to(f);
         return (*reinterpret_cast<functor_type*>(this));
     }
 
@@ -357,7 +346,7 @@ public:
     typename nx::enable_if<!is_pointer<Func_>::value && (sizeof(Func_) > sizeof(pvoid)),
     functor_type&>::type_t bind(const Func_& f)
     {
-        assign_to(guard(f), private_functor::obj_ptr_tag());
+        assign_to(guard(f));
         return (*reinterpret_cast<functor_type*>(this));
     }
 
