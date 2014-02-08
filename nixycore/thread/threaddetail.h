@@ -9,6 +9,7 @@
 
 #include "thread/threadops.h"
 #include "thread/blockingqueue.h"
+#include "thread/mutex.h"
 
 #include "delegate/functor.h"
 #include "delegate/bind.h"
@@ -27,10 +28,14 @@ NX_BEG
 
 class thread : NonCopyable
 {
+public:
+    typedef functor<void()> task_t;
+
+private:
+    mutable mutex lock_;
+
     thread_ops::handle_t handle_;
     thread_ops::id_t     id_;
-
-    typedef functor<void()> task_t;
 
     struct data
     {
@@ -48,20 +53,48 @@ class thread : NonCopyable
         if (thr_dat->task_queue_)
         {
             nx_guard_scope(thr_dat->task_queue_);
-            nx_forever()
-            {
-                task_t task = thr_dat->task_queue_->take(); // wait for a new task
-                if (task) task();
-                else break;
-            }
+            task_t task;
+            while (task = thr_dat->task_queue_->take()) // wait for a new task
+                task();
         }
         else thr_dat->proc_();
         return 0;
     }
 
-    template <typename T>
-    void start(const T& t)
+public:
+    thread(void)
+        : handle_(0), id_(0), thr_dat_(nx::nulptr)
+    {}
+
+    thread(const rvalue<thread>& r)
+        : handle_(0), id_(0), thr_dat_(nx::nulptr)
     {
+        swap(nx::unmove(r));
+    }
+
+    thread(const task_t& t)
+        : handle_(0), id_(0), thr_dat_(nx::nulptr)
+    {
+        start(t);
+    }
+
+#define NX_THREAD_CONSTRUCT_(n) \
+    template <typename F, NX_PP_TYPE_1(n, typename P)> \
+    thread(const F& f, NX_PP_TYPE_2(n, P, par)) \
+        : handle_(0), id_(0), thr_dat_(nx::nulptr) \
+    { \
+        start(f, NX_PP_TYPE_1(n, par)); \
+    }
+    NX_PP_MULT_MAX(NX_THREAD_CONSTRUCT_)
+#undef NX_THREAD_CONSTRUCT_
+
+    ~thread() { join(); }
+
+public:
+    void start(const task_t& t = nx::none)
+    {
+        nx_lock_scope(lock_);
+        if (thr_dat_) thread_ops::join(handle_);
         nx_verify(thr_dat_ = nx::alloc<data>());
         thr_dat_->proc_ = t;
         if (!(thr_dat_->proc_))
@@ -71,52 +104,50 @@ class thread : NonCopyable
         handle_ = thread_ops::create(onThreadProc, thr_dat_, &id_);
     }
 
-public:
-    thread(void)
-        : handle_(0), id_(0), thr_dat_(nx::nulptr)
-    { start(nx::none); }
-
-    thread(const rvalue<thread>& r)
-        : handle_(0), id_(0), thr_dat_(nx::nulptr)
-    { swap(nx::unmove(r)); }
-
-    thread(const task_t& t)
-        : handle_(0), id_(0), thr_dat_(nx::nulptr)
-    { start(t); }
-
 #define NX_THREAD_CONSTRUCT_(n) \
     template <typename F, NX_PP_TYPE_1(n, typename P)> \
-    thread(const F& f, NX_PP_TYPE_2(n, P, par)) \
-        : handle_(0), id_(0), thr_dat_(nx::nulptr) \
-    { start(bind<void>(f, NX_PP_TYPE_1(n, par))); }
+    void start(const F& f, NX_PP_TYPE_2(n, P, par)) \
+    { \
+        start(bind<void>(f, NX_PP_TYPE_1(n, par))); \
+    }
     NX_PP_MULT_MAX(NX_THREAD_CONSTRUCT_)
 #undef NX_THREAD_CONSTRUCT_
 
-    ~thread() { join(); }
-
-public:
     thread_ops::handle_t handle(void) const
     {
+        nx_lock_scope(lock_);
         return handle_;
     }
 
     thread_ops::id_t id(void) const
     {
+        nx_lock_scope(lock_);
         return id_;
     }
 
     void join(void)
     {
-        thread_ops::join(handle_);
+        nx_lock_scope(lock_);
+        if (thr_dat_)
+            thread_ops::join(handle_);
+        handle_ = 0;
+        id_ = 0;
+        thr_dat_ = nx::nulptr;
     }
 
     void detach(void)
     {
-        thread_ops::detach(handle_);
+        nx_lock_scope(lock_);
+        if (thr_dat_)
+            thread_ops::detach(handle_);
+        handle_ = 0;
+        id_ = 0;
+        thr_dat_ = nx::nulptr;
     }
 
     void post(const task_t& t)
     {
+        nx_lock_scope(lock_);
         if (thr_dat_ && thr_dat_->task_queue_)
             thr_dat_->task_queue_->put(t);
     }
@@ -125,8 +156,7 @@ public:
     template <typename F, NX_PP_TYPE_1(n, typename P)> \
     void post(const F& f, NX_PP_TYPE_2(n, P, par)) \
     { \
-        if (thr_dat_ && thr_dat_->task_queue_) \
-            thr_dat_->task_queue_->put(bind<void>(f, NX_PP_TYPE_1(n, par))); \
+        post(bind<void>(f, NX_PP_TYPE_1(n, par))); \
     }
     NX_PP_MULT_MAX(NX_THREAD_CONSTRUCT_)
 #undef NX_THREAD_CONSTRUCT_
