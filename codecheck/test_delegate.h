@@ -106,6 +106,9 @@ void testFunctor(void)
         fr = &func0_1;
         fr();
         strout << endl;
+
+        nx::functor<void(void)> fr2;
+        fr2 = nx::move(fr);
     }
     {
         nx::functor<int(void)> fr(NULL);
@@ -164,6 +167,13 @@ void testFunctor(void)
         nx::functor<const char*(string&)> fr;
         string s("Hello functor");
         strout << (fr = f)(s) << endl;
+    }
+    strout << endl;
+    {
+        B b;
+        A* pa = &b;
+        nx::functor<int(long, int, int, int)> fr;
+        strout << fr.bind(&A::func, pa)(4, 3, 2, 1) << endl;
     }
 }
 
