@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "typemanip/typedetect.h"
+#include "nixycore/typemanip/typedetect.h"
 
-#include "general/general.h"
+#include "nixycore/general/general.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include "thread/interlocked.h"
+#include "nixycore/thread/interlocked.h"
 
-#include "general/general.h"
-#include "typemanip/typemanip.h"
-#include "utility/utility.h"
+#include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
+#include "nixycore/utility/utility.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

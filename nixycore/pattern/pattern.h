@@ -9,10 +9,10 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "pattern/stream.h"
-#include "pattern/prototype.h"
-#include "pattern/singleton.h"
-#include "pattern/iterator.h"
-#include "pattern/trackable.h"
+#include "nixycore/pattern/stream.h"
+#include "nixycore/pattern/prototype.h"
+#include "nixycore/pattern/singleton.h"
+#include "nixycore/pattern/iterator.h"
+#include "nixycore/pattern/trackable.h"
 
 //////////////////////////////////////////////////////////////////////////

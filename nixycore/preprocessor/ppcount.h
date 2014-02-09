@@ -8,7 +8,7 @@
 #pragma once
 
 // preprocessor macros
-#include "preprocessor/ppmacros.h"
+#include "nixycore/preprocessor/ppmacros.h"
 
 //////////////////////////////////////////////////////////////////////////
 

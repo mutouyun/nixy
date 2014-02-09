@@ -1,6 +1,6 @@
 #pragma once
 
-#include "finalizer/finalizer.h"
+#include "nixycore/finalizer/finalizer.h"
 
 //////////////////////////////////////////////////////////////////////////
 

@@ -11,13 +11,13 @@
 
 #pragma once
 
-#include "bugfix/assert.h"
-#include "memory/alloc.h"
-#include "pattern/prototype.h"
+#include "nixycore/bugfix/assert.h"
+#include "nixycore/memory/alloc.h"
+#include "nixycore/pattern/prototype.h"
 
-#include "general/general.h"
-#include "utility/utility.h"
-#include "algorithm/algorithm.h"
+#include "nixycore/general/general.h"
+#include "nixycore/utility/utility.h"
+#include "nixycore/algorithm/algorithm.h"
 
 // typeid
 #include <typeinfo>

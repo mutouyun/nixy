@@ -6,8 +6,8 @@
 */
 
 #if defined(NX_OS_WINCE) || (WINVER < 0x0600)
-#include "thread/lockguard.h"
-#include "thread/spinlock.h"
+#include "nixycore/thread/lockguard.h"
+#include "nixycore/thread/spinlock.h"
 #endif
 
 //////////////////////////////////////////////////////////////////////////

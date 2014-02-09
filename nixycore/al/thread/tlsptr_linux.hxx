@@ -5,7 +5,7 @@
     Author: mutouyun (http://darkc.at)
 */
 
-#include "bugfix/assert.h"
+#include "nixycore/bugfix/assert.h"
 
 #include <pthread.h>
 

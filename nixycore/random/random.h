@@ -7,13 +7,13 @@
 
 #pragma once
 
-#include "random/randstd.h"
-#include "random/randmt19937.h"
+#include "nixycore/random/randstd.h"
+#include "nixycore/random/randmt19937.h"
 
-#include "time/tickcount.h"
+#include "nixycore/time/tickcount.h"
 
-#include "general/general.h"
-#include "typemanip/typemanip.h"
+#include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

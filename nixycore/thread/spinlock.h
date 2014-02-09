@@ -7,13 +7,13 @@
 
 #pragma once
 
-#include "thread/atomic.h"
-#include "thread/threadops.h"
+#include "nixycore/thread/atomic.h"
+#include "nixycore/thread/threadops.h"
 
-#include "bugfix/assert.h"
+#include "nixycore/bugfix/assert.h"
 
-#include "general/general.h"
-#include "utility/utility.h"
+#include "nixycore/general/general.h"
+#include "nixycore/utility/utility.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

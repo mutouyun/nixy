@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "general/general.h"
-#include "typemanip/typemanip.h"
+#include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
 
 // numeric limits
 #include <limits.h>

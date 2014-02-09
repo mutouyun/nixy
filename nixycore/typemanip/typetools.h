@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "typemanip/typedefs.h"
+#include "nixycore/typemanip/typedefs.h"
 
-#include "general/general.h"
+#include "nixycore/general/general.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -28,7 +28,7 @@ struct type_wrap
 template <int N>
 struct type_int {};
 
-#include "al/typemanip/nx_friend_class.hxx"
+#include "nixycore/al/typemanip/nx_friend_class.hxx"
 
 /*
     For judge bool value

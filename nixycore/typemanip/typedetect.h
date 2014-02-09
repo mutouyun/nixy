@@ -7,15 +7,15 @@
 
 #pragma once
 
-#include "typemanip/typedefs.h"
-#include "typemanip/typetools.h"
-#include "typemanip/typelist.h"
-#include "typemanip/typeconcept.h"
-#include "typemanip/typequalifier.h"
-#include "typemanip/typebehavior.h"
+#include "nixycore/typemanip/typedefs.h"
+#include "nixycore/typemanip/typetools.h"
+#include "nixycore/typemanip/typelist.h"
+#include "nixycore/typemanip/typeconcept.h"
+#include "nixycore/typemanip/typequalifier.h"
+#include "nixycore/typemanip/typebehavior.h"
 
-#include "general/general.h"
-#include "preprocessor/preprocessor.h"
+#include "nixycore/general/general.h"
+#include "nixycore/preprocessor/preprocessor.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -260,7 +260,7 @@ struct is_fundamental
     detect POD
 */
 
-#include "al/typemanip/private_is_pod.hxx"
+#include "nixycore/al/typemanip/private_is_pod.hxx"
 
 namespace private_is_pod
 {

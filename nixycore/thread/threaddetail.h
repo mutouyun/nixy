@@ -7,20 +7,20 @@
 
 #pragma once
 
-#include "thread/threadops.h"
-#include "thread/blockingqueue.h"
-#include "thread/mutex.h"
+#include "nixycore/thread/threadops.h"
+#include "nixycore/thread/blockingqueue.h"
+#include "nixycore/thread/mutex.h"
 
-#include "delegate/functor.h"
-#include "delegate/bind.h"
+#include "nixycore/delegate/functor.h"
+#include "nixycore/delegate/bind.h"
 
-#include "bugfix/assert.h"
+#include "nixycore/bugfix/assert.h"
 
-#include "general/general.h"
-#include "preprocessor/preprocessor.h"
-#include "utility/utility.h"
-#include "algorithm/algorithm.h"
-#include "memory/memory.h"
+#include "nixycore/general/general.h"
+#include "nixycore/preprocessor/preprocessor.h"
+#include "nixycore/utility/utility.h"
+#include "nixycore/algorithm/algorithm.h"
+#include "nixycore/memory/memory.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

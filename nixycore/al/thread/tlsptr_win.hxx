@@ -5,7 +5,7 @@
     Author: mutouyun (http://darkc.at)
 */
 
-#include "pattern/trackable.h"
+#include "nixycore/pattern/trackable.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG namespace private_tls_ptr {

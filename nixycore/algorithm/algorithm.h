@@ -9,15 +9,15 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "algorithm/container.h"
-#include "algorithm/foreach.h"
-#include "algorithm/assign.h"
-#include "algorithm/series.h"
+#include "nixycore/algorithm/container.h"
+#include "nixycore/algorithm/foreach.h"
+#include "nixycore/algorithm/assign.h"
+#include "nixycore/algorithm/series.h"
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "general/general.h"
-#include "typemanip/typemanip.h"
+#include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
 
 // std algorithms
 #include <algorithm>

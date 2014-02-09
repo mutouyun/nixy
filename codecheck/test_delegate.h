@@ -1,6 +1,6 @@
 #pragma once
 
-#include "delegate/delegate.h"
+#include "nixycore/delegate/delegate.h"
 
 //////////////////////////////////////////////////////////////////////////
 

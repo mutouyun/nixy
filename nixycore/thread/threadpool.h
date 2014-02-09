@@ -7,23 +7,23 @@
 
 #pragma once
 
-#include "thread/threaddetail.h"
-#include "thread/blockingqueue.h"
-#include "thread/lockguard.h"
-#include "thread/mutex.h"
-#include "thread/atomic.h"
-#include "thread/condition.h"
+#include "nixycore/thread/threaddetail.h"
+#include "nixycore/thread/blockingqueue.h"
+#include "nixycore/thread/lockguard.h"
+#include "nixycore/thread/mutex.h"
+#include "nixycore/thread/atomic.h"
+#include "nixycore/thread/condition.h"
 
-#include "bugfix/assert.h"
+#include "nixycore/bugfix/assert.h"
 
-#include "general/general.h"
-#include "preprocessor/preprocessor.h"
-#include "utility/utility.h"
-#include "typemanip/typemanip.h"
-#include "memory/memory.h"
+#include "nixycore/general/general.h"
+#include "nixycore/preprocessor/preprocessor.h"
+#include "nixycore/utility/utility.h"
+#include "nixycore/typemanip/typemanip.h"
+#include "nixycore/memory/memory.h"
 
 //////////////////////////////////////////////////////////////////////////
-#include "al/general/disable_warnings.hxx"
+#include "nixycore/al/general/disable_warnings.hxx"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -126,14 +126,14 @@ namespace private_thread_pool
             else
             if (curr == free_tail_)
             {
-                free_tail_ = static_cast<alloc_t*>(reinterpret_cast<type_t*>(free_tail_->data_)->prev_);
+                free_tail_ = static_cast<alloc_t*>(reinterpret_cast<type_t*>(free_tail_)->prev_);
             }
             else
             {
                 alloc_t* prev = static_cast<alloc_t*>(objc->prev_);
                 alloc_t* next = curr->next_;
                 prev->next_ = next;
-                reinterpret_cast<type_t*>(next->data_)->prev_ = prev;
+                reinterpret_cast<type_t*>(next)->prev_ = prev;
             }
             -- size_;
             return objc;
@@ -166,7 +166,7 @@ namespace private_thread_pool
             alloc_t* p = free_head_;
             for (size_t i = 0; i < size_; ++i)
             {
-                reinterpret_cast<type_t*>(p->data_)->is_exit_ = true;
+                reinterpret_cast<type_t*>(p)->is_exit_ = true;
                 p = p->next_;
             }
             do_finish(base_t::size());
@@ -299,5 +299,5 @@ private:
 NX_END
 //////////////////////////////////////////////////////////////////////////
 
-#include "al/general/disable_warnings.hxx"
+#include "nixycore/al/general/disable_warnings.hxx"
 //////////////////////////////////////////////////////////////////////////

@@ -8,9 +8,9 @@
 //////////////////////////////////////////////////////////////////////////
 
 #if defined(NX_OS_WIN)
-#   include "al/thread/mutex_win.hxx"
+#   include "nixycore/al/thread/mutex_win.hxx"
 #elif defined(NX_OS_LINUX)
-#   include "al/thread/mutex_linux.hxx"
+#   include "nixycore/al/thread/mutex_linux.hxx"
 #endif
 
 //////////////////////////////////////////////////////////////////////////

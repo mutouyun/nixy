@@ -7,12 +7,12 @@
 
 #pragma once
 
-#include "thread/atomic.h"
-#include "thread/spinlock.h"
-#include "thread/mutex.h"
+#include "nixycore/thread/atomic.h"
+#include "nixycore/thread/spinlock.h"
+#include "nixycore/thread/mutex.h"
 
-#include "general/general.h"
-#include "utility/utility.h"
+#include "nixycore/general/general.h"
+#include "nixycore/utility/utility.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

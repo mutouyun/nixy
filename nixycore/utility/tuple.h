@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include "bugfix/assert.h"
+#include "nixycore/bugfix/assert.h"
 
-#include "general/general.h"
-#include "typemanip/typemanip.h"
-#include "preprocessor/preprocessor.h"
+#include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
+#include "nixycore/preprocessor/preprocessor.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

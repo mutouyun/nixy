@@ -7,13 +7,13 @@
 
 #pragma once
 
-#include "memory/stdalloc.h"
-#include "memory/mempool.h"
+#include "nixycore/memory/stdalloc.h"
+#include "nixycore/memory/mempool.h"
 
-#include "thread/tlsptr.h"
-#include "pattern/singleton.h"
+#include "nixycore/thread/tlsptr.h"
+#include "nixycore/pattern/singleton.h"
 
-#include "general/general.h"
+#include "nixycore/general/general.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

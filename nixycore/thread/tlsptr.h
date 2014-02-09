@@ -7,13 +7,13 @@
 
 #pragma once
 
-#include "general/general.h"
-#include "typemanip/typemanip.h"
-#include "utility/utility.h"
+#include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
+#include "nixycore/utility/utility.h"
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "al/thread/tlsptr.hxx"
+#include "nixycore/al/thread/tlsptr.hxx"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

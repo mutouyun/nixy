@@ -9,13 +9,13 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "typemanip/typedefs.h"
-#include "typemanip/typetools.h"
-#include "typemanip/typerelation.h"
-#include "typemanip/typelist.h"
-#include "typemanip/typeconcept.h"
-#include "typemanip/typedetect.h"
-#include "typemanip/typetraits.h"
-#include "typemanip/typeof.h"
+#include "nixycore/typemanip/typedefs.h"
+#include "nixycore/typemanip/typetools.h"
+#include "nixycore/typemanip/typerelation.h"
+#include "nixycore/typemanip/typelist.h"
+#include "nixycore/typemanip/typeconcept.h"
+#include "nixycore/typemanip/typedetect.h"
+#include "nixycore/typemanip/typetraits.h"
+#include "nixycore/typemanip/typeof.h"
 
 //////////////////////////////////////////////////////////////////////////

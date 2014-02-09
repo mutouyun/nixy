@@ -9,15 +9,15 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "container/any.h"
-#include "container/array.h"
-#include "container/deque.h"
-#include "container/list.h"
-#include "container/map.h"
-#include "container/priority.h"
-#include "container/queue.h"
-#include "container/set.h"
-#include "container/stack.h"
-#include "container/vector.h"
+#include "nixycore/container/any.h"
+#include "nixycore/container/array.h"
+#include "nixycore/container/deque.h"
+#include "nixycore/container/list.h"
+#include "nixycore/container/map.h"
+#include "nixycore/container/priority.h"
+#include "nixycore/container/queue.h"
+#include "nixycore/container/set.h"
+#include "nixycore/container/stack.h"
+#include "nixycore/container/vector.h"
 
 //////////////////////////////////////////////////////////////////////////

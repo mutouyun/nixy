@@ -8,9 +8,9 @@
 //////////////////////////////////////////////////////////////////////////
 
 #if defined(NX_OS_WIN)
-#   include "al/thread/tlsptr_win.hxx"
+#   include "nixycore/al/thread/tlsptr_win.hxx"
 #elif defined(NX_OS_LINUX)
-#   include "al/thread/tlsptr_linux.hxx"
+#   include "nixycore/al/thread/tlsptr_linux.hxx"
 #endif
 
 //////////////////////////////////////////////////////////////////////////

@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include "typemanip/typedefs.h"
-#include "typemanip/typequalifier.h"
+#include "nixycore/typemanip/typedefs.h"
+#include "nixycore/typemanip/typequalifier.h"
 
-#include "general/general.h"
-#include "preprocessor/preprocessor.h"
+#include "nixycore/general/general.h"
+#include "nixycore/preprocessor/preprocessor.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

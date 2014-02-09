@@ -1,6 +1,6 @@
-#include "time/time.h"
-#include "thread/thread.h"
-#include "memory/memory.h"
+#include "nixycore/time/time.h"
+#include "nixycore/thread/thread.h"
+#include "nixycore/memory/memory.h"
 
 void dummy(void)
 {

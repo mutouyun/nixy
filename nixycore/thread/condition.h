@@ -7,14 +7,14 @@
 
 #pragma once
 
-#include "thread/mutex.h"
+#include "nixycore/thread/mutex.h"
 
-#include "general/general.h"
-#include "utility/utility.h"
+#include "nixycore/general/general.h"
+#include "nixycore/utility/utility.h"
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "al/thread/condition.hxx"
+#include "nixycore/al/thread/condition.hxx"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

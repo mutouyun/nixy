@@ -7,16 +7,16 @@
 
 #pragma once
 
-#include "typemanip/typedefs.h"
-#include "typemanip/typedetect.h"
+#include "nixycore/typemanip/typedefs.h"
+#include "nixycore/typemanip/typedetect.h"
 
-#include "general/general.h"
+#include "nixycore/general/general.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-#include "al/typemanip/typeof.hxx"
+#include "nixycore/al/typemanip/typeof.hxx"
 
 #ifndef nx_typeof
 #define nx_typeof(...) nx::null_t

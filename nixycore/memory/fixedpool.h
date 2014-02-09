@@ -7,15 +7,15 @@
 
 #pragma once
 
-#include "memory/stdalloc.h"
+#include "nixycore/memory/stdalloc.h"
 
-#include "bugfix/assert.h"
-#include "pattern/iterator.h"
-#include "algorithm/series.h"
+#include "nixycore/bugfix/assert.h"
+#include "nixycore/pattern/iterator.h"
+#include "nixycore/algorithm/series.h"
 
-#include "general/general.h"
-#include "typemanip/typemanip.h"
-#include "utility/utility.h"
+#include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
+#include "nixycore/utility/utility.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

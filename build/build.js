@@ -4,7 +4,7 @@
 
 Solution.name           = "nixy"
 Solution.project_path   = "../"
-Solution.include_path   = "'nixycore'"
+Solution.include_path   = ""
 Solution.tmp_path       = "!tmp/$(Configuration)/$(CC)"
 Solution.out_path       = "!bin/$(Configuration)/$(CC)"
 

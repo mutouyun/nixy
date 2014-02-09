@@ -7,14 +7,14 @@
 
 #pragma once
 
-#include "memory/stdalloc.h"
-#include "memory/fixedpool.h"
-#include "memory/centerpool.h"
+#include "nixycore/memory/stdalloc.h"
+#include "nixycore/memory/fixedpool.h"
+#include "nixycore/memory/centerpool.h"
 
-#include "bugfix/assert.h"
+#include "nixycore/bugfix/assert.h"
 
-#include "general/general.h"
-#include "utility/utility.h"
+#include "nixycore/general/general.h"
+#include "nixycore/utility/utility.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

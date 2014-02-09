@@ -7,16 +7,16 @@
 
 #pragma once
 
-#include "thread/lockguard.h"
-#include "thread/mutex.h"
-#include "thread/condition.h"
+#include "nixycore/thread/lockguard.h"
+#include "nixycore/thread/mutex.h"
+#include "nixycore/thread/condition.h"
 
-#include "container/deque.h"
+#include "nixycore/container/deque.h"
 
-#include "bugfix/assert.h"
+#include "nixycore/bugfix/assert.h"
 
-#include "general/general.h"
-#include "utility/utility.h"
+#include "nixycore/general/general.h"
+#include "nixycore/utility/utility.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

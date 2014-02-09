@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include "memory/stdalloc.h"
-#include "memory/memalloc.h"
+#include "nixycore/memory/stdalloc.h"
+#include "nixycore/memory/memalloc.h"
 
-#include "general/general.h"
-#include "preprocessor/preprocessor.h"
+#include "nixycore/general/general.h"
+#include "nixycore/preprocessor/preprocessor.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

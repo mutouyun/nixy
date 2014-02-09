@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include "container/vector.h"
+#include "nixycore/container/vector.h"
 
-#include "general/general.h"
-#include "typemanip/typemanip.h"
-#include "algorithm/algorithm.h"
+#include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
+#include "nixycore/algorithm/algorithm.h"
 
 // std::priority_queue
 #include <queue>

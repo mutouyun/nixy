@@ -7,12 +7,12 @@
 
 #pragma once
 
-#include "pattern/singleton.h"
+#include "nixycore/pattern/singleton.h"
 
-#include "bugfix/assert.h"
+#include "nixycore/bugfix/assert.h"
 
-#include "general/general.h"
-#include "typemanip/typemanip.h"
+#include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

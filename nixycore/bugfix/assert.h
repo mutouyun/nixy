@@ -8,8 +8,8 @@
 #pragma once
 
 // nx...
-#include "general/general.h"
-#include "preprocessor/preprocessor.h"
+#include "nixycore/general/general.h"
+#include "nixycore/preprocessor/preprocessor.h"
 
 // assert
 #include <assert.h>

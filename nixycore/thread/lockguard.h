@@ -7,13 +7,13 @@
 
 #pragma once
 
-#include "pattern/singleton.h"
-#include "finalizer/scopeguard.h"
-#include "delegate/bind.h"
+#include "nixycore/pattern/singleton.h"
+#include "nixycore/finalizer/scopeguard.h"
+#include "nixycore/delegate/bind.h"
 
-#include "general/general.h"
-#include "typemanip/typemanip.h"
-#include "utility/utility.h"
+#include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
+#include "nixycore/utility/utility.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

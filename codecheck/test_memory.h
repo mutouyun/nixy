@@ -1,9 +1,9 @@
 #pragma once
 
-#include "memory/memory.h"
-#include "time/stopwatch.h"
-#include "random/random.h"
-#include "thread/thread.h"
+#include "nixycore/memory/memory.h"
+#include "nixycore/time/stopwatch.h"
+#include "nixycore/random/random.h"
+#include "nixycore/thread/thread.h"
 
 #if (NX_CC_MSVC == 1400) || defined(NX_OS_WINCE)
 #define NO_TEST_NEDMALLOC

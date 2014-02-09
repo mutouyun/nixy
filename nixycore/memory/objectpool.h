@@ -7,18 +7,18 @@
 
 #pragma once
 
-#include "memory/fixedpool.h"
-#include "memory/construct.h"
+#include "nixycore/memory/fixedpool.h"
+#include "nixycore/memory/construct.h"
 
-#include "delegate/functor.h"
-#include "delegate/bind.h"
+#include "nixycore/delegate/functor.h"
+#include "nixycore/delegate/bind.h"
 
-#include "bugfix/assert.h"
+#include "nixycore/bugfix/assert.h"
 
-#include "general/general.h"
-#include "preprocessor/preprocessor.h"
-#include "typemanip/typemanip.h"
-#include "utility/utility.h"
+#include "nixycore/general/general.h"
+#include "nixycore/preprocessor/preprocessor.h"
+#include "nixycore/typemanip/typemanip.h"
+#include "nixycore/utility/utility.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

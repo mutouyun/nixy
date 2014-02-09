@@ -1,7 +1,7 @@
 #pragma once
 
-#include "time/time.h"
-#include "thread/threadops.h"
+#include "nixycore/time/time.h"
+#include "nixycore/thread/threadops.h"
 
 //////////////////////////////////////////////////////////////////////////
 

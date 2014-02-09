@@ -7,12 +7,12 @@
 
 #pragma once
 
-#include "general/general.h"
-#include "utility/utility.h"
+#include "nixycore/general/general.h"
+#include "nixycore/utility/utility.h"
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "al/thread/mutex.hxx"
+#include "nixycore/al/thread/mutex.hxx"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

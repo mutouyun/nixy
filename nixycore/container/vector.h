@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include "memory/alloc.h"
+#include "nixycore/memory/alloc.h"
 
-#include "general/general.h"
-#include "typemanip/typemanip.h"
+#include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
 
 // std::vector
 #include <vector>

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "algorithm/algorithm.h"
-#include "container/container.h"
-#include "pattern/iterator.h"
+#include "nixycore/algorithm/algorithm.h"
+#include "nixycore/container/container.h"
+#include "nixycore/pattern/iterator.h"
 
 //////////////////////////////////////////////////////////////////////////
 

@@ -7,12 +7,12 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#if   defined(NX_CC_GNUC)
+#if defined(NX_CC_GNUC)
 #   ifndef nx_typeof
 #       define nx_typeof(...) __typeof(__VA_ARGS__)
 #   endif
 #elif defined(NX_CC_MSVC)
-#   include "al/typemanip/typeof_msvc.hxx"
+#   include "nixycore/al/typemanip/typeof_msvc.hxx"
 #endif
 
 //////////////////////////////////////////////////////////////////////////

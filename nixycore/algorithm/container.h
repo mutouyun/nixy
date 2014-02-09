@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "general/general.h"
-#include "typemanip/typemanip.h"
-#include "utility/maxmin.h"
+#include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
+#include "nixycore/utility/maxmin.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

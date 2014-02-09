@@ -8,9 +8,9 @@
 //////////////////////////////////////////////////////////////////////////
 
 #if defined(NX_CC_MSVC)
-#   include "al/thread/barrier_msvc.hxx"
+#   include "nixycore/al/thread/barrier_msvc.hxx"
 #elif defined(NX_CC_GNUC)
-#   include "al/thread/barrier_gnuc.hxx"
+#   include "nixycore/al/thread/barrier_gnuc.hxx"
 #endif
 
 //////////////////////////////////////////////////////////////////////////

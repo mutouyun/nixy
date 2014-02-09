@@ -7,13 +7,13 @@
 
 #pragma once
 
-#include "memory/alloc.h"
+#include "nixycore/memory/alloc.h"
 
-#include "delegate/functor.h"
-#include "finalizer/scopeguard.h"
+#include "nixycore/delegate/functor.h"
+#include "nixycore/finalizer/scopeguard.h"
 
-#include "general/general.h"
-#include "typemanip/typemanip.h"
+#include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

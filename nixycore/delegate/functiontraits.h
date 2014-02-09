@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "general/general.h"
-#include "typemanip/typemanip.h"
-#include "preprocessor/preprocessor.h"
+#include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
+#include "nixycore/preprocessor/preprocessor.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -75,7 +75,7 @@ namespace private_function_traits
 #undef NX_FUNC_TRAITS_
 #undef NX_FUNC_MEM_
 
-#include "al/delegate/private_function_traits.hxx"
+#include "nixycore/al/delegate/private_function_traits.hxx"
 }
 
 template <typename T>

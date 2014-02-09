@@ -1,8 +1,8 @@
 #pragma once
 
-#include "general/general.h"
-#include "preprocessor/preprocessor.h"
-#include "preprocessor/pprepeat.h"
+#include "nixycore/general/general.h"
+#include "nixycore/preprocessor/preprocessor.h"
+#include "nixycore/preprocessor/pprepeat.h"
 
 //////////////////////////////////////////////////////////////////////////
 

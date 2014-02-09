@@ -7,13 +7,13 @@
 
 #pragma once
 
-#include "thread/barrier.h"
+#include "nixycore/thread/barrier.h"
 
-#include "general/general.h"
-#include "typemanip/typemanip.h"
+#include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "al/thread/interlocked.hxx"
+#include "nixycore/al/thread/interlocked.hxx"
 
 //////////////////////////////////////////////////////////////////////////

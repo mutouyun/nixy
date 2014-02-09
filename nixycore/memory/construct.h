@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "general/general.h"
+#include "nixycore/general/general.h"
 
 // placement new, std::bad_alloc
 #include <new>

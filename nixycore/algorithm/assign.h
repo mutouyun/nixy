@@ -7,12 +7,12 @@
 
 #pragma once
 
-#include "algorithm/container.h"
+#include "nixycore/algorithm/container.h"
 
-#include "pattern/stream.h"
+#include "nixycore/pattern/stream.h"
 
-#include "general/general.h"
-#include "typemanip/typemanip.h"
+#include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

@@ -7,14 +7,14 @@
 
 #pragma once
 
-#include "memory/alloc.h"
-#include "pattern/prototype.h"
+#include "nixycore/memory/alloc.h"
+#include "nixycore/pattern/prototype.h"
 
-#include "general/general.h"
-#include "typemanip/typemanip.h"
-#include "utility/utility.h"
-#include "algorithm/algorithm.h"
-#include "preprocessor/preprocessor.h"
+#include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
+#include "nixycore/utility/utility.h"
+#include "nixycore/algorithm/algorithm.h"
+#include "nixycore/preprocessor/preprocessor.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -37,6 +37,16 @@ namespace private_functor
             void* this_ptr;
             void(class_t::*func_ptr)();
         } mem_ptr;
+
+        template <typename Func_>
+        static Func_* cast(pvoid& p)
+        {
+            /*
+                this cast is for disable the gcc warning:
+                dereferencing type-punned pointer will break strict-aliasing rules
+            */
+            return reinterpret_cast<Func_*>(&(p));
+        }
     };
 
     /*
@@ -70,7 +80,7 @@ namespace private_functor
     {
         static R invoke(handler& hd)
         {
-            return (*(reinterpret_cast<Func_*>(&(hd.obj_ptr))))(); // hd.obj_ptr is not a pointer
+            return (*(handler::cast<Func_>(hd.obj_ptr)))(); // hd.obj_ptr is not a pointer
         }
     };
 
@@ -109,7 +119,7 @@ namespace private_functor
     {
         static void invoke(handler& hd)
         {
-            /*return*/ (*(reinterpret_cast<Func_*>(&(hd.obj_ptr))))();
+            /*return*/ (*(handler::cast<Func_>(hd.obj_ptr)))();
         }
     };
 
@@ -145,7 +155,7 @@ namespace private_functor
     { \
         static R invoke(handler& hd, NX_PP_TYPE_2(n, typename nx::traits<P, >::param_t par)) \
         { \
-            return (*(reinterpret_cast<Func_*>(&(hd.obj_ptr))))(NX_PP_TYPE_1(n, par)); \
+            return (*(handler::cast<Func_>(hd.obj_ptr)))(NX_PP_TYPE_1(n, par)); \
         } \
     }; \
     template <typename R, NX_PP_TYPE_1(n, typename P), typename Func_, typename This_> \
@@ -178,7 +188,7 @@ namespace private_functor
     { \
         static void invoke(handler& hd, NX_PP_TYPE_2(n, typename nx::traits<P, >::param_t par)) \
         { \
-            /*return*/ (*(reinterpret_cast<Func_*>(&(hd.obj_ptr))))(NX_PP_TYPE_1(n, par)); \
+            /*return*/ (*(handler::cast<Func_>(hd.obj_ptr)))(NX_PP_TYPE_1(n, par)); \
         } \
     }; \
     template <NX_PP_TYPE_1(n, typename P), typename Func_, typename This_> \

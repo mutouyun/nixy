@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include "memory/construct.h"
+#include "nixycore/memory/construct.h"
 
-#include "general/general.h"
-#include "utility/utility.h"
+#include "nixycore/general/general.h"
+#include "nixycore/utility/utility.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

@@ -7,16 +7,16 @@
 
 #pragma once
 
-#include "finalizer/scopeguard.h"
+#include "nixycore/finalizer/scopeguard.h"
 
-#include "memory/alloc.h"
-#include "pattern/trackable.h"
-#include "bugfix/assert.h"
+#include "nixycore/memory/alloc.h"
+#include "nixycore/pattern/trackable.h"
+#include "nixycore/bugfix/assert.h"
 
-#include "general/general.h"
-#include "utility/utility.h"
-#include "algorithm/algorithm.h"
-#include "container/container.h"
+#include "nixycore/general/general.h"
+#include "nixycore/utility/utility.h"
+#include "nixycore/algorithm/algorithm.h"
+#include "nixycore/container/container.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -478,7 +478,7 @@ namespace private_gc
 }
 
 //////////////////////////////////////////////////////////////////////////
-#include "al/general/disable_warnings.hxx"
+#include "nixycore/al/general/disable_warnings.hxx"
 
 /*
     Execute gc when the enclosing scope exits
@@ -520,7 +520,7 @@ public:
     }
 };
 
-#include "al/general/disable_warnings.hxx"
+#include "nixycore/al/general/disable_warnings.hxx"
 //////////////////////////////////////////////////////////////////////////
 
 /*

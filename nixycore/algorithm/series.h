@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "algorithm/foreach.h"
+#include "nixycore/algorithm/foreach.h"
 
-#include "general/general.h"
+#include "nixycore/general/general.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

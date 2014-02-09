@@ -5,7 +5,7 @@
     Author: mutouyun (http://darkc.at)
 */
 
-#include "time/tickcount.h"
+#include "nixycore/time/tickcount.h"
 
 #include <pthread.h>
 

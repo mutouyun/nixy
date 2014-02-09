@@ -9,11 +9,11 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "preprocessor/ppcount.h"
-#include "preprocessor/pparg.h"
-#include "preprocessor/pprepeat.h"
-#include "preprocessor/ppnest.h"
-#include "preprocessor/ppmult.h"
+#include "nixycore/preprocessor/ppcount.h"
+#include "nixycore/preprocessor/pparg.h"
+#include "nixycore/preprocessor/pprepeat.h"
+#include "nixycore/preprocessor/ppnest.h"
+#include "nixycore/preprocessor/ppmult.h"
 
 //////////////////////////////////////////////////////////////////////////
 

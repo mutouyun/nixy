@@ -9,19 +9,19 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "utility/addressof.h"
-#include "utility/typecast.h"
-#include "utility/countof.h"
-#include "utility/operator.h"
-#include "utility/noncopyable.h"
-#include "utility/final.h"
-#include "utility/initialize.h"
-#include "utility/maxmin.h"
-#include "utility/limitof.h"
-#include "utility/safebool.h"
-#include "utility/refer.h"
-#include "utility/rvalue.h"
-#include "utility/valid.h"
-#include "utility/tuple.h"
+#include "nixycore/utility/addressof.h"
+#include "nixycore/utility/typecast.h"
+#include "nixycore/utility/countof.h"
+#include "nixycore/utility/operator.h"
+#include "nixycore/utility/noncopyable.h"
+#include "nixycore/utility/final.h"
+#include "nixycore/utility/initialize.h"
+#include "nixycore/utility/maxmin.h"
+#include "nixycore/utility/limitof.h"
+#include "nixycore/utility/safebool.h"
+#include "nixycore/utility/refer.h"
+#include "nixycore/utility/rvalue.h"
+#include "nixycore/utility/valid.h"
+#include "nixycore/utility/tuple.h"
 
 //////////////////////////////////////////////////////////////////////////

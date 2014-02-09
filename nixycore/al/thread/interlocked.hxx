@@ -6,7 +6,7 @@
 */
 
 //////////////////////////////////////////////////////////////////////////
-#include "al/general/disable_warnings.hxx"
+#include "nixycore/al/general/disable_warnings.hxx"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -88,10 +88,10 @@ NX_END
 //////////////////////////////////////////////////////////////////////////
 
 #if defined(NX_CC_MSVC)
-#   include "al/thread/interlocked_msvc.hxx"
+#   include "nixycore/al/thread/interlocked_msvc.hxx"
 #elif defined(NX_CC_GNUC)
-#   include "al/thread/interlocked_gnuc.hxx"
+#   include "nixycore/al/thread/interlocked_gnuc.hxx"
 #endif
 
-#include "al/general/disable_warnings.hxx"
+#include "nixycore/al/general/disable_warnings.hxx"
 //////////////////////////////////////////////////////////////////////////

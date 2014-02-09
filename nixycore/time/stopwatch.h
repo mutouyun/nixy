@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "time/tickcount.h"
+#include "nixycore/time/tickcount.h"
 
-#include "general/general.h"
+#include "nixycore/general/general.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

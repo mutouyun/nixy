@@ -33,7 +33,7 @@
 */
 
 // NX_OS, NX_CC, NDEBUG, ...
-#include "al/general/platdetect.hxx"
+#include "nixycore/al/general/platdetect.hxx"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -81,7 +81,7 @@ typedef ullong              uint64;
 
 // global functions
 
-#include "al/general/global_functions.hxx"
+#include "nixycore/al/general/global_functions.hxx"
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

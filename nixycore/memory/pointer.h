@@ -7,13 +7,13 @@
 
 #pragma once
 
-#include "memory/alloc.h"
-#include "memory/memguard.h"
+#include "nixycore/memory/alloc.h"
+#include "nixycore/memory/memguard.h"
 
-#include "thread/threadmodel.h"
-#include "finalizer/holder.h"
+#include "nixycore/thread/threadmodel.h"
+#include "nixycore/finalizer/holder.h"
 
-#include "general/general.h"
+#include "nixycore/general/general.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

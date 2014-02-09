@@ -7,15 +7,15 @@
 
 #pragma once
 
-#include "memory/fixedpool.h"
+#include "nixycore/memory/fixedpool.h"
 
-#include "bugfix/assert.h"
-#include "thread/threadmodel.h"
-#include "pattern/singleton.h"
+#include "nixycore/bugfix/assert.h"
+#include "nixycore/thread/threadmodel.h"
+#include "nixycore/pattern/singleton.h"
 
-#include "general/general.h"
-#include "typemanip/typemanip.h"
-#include "utility/utility.h"
+#include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
+#include "nixycore/utility/utility.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

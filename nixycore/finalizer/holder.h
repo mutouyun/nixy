@@ -7,12 +7,12 @@
 
 #pragma once
 
-#include "finalizer/refcounter.h"
+#include "nixycore/finalizer/refcounter.h"
 
-#include "general/general.h"
-#include "typemanip/typemanip.h"
-#include "utility/utility.h"
-#include "algorithm/algorithm.h"
+#include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
+#include "nixycore/utility/utility.h"
+#include "nixycore/algorithm/algorithm.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

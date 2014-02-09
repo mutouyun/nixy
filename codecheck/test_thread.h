@@ -1,7 +1,7 @@
 #pragma once
 
-#include "thread/thread.h"
-#include "random/random.h"
+#include "nixycore/thread/thread.h"
+#include "nixycore/random/random.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -63,7 +63,7 @@ void testThreadOps(void)
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "container/queue.h"
+#include "nixycore/container/queue.h"
 
 namespace test_condition
 {
@@ -363,7 +363,7 @@ void testTlsPtr(void)
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "memory/pointer.h"
+#include "nixycore/memory/pointer.h"
 
 namespace test_threaddetail
 {

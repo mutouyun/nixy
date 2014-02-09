@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include "utility/refer.h"
+#include "nixycore/utility/refer.h"
 
-#include "general/general.h"
-#include "typemanip/typemanip.h"
-#include "algorithm/algorithm.h"
+#include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
+#include "nixycore/algorithm/algorithm.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
