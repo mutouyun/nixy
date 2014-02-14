@@ -25,7 +25,7 @@ NX_BEG
 
 struct by_dest_memory
 {
-    template <typename T> bool is_valid(const T& r)
+    template <typename T> bool is_valid(const T& r) const
     { return !!r; }
     template <typename T> void reset(T& r)
     { r = nx::nulptr; }
