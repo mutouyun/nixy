@@ -35,13 +35,13 @@ NX_BEG
 // Static Assert
 
 #ifndef nx_assert_static
-template <bool, int> struct Static_Assert_Failure;
-template <int Line_> struct Static_Assert_Failure<true, Line_> {};
+template <bool, int> struct static_assert_failure;
+template <int Line_> struct static_assert_failure<true, Line_> {};
 #define nx_assert_static(...) \
     enum \
     { \
-        NX_PP_JOIN(static_assert_failure_test_, __LINE__) = \
-            sizeof(nx::Static_Assert_Failure<!!(__VA_ARGS__), __LINE__>) \
+        NX_PP_JOIN(StaticAssertFailureTest_, __LINE__) = \
+            sizeof(nx::static_assert_failure<!!(__VA_ARGS__), __LINE__>) \
     }
 #endif
 

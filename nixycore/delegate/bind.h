@@ -10,9 +10,9 @@
 #include "nixycore/delegate/functiontraits.h"
 
 #include "nixycore/general/general.h"
+#include "nixycore/preprocessor/preprocessor.h"
 #include "nixycore/typemanip/typemanip.h"
 #include "nixycore/utility/utility.h"
-#include "nixycore/preprocessor/preprocessor.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -38,7 +38,7 @@ namespace private_bind
         Check result type
     */
 
-    template <typename F, typename R>
+    template <typename F, typename R = nx::null_t>
     struct check_result
     {
         typedef R type_t;
@@ -369,11 +369,7 @@ inline private_bind::detail<F, private_bind::list<nx::tuple<NX_PP_TYPE_1(n, P)> 
 { \
     typedef private_bind::list<nx::tuple<NX_PP_TYPE_1(n, P)> > l_t; \
     return private_bind::detail<F, l_t>(f, nx::tie(NX_PP_TYPE_1(n, p))); \
-}
-NX_PP_MULT_MAX(NX_BIND_)
-#undef NX_BIND_
-
-#define NX_BIND_(n) \
+} \
 template <typename R, typename F, NX_PP_TYPE_1(n, typename P)> \
 inline private_bind::detail<F, private_bind::list<nx::tuple<NX_PP_TYPE_1(n, P)> >, R> bind(F f, NX_PP_TYPE_2(n, P, p)) \
 { \

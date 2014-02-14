@@ -25,53 +25,53 @@ class waiter : nx::NonCopyable
 
     enum
     {
-        RESTING, 
-        EXCITED, 
-        AUTORET
+        Resting,
+        Excited,
+        AutoRet
     } signaled_;
 
 public:
     waiter(void)
         : cond_(lock_)
-        , signaled_(RESTING)
+        , signaled_(Resting)
     {}
 
     bool is_signaled(void) const
     {
         nx_lock_scope(lock_);
-        return (signaled_ != RESTING);
+        return (signaled_ != Resting);
     }
 
     void reset(void)
     {
         nx_lock_scope(lock_);
-        signaled_ = RESTING;
+        signaled_ = Resting;
     }
 
 public:
     bool wait(int tm_ms = -1)
     {
         nx_lock_scope(lock_);
-        while (signaled_ == RESTING)
+        while (signaled_ == Resting)
         {
             bool ret = cond_.wait(tm_ms);
             if (!ret) return false;
         }
-        if (signaled_ == AUTORET) signaled_ = RESTING;
+        if (signaled_ == AutoRet) signaled_ = Resting;
         return true;
     }
 
     void notify(void)
     {
         nx_lock_scope(lock_);
-        signaled_ = AUTORET;
+        signaled_ = AutoRet;
         cond_.broadcast();
     }
 
     void broadcast(void)
     {
         nx_lock_scope(lock_);
-        signaled_ = EXCITED;
+        signaled_ = Excited;
         cond_.broadcast();
     }
 };
