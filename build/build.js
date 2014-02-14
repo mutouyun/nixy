@@ -155,6 +155,7 @@ else
         'nixycore/thread/threadmodel.h' \
         'nixycore/thread/threaddetail.h' \
         'nixycore/thread/threadpool.h' \
+        'nixycore/thread/async.h' \
         'nixycore/thread/thread.h'"
 }
 /* project test */

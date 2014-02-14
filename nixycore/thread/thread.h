@@ -23,5 +23,6 @@
 #include "nixycore/thread/threadmodel.h"
 #include "nixycore/thread/threaddetail.h"
 #include "nixycore/thread/threadpool.h"
+#include "nixycore/thread/async.h"
 
 //////////////////////////////////////////////////////////////////////////

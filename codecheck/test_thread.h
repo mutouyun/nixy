@@ -448,6 +448,50 @@ void testThreadPool(void)
 
 //////////////////////////////////////////////////////////////////////////
 
+namespace test_async
+{
+    int test_1(int total)
+    {
+        int r = 0;
+        for(int i = 1; i <= total; ++i)
+            r += i;
+        return r;
+    }
+
+    int test_2(int total)
+    {
+        int r = 1;
+        for(int i = 1; i <= total; ++i)
+            r *= i;
+        return r;
+    }
+
+    int test_3(int total)
+    {
+        int r = 0;
+        for(int i = 1; i <= total; ++i)
+            r += (i & 1) ? i : -i;
+        return r;
+    }
+}
+
+void testAsync(void)
+{
+    TEST_CASE();
+
+    using namespace test_async;
+
+    nx::task<int> t1 = nx::async(&test_1, 100);
+    nx::task<int> t2 = nx::async(&test_2, 10);
+    nx::task<int> t3 = nx::async(&test_3, 100);
+
+    strout << "Check task result: " << t1.result()
+                             << " " << t2.result()
+                             << " " << t3.result() << endl;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
 void testThread(void)
 {
     TEST_FUNCTION();
@@ -460,5 +504,6 @@ void testThread(void)
     //testWaiter();
     //testTlsPtr();
     //testThreadDetail();
-    testThreadPool();
+    //testThreadPool();
+    testAsync();
 }
