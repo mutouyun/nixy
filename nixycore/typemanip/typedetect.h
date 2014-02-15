@@ -112,22 +112,9 @@ struct is_union
     detect class
 */
 
-namespace private_is_class
-{
-    template <typename T>
-    struct detail
-    {
-        template <typename U>
-        static nx::yes_t check(void(U::*)(void));
-        template <typename U>
-        static nx::not_t check(...);
-        NX_STATIC_VALUE( bool, nx_rightof(check<T>(0)) && !is_union<T>::value );
-    };
-}
-
 template <typename T>
 struct is_class
-    : private_is_class::detail<T>
+    : Judge<__is_class(T)>
 {};
 
 /*
