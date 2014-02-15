@@ -14,6 +14,8 @@
 #include "nixycore/typemanip/typerelation.h"
 #include "nixycore/typemanip/typelist.h"
 #include "nixycore/typemanip/typeconcept.h"
+#include "nixycore/typemanip/typequalifier.h"
+#include "nixycore/typemanip/typebehavior.h"
 #include "nixycore/typemanip/typedetect.h"
 #include "nixycore/typemanip/typetraits.h"
 #include "nixycore/typemanip/typeof.h"
