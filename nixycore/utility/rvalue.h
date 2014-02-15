@@ -7,11 +7,9 @@
 
 #pragma once
 
-#include "nixycore/utility/refer.h"
+#include "nixycore/typemanip/typedetect.h"
 
 #include "nixycore/general/general.h"
-#include "nixycore/typemanip/typemanip.h"
-#include "nixycore/algorithm/algorithm.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -40,18 +38,23 @@ public:
 };
 
 template <typename T>
-class rvalue<T, false> : public refer<T>
+class rvalue<T, false>
 {
-    typedef refer<T> base_t;
-    typedef typename base_t::value_t value_t;
+    typedef typename rm_const<
+            typename rm_reference<T>::type_t
+                                   >::type_t value_t;
+
+    value_t content_;
 
 public:
     rvalue(const rvalue& rv)
-        : base_t(rv)
+        : content_(rv.content_)
     {}
     rvalue(const value_t& rv)
-        : base_t(const_cast<value_t&>(rv))
+        : content_(rv)
     {}
+
+    operator value_t() const { return content_; }
 };
 
 /*
@@ -76,22 +79,6 @@ template <typename T>
 inline T& unmove(const rvalue<T>& rv)
 {
     return const_cast<T&>(static_cast<const T&>(rv));
-}
-
-/*
-    Special swap algorithm
-*/
-
-template <typename T>
-inline void swap(T& x, const nx::rvalue<T>& y)
-{
-    nx::swap(x, unmove(y));
-}
-
-template <typename T>
-inline void swap(const nx::rvalue<T>& x, T& y)
-{
-    nx::swap(unmove(x), y);
 }
 
 //////////////////////////////////////////////////////////////////////////

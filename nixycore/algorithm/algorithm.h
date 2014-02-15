@@ -16,6 +16,8 @@
 
 //////////////////////////////////////////////////////////////////////////
 
+#include "nixycore/utility/rvalue.h"
+
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
 
@@ -56,6 +58,18 @@ inline void swap(T(&x)[N], T(&y)[N])
 {
     nx_foreach(i, N)
         nx::swap(x[i], y[i]);
+}
+
+template <typename T>
+inline void swap(T& x, const nx::rvalue<T>& y)
+{
+    nx::swap(x, unmove(y));
+}
+
+template <typename T>
+inline void swap(const nx::rvalue<T>& x, T& y)
+{
+    nx::swap(unmove(x), y);
 }
 
 /*
