@@ -16,6 +16,7 @@
 #include "nixycore/delegate/bind.h"
 
 #include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
 #include "nixycore/preprocessor/preprocessor.h"
 #include "nixycore/utility/utility.h"
 #include "nixycore/memory/memory.h"
@@ -59,7 +60,7 @@ private:
     template <typename U, typename = nx::null_t>
     struct data : data_base
     {
-        U result_;
+        typename rm_rvalue<U>::type_t result_;
 
         static void onProcess(pointer<data>& d)
         {
@@ -102,7 +103,7 @@ public:
 
     task(const rvalue<task>& r)
     {
-        swap(nx::unmove(r));
+        swap(unmove(r));
     }
 
 public:
