@@ -7,8 +7,9 @@
 
 #pragma once
 
+#include "nixycore/typemanip/typetools.h"
+
 #include "nixycore/general/general.h"
-#include "nixycore/typemanip/typemanip.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

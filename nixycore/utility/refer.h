@@ -9,8 +9,9 @@
 
 #include "nixycore/utility/addressof.h"
 
+#include "nixycore/typemanip/typebehavior.h"
+
 #include "nixycore/general/general.h"
-#include "nixycore/typemanip/typemanip.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -20,14 +21,10 @@ template <typename T>
 class refer
 {
 public:
-    typedef typename rm_const
-                <typename rm_reference
-                    <T
-                    >::type_t
-                >::type_t type_t;
-    typedef typename rm_reference
-                <T
-                >::type_t value_t;
+    typedef typename rm_const<
+            typename rm_reference<T>::type_t
+                                   >::type_t type_t;
+    typedef typename rm_reference<T>::type_t value_t;
 
 protected:
     value_t* content_;

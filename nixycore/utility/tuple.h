@@ -9,8 +9,11 @@
 
 #include "nixycore/bugfix/assert.h"
 
+#include "nixycore/typemanip/typedefs.h"
+#include "nixycore/typemanip/typelist.h"
+#include "nixycore/typemanip/typebehavior.h"
+
 #include "nixycore/general/general.h"
-#include "nixycore/typemanip/typemanip.h"
 #include "nixycore/preprocessor/preprocessor.h"
 
 //////////////////////////////////////////////////////////////////////////

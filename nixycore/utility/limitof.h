@@ -7,8 +7,10 @@
 
 #pragma once
 
+#include "nixycore/typemanip/typedefs.h"
+#include "nixycore/typemanip/typedetect.h"
+
 #include "nixycore/general/general.h"
-#include "nixycore/typemanip/typemanip.h"
 
 // numeric limits
 #include <limits.h>

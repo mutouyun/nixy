@@ -11,8 +11,9 @@
 #include "nixycore/utility/refer.h"
 #include "nixycore/utility/final.h"
 
+#include "nixycore/typemanip/typebehavior.h"
+
 #include "nixycore/general/general.h"
-#include "nixycore/typemanip/typemanip.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -27,14 +28,10 @@ namespace private_valid
     class detail<T, true> : public SafeBool<detail<T, true> >
     {
     public:
-        typedef typename rm_const
-                    <typename rm_reference
-                        <T
-                        >::type_t
-                    >::type_t type_t;
-        typedef typename rm_reference
-                    <T
-                    >::type_t value_t;
+        typedef typename rm_const<
+                typename rm_reference<T>::type_t
+                                       >::type_t type_t;
+        typedef typename rm_reference<T>::type_t value_t;
 
     public:
         value_t* value_;
