@@ -8,9 +8,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #if defined(NX_CC_GNUC)
-#   ifndef nx_typeof
-#       define nx_typeof(...) __typeof(__VA_ARGS__)
-#   endif
+#   define NX_TYPEOF_(...) __typeof(__VA_ARGS__)
 #elif defined(NX_CC_MSVC)
 #   include "nixycore/al/typemanip/typeof_msvc.hxx"
 #endif
