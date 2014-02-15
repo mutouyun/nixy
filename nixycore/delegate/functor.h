@@ -397,7 +397,7 @@ public:
     {}
     functor(const rvalue<functor>& fr)
         : base_t()
-    { nx::swap(*this, fr); }
+    { swap(unmove(fr)); }
 public:
     functor& operator=(functor fr) { return base_t::operator=(fr); }
     using base_t::swap;
@@ -441,7 +441,7 @@ public: \
     {} \
     functor(const rvalue<functor>& fr) \
         : base_t() \
-    { nx::swap(*this, fr); } \
+    { swap(unmove(fr)); } \
 public: \
     functor& operator=(functor fr) { return base_t::operator=(fr); } \
     using base_t::swap; \

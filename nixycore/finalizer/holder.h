@@ -109,7 +109,7 @@ public:
 
     holder(const rvalue<holder>& r)
         : base_t()
-    { nx::swap(*this, r); }
+    { swap(unmove(r)); }
 
     holder& operator=(holder rhs)
     {

@@ -96,7 +96,7 @@ public:
     {}
     pointer(const rvalue<pointer>& r)
         : opt_t()
-    { nx::swap(*this, r); }
+    { swap(unmove(r)); }
 
     pointer& operator=(pointer rhs)
     {

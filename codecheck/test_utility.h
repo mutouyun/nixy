@@ -302,7 +302,7 @@ namespace test_rvalue
         Big(const nx::rvalue<Big>& big)
             : str_(nx::nulptr)
         {
-            nx::swap(*this, big);
+            swap(nx::unmove(big));
             strout << "Move Constructor ";
             if (str_) strout << str_;
             strout << endl;
@@ -326,7 +326,7 @@ namespace test_rvalue
 
         const Big& operator=(const nx::rvalue<Big>& big)
         {
-            nx::swap(*this, big);
+            swap(nx::unmove(big));
             strout << "Move Assignment ";
             if (str_) strout << str_;
             strout << endl;
