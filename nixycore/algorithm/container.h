@@ -7,9 +7,13 @@
 
 #pragma once
 
-#include "nixycore/general/general.h"
-#include "nixycore/typemanip/typemanip.h"
 #include "nixycore/utility/maxmin.h"
+
+#include "nixycore/typemanip/typetools.h"
+#include "nixycore/typemanip/typeconcept.h"
+#include "nixycore/typemanip/typedetect.h"
+
+#include "nixycore/general/general.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
