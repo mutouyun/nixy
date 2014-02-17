@@ -111,6 +111,7 @@ else
         'nixycore/delegate/functor.h' \
         'nixycore/delegate/bind.h' \
         'nixycore/delegate/delegate.h' \
+        'nixycore/delegate/signal.h' \
         'nixycore/bugfix/assert.h' \
         'nixycore/finalizer/scopeguard.h' \
         'nixycore/finalizer/refcounter.h' \

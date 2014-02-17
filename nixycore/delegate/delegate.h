@@ -12,5 +12,6 @@
 #include "nixycore/delegate/functiontraits.h"
 #include "nixycore/delegate/functor.h"
 #include "nixycore/delegate/bind.h"
+#include "nixycore/delegate/signal.h"
 
 //////////////////////////////////////////////////////////////////////////
