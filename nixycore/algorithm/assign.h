@@ -87,25 +87,23 @@ namespace private_assign
     template <typename T>
     struct policy_type
     {
-        typedef typename select_if
-                <
-                    is_array<T>::value, 
-                    policy_array<T>, 
-                    typename select_if
-                    <
-                        is_container<T>::value, 
-                        policy_container<T>, 
+        typedef typename select_if<is_array<T>::value,
+                    policy_array<T>,
+                    typename select_if<is_container<T>::value,
+                        policy_container<T>,
                         policy_pod<T>
                     >::type_t
                 >::type_t type_t;
     };
 
     template <typename T>
-    struct detail : Stream<typename policy_type<T>::type_t>
+    struct detail : stream<typename policy_type<T>::type_t>
     {
+        typedef stream<typename policy_type<T>::type_t> base_t;
+
         const detail& operator()(T& set)
         {
-            Stream<typename policy_type<T>::type_t>::operator()(set);
+            base_t::operator()(set);
             return (*this);
         }
 

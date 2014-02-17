@@ -134,7 +134,7 @@ public:
 */
 
 template <class Stack_>
-class CenterPool : Stack_, NonCopyable
+class center_pool : Stack_, noncopyable
 {
 public:
     typedef Stack_ stack_t;
@@ -147,13 +147,13 @@ private:
     node_t* (pools_[stack_t::TOTAL_NUM]);
 
 protected:
-    CenterPool(void)
+    center_pool(void)
         : stack_(singleton<stack_t>())
     {
         std::memset(pools_, 0, sizeof(pools_));
     }
 
-    ~CenterPool()
+    ~center_pool()
     {
         for(size_t n = 0; n < nx_countof(pools_); ++n)
             stack_.push_node(n, pools_[n]);

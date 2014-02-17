@@ -20,7 +20,7 @@ NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
 template <typename T>
-class Singleton : NonCopyable
+class Singleton : noncopyable
 {
 #ifndef NX_SINGLE_THREAD
 

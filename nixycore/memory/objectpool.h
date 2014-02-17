@@ -144,7 +144,7 @@ template
     template <typename, class>
     class Storage_ = object_pool_storage
 >
-class object_pool : NonCopyable
+class object_pool : noncopyable
 {
     typedef Storage_<T, FixedAlloc_> storage_t;
 

@@ -139,7 +139,7 @@ template
 
     size_t IterCount_ = NX_FIXEDPOOL_ITERCOUNT  /* Iteration count */
 >
-class fixed_pool : public Expand_<Alloc_, IterCount_, Model_>, NonCopyable
+class fixed_pool : public Expand_<Alloc_, IterCount_, Model_>, noncopyable
 {
 public:
     typedef Expand_<Alloc_, IterCount_, Model_> base_t;

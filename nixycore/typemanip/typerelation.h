@@ -33,12 +33,12 @@ NX_BEG
 
 template <typename T, typename U>
 struct is_sametype
-    : Judge<false>
+    : type_if<false>
 {};
 
 template <typename T>
 struct is_sametype<T, T>
-    : Judge<true>
+    : type_if<true>
 {};
 
 /*
@@ -58,7 +58,7 @@ public:
 
 template <typename T>
 struct is_convertible<T, T> : 
-    Judge<true>
+    type_if<true>
 {};
 
 /*
@@ -67,24 +67,24 @@ struct is_convertible<T, T> :
 
 template <typename T, typename U>
 struct is_supersub : 
-    Judge<is_convertible<const U*, const T*>::value && 
-         !is_sametype<const T*, const void*>::value && 
-         !is_sametype<const T , const U    >::value>
+    type_if<is_convertible<const U*, const T*>::value &&
+           !is_sametype<const T*, const void*>::value &&
+           !is_sametype<const T , const U    >::value>
 {};
 
 template <>
 struct is_supersub<void, void> : 
-    Judge<false>
+    type_if<false>
 {};
 
 template <typename T>
 struct is_supersub<T, void> : 
-    Judge<false>
+    type_if<false>
 {};
 
 template <typename U>
 struct is_supersub<void, U> : 
-    Judge<false>
+    type_if<false>
 {};
 
 //////////////////////////////////////////////////////////////////////////

@@ -123,7 +123,7 @@ public:
 
 template <class List_, typename T>
 struct types_exist : 
-    Judge<types_find<List_, T>::value != -1>
+    type_if<types_find<List_, T>::value != -1>
 {};
 
 /*

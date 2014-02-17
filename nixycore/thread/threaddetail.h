@@ -26,7 +26,7 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-class thread : NonCopyable
+class thread : noncopyable
 {
 public:
     typedef functor<void()> task_t;
@@ -72,10 +72,11 @@ public:
         swap(nx::unmove(r));
     }
 
-    thread(const task_t& t)
+    template <typename F>
+    thread(const F& f)
         : handle_(0), id_(0), thr_dat_(nx::nulptr)
     {
-        start(t);
+        start(f);
     }
 
 #define NX_THREAD_CONSTRUCT_(n) \
@@ -91,12 +92,13 @@ public:
     ~thread() { join(); }
 
 public:
-    void start(const task_t& t = nx::none)
+    template <typename F>
+    void start(const F& f)
     {
         nx_lock_scope(lock_);
         if (thr_dat_) thread_ops::join(handle_);
         nx_verify(thr_dat_ = nx::alloc<data>());
-        thr_dat_->proc_ = t;
+        thr_dat_->proc_ = f;
         if (!(thr_dat_->proc_))
             nx_verify(thr_dat_->task_queue_ = nx::alloc<blocking_queue<task_t> >());
         else
@@ -112,6 +114,11 @@ public:
     }
     NX_PP_MULT_MAX(NX_THREAD_CONSTRUCT_)
 #undef NX_THREAD_CONSTRUCT_
+
+    void start(void)
+    {
+        start(nx::none);
+    }
 
     thread_ops::handle_t handle(void) const
     {

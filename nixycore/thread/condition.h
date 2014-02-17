@@ -21,7 +21,7 @@ NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
 class condition
-    : public private_condition::detail, nx::NonCopyable
+    : public private_condition::detail, nx::noncopyable
 {
 public:
     condition(mutex& mx)

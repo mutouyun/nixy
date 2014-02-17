@@ -19,7 +19,7 @@ NX_BEG namespace private_tls_ptr {
     The list node for saving destructors
 */
 
-class tls_data : public Trackable<tls_data>
+class tls_data : public trackable<tls_data>
 {
 public:
     void (*destructor_)(void*);

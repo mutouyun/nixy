@@ -19,7 +19,7 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-class spin_lock : nx::NonCopyable
+class spin_lock : nx::noncopyable
 {
 protected:
     long rc_;

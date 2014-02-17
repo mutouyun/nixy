@@ -31,9 +31,9 @@ template
     template <class>
     class Stack_ = nx::by_pool_stack_fixed
 >
-class mem_pool : CenterPool<Stack_<Alloc_> >
+class mem_pool : center_pool<Stack_<Alloc_> >
 {
-    typedef CenterPool<Stack_<Alloc_> > base_t;
+    typedef center_pool<Stack_<Alloc_> > base_t;
     typedef typename base_t::pool_t pool_t;
 
     struct alloc_t { size_t size_; };

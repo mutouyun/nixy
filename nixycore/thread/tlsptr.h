@@ -23,7 +23,7 @@ template <typename T>
 class tls_ptr
     : public private_tls_ptr::detail<T>
     , public SafeBool<tls_ptr<T> >
-    , nx::NonCopyable
+    , nx::noncopyable
 {
     typedef private_tls_ptr::detail<T> base_t;
 

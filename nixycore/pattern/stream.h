@@ -14,40 +14,40 @@ NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
 template <typename P>
-class Stream : public P
+class stream : public P
 {
 public:
     typedef P policy_t;
 
 public:
     template <typename T>
-    friend const Stream<P>& operator<<(const Stream<P>& s, const T& data)
+    friend const stream<P>& operator<<(const stream<P>& s, const T& data)
     {
-        const_cast<Stream<P>&>(s).policy_t::operator<<(data);
+        const_cast<stream<P>&>(s).policy_t::operator<<(data);
         return s;
     }
 
     template <typename T>
-    friend const Stream<P>& operator>>(const Stream<P>& s, T& data)
+    friend const stream<P>& operator>>(const stream<P>& s, T& data)
     {
-        const_cast<Stream<P>&>(s).policy_t::operator>>(data);
+        const_cast<stream<P>&>(s).policy_t::operator>>(data);
         return s;
     }
 
     template <typename T>
-    friend const Stream<P>& operator, (const Stream<P>& s, const T& data)
+    friend const stream<P>& operator, (const stream<P>& s, const T& data)
     {
         return s << data;
     }
 
-    friend const Stream<P>& operator<<(const Stream<P>& s, Stream<P>& (*opt)(Stream<P>&))
+    friend const stream<P>& operator<<(const stream<P>& s, stream<P>& (*opt)(stream<P>&))
     {
-        return opt(const_cast<Stream<P>&>(s));
+        return opt(const_cast<stream<P>&>(s));
     }
 
-    friend const Stream<P>& operator, (const Stream<P>& s, Stream<P>& (*opt)(Stream<P>&))
+    friend const stream<P>& operator, (const stream<P>& s, stream<P>& (*opt)(stream<P>&))
     {
-        return opt(const_cast<Stream<P>&>(s));
+        return opt(const_cast<stream<P>&>(s));
     }
 };
 

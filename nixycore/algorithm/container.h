@@ -29,12 +29,12 @@ namespace private_is_container
 
     template <typename T>
     struct detail
-        : Judge<has_iterator<T>::value || is_array<T>::value>
+        : type_if<has_iterator<T>::value || is_array<T>::value>
     {};
 
     template <>
     struct detail<null_t>
-        : Judge<false>
+        : type_if<false>
     {};
 }
 

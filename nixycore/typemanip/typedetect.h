@@ -29,12 +29,12 @@ namespace private_is_void
 {
     template <typename T>
     struct detail
-        : Judge<false>
+        : type_if<false>
     {};
 
     template <>
     struct detail<void>
-        : Judge<true>
+        : type_if<true>
     {};
 }
 
@@ -73,8 +73,8 @@ struct is_float
 
 template <typename T>
 struct is_numeric
-    : Judge<is_integral<T>::value || 
-            is_float   <T>::value>
+    : type_if<is_integral<T>::value ||
+              is_float   <T>::value>
 {};
 
 /*
@@ -105,7 +105,7 @@ struct is_unsigned
 
 template <typename T>
 struct is_union
-    : Judge<__is_union(T)>
+    : type_if<__is_union(T)>
 {};
 
 /*
@@ -114,7 +114,7 @@ struct is_union
 
 template <typename T>
 struct is_class
-    : Judge<__is_class(T)>
+    : type_if<__is_class(T)>
 {};
 
 /*
@@ -135,12 +135,12 @@ namespace private_is_function
 
     template <>
     struct detail<nx::null_t>
-        : Judge<false>
+        : type_if<false>
     {};
 
     template <>
     struct detail<void>
-        : Judge<false>
+        : type_if<false>
     {};
 }
 
@@ -162,18 +162,18 @@ struct is_function
 
 namespace private_is_mem_function
 {
-    template <typename T>             struct detail                           : Judge<false>   {};
+    template <typename T>             struct detail                           : type_if<false> {};
     template <typename T, typename C> struct detail<T C::*>                   : is_function<T> {};
-    template <typename R, typename C> struct detail<R(C::*)() const>          : Judge<true>    {};
-    template <typename R, typename C> struct detail<R(C::*)() volatile>       : Judge<true>    {};
-    template <typename R, typename C> struct detail<R(C::*)() const volatile> : Judge<true>    {};
+    template <typename R, typename C> struct detail<R(C::*)() const>          : type_if<true>  {};
+    template <typename R, typename C> struct detail<R(C::*)() volatile>       : type_if<true>  {};
+    template <typename R, typename C> struct detail<R(C::*)() const volatile> : type_if<true>  {};
 #define NX_IS_MEM_FUNCTION_(n) \
     template <typename R, typename C, NX_PP_TYPE_1(n, typename P)> struct detail<R(C::*)(NX_PP_TYPE_1(n, P)) const> \
-        : Judge<true> {}; \
+        : type_if<true> {}; \
     template <typename R, typename C, NX_PP_TYPE_1(n, typename P)> struct detail<R(C::*)(NX_PP_TYPE_1(n, P)) volatile> \
-        : Judge<true> {}; \
+        : type_if<true> {}; \
     template <typename R, typename C, NX_PP_TYPE_1(n, typename P)> struct detail<R(C::*)(NX_PP_TYPE_1(n, P)) const volatile> \
-        : Judge<true> {};
+        : type_if<true> {};
     NX_PP_MULT_MAX(NX_IS_MEM_FUNCTION_)
 #undef NX_IS_MEM_FUNCTION_
 }
@@ -191,12 +191,12 @@ namespace private_is_mem_object_pointer
 {
     template <typename T>
     struct detail
-        : Judge<false>
+        : type_if<false>
     {};
 
     template <typename T, typename C>
     struct detail<T C::*>
-        : Judge<!is_function<T>::value>
+        : type_if<!is_function<T>::value>
     {};
 }
 
@@ -211,8 +211,8 @@ struct is_mem_object_pointer
 
 template <typename T>
 struct is_mem_pointer
-    : Judge<is_mem_object_pointer<T>::value || 
-            is_mem_function      <T>::value>
+    : type_if<is_mem_object_pointer<T>::value ||
+              is_mem_function      <T>::value>
 {};
 
 /*
@@ -221,14 +221,14 @@ struct is_mem_pointer
 
 template <typename T>
 struct is_enum
-    : Judge<!is_numeric    <T>::value && 
-            !is_void       <T>::value && 
-            !is_array      <T>::value && 
-            !is_pointer    <T>::value && 
-            !is_reference  <T>::value && 
-            !is_mem_pointer<T>::value && 
-            !is_union      <T>::value && 
-            !is_class      <T>::value>
+    : type_if<!is_numeric    <T>::value &&
+              !is_void       <T>::value &&
+              !is_array      <T>::value &&
+              !is_pointer    <T>::value &&
+              !is_reference  <T>::value &&
+              !is_mem_pointer<T>::value &&
+              !is_union      <T>::value &&
+              !is_class      <T>::value>
 {};
 
 /*
@@ -237,10 +237,10 @@ struct is_enum
 
 template <typename T>
 struct is_fundamental
-    : Judge<is_numeric<T>::value ||
-            is_void   <T>::value ||
-            is_enum   <T>::value ||
-            is_pointer<T>::value>
+    : type_if<is_numeric<T>::value ||
+              is_void   <T>::value ||
+              is_enum   <T>::value ||
+              is_pointer<T>::value>
 {};
 
 /*
@@ -253,7 +253,7 @@ namespace private_is_pod
 {
     template <>
     struct detail<nx::null_t>
-        : Judge<false>
+        : type_if<false>
     {};
 }
 

@@ -30,15 +30,15 @@ namespace private_final
 }
 
 /*
-    Final class interface
+    final class interface
 */
 
 template <class T>
-class Final : virtual public private_final::detail<Final<T>, T>
+class final : virtual public private_final::detail<final<T>, T>
 {
 public:
-    Final() {}
-    ~Final() {}
+    final() {}
+    ~final() {}
 };
 
 //////////////////////////////////////////////////////////////////////////

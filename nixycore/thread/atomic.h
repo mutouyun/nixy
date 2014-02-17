@@ -40,7 +40,7 @@ namespace private_atomic
 
     template <int Mask_, int Size_>
     struct is_supported
-        : Judge<(Mask_ & Size_) ? true : false>
+        : type_if<(Mask_ & Size_) ? true : false>
     {};
 
     /*
@@ -235,7 +235,7 @@ namespace private_atomic
 
 template <typename T, typename Model_ = NX_DEFAULT_INTERLOCKED>
 class atomic
-    : public private_atomic::detail<T, Model_>, nx::NonCopyable
+    : public private_atomic::detail<T, Model_>, nx::noncopyable
 {
 public:
     typedef private_atomic::detail<T, Model_> base_t;

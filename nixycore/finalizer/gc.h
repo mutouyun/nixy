@@ -126,11 +126,12 @@ namespace private_gc
     };
 
     /*
-        Use tls_singleton
+        Use TLSSingleton
     */
 
-    typedef tls_singleton<NX_DEFAULT_ALLOC> singleton_t;
-    typedef singleton_t::type_t<manager> manager_single_t;
+    template <typename T>
+    struct GCSingleton : TLSSingleton<T, NX_DEFAULT_ALLOC> {};
+    typedef GCSingleton<manager> manager_single_t;
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -230,9 +231,9 @@ namespace private_gc
         counter for calculate the gc id
     */
 
-    class counter : public Trackable<counter, singleton_t::type_t>
+    class counter : public trackable<counter, GCSingleton>
     {
-        typedef Trackable<counter, singleton_t::type_t> base_t;
+        typedef trackable<counter, GCSingleton> base_t;
 
         int id_;
 

@@ -35,14 +35,14 @@ struct type_int {};
 */
 
 template <bool>
-struct Judge;
+struct type_if;
 
 template <>
-struct Judge<true> : true_t
+struct type_if<true> : true_t
 {};
 
 template <>
-struct Judge<false> : false_t
+struct type_if<false> : false_t
 {};
 
 /*

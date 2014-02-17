@@ -103,7 +103,7 @@ namespace private_valid
 */
 
 template <typename T>
-class valid : public private_valid::detail<T>, Final<valid<T> >
+class valid : public private_valid::detail<T>, final<valid<T> >
 {
     typedef private_valid::detail<T> base_t;
 

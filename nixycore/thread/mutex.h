@@ -19,7 +19,7 @@ NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
 class mutex
-    : public private_mutex::detail, nx::NonCopyable
+    : public private_mutex::detail, nx::noncopyable
 {
 public:
     typedef mutex lock_t;

@@ -19,7 +19,7 @@ NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
 template <typename T, template <typename> class Single_ = Singleton>
-class Trackable
+class trackable
 {
     typedef Single_<T*> single_t;
 
@@ -59,17 +59,17 @@ private:
     }
 
 public:
-    Trackable(void)
+    trackable(void)
         : prev_(nx::nulptr)
         , next_(nx::nulptr) { init(); }
 
-    Trackable(const Trackable&)
+    trackable(const trackable&)
         : prev_(nx::nulptr)
         , next_(nx::nulptr) { init(); }
 
-    ~Trackable() { dest(); }
+    ~trackable() { dest(); }
 
-    Trackable& operator=(const Trackable&) { return (*this); }
+    trackable& operator=(const trackable&) { return (*this); }
 
 public:
     static T* track(void) { return single_t::instance(); }

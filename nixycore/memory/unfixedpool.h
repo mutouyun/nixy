@@ -34,7 +34,7 @@ template
     class  Alloc_     = NX_DEFAULT_ALLOC,
     size_t BlockSize_ = NX_UNFIXEDPOOL_BLOCKSIZE
 >
-class unfixed_pool : NonCopyable
+class unfixed_pool : noncopyable
 {
     struct block_t
     {

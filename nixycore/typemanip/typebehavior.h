@@ -21,8 +21,8 @@ NX_BEG
     reference
 */
 
-template <typename T>                       struct is_reference        : Judge<false> {};
-template <typename T>                       struct is_reference<T&>    : Judge<true>  {};
+template <typename T>                       struct is_reference        : type_if<false> {};
+template <typename T>                       struct is_reference<T&>    : type_if<true>  {};
 
 template <typename T>                       struct rm_reference        { typedef T type_t; };
 template <typename T>                       struct rm_reference<T&>    { typedef T type_t; };
@@ -34,9 +34,9 @@ template <typename T, typename R>           struct cp_reference<T&, R> { typedef
     array
 */
 
-template <typename T>                       struct is_array            : Judge<false> {};
-template <typename T>                       struct is_array<T[]>       : Judge<true>  {};
-template <typename T, size_t N>             struct is_array<T[N]>      : Judge<true>  {};
+template <typename T>                       struct is_array            : type_if<false> {};
+template <typename T>                       struct is_array<T[]>       : type_if<true>  {};
+template <typename T, size_t N>             struct is_array<T[N]>      : type_if<true>  {};
 
 template <typename T>                       struct rm_array            { typedef T type_t; };
 template <typename T>                       struct rm_array<T[]>       { typedef T type_t; };
@@ -56,19 +56,19 @@ template <typename T, size_t N>             struct rm_extents<T[N]>    { typedef
 
 namespace private_is_pointer
 {
-    template <typename T>                   struct detail                           : Judge<false> {};
-    template <typename T>                   struct detail<T*>                       : Judge<true>  {};
-    template <typename T, typename C>       struct detail<T C::*>                   : Judge<true>  {};
-    template <typename R, typename C>       struct detail<R(C::*)() const>          : Judge<true>  {};
-    template <typename R, typename C>       struct detail<R(C::*)() volatile>       : Judge<true>  {};
-    template <typename R, typename C>       struct detail<R(C::*)() const volatile> : Judge<true>  {};
+    template <typename T>                   struct detail                           : type_if<false> {};
+    template <typename T>                   struct detail<T*>                       : type_if<true>  {};
+    template <typename T, typename C>       struct detail<T C::*>                   : type_if<true>  {};
+    template <typename R, typename C>       struct detail<R(C::*)() const>          : type_if<true>  {};
+    template <typename R, typename C>       struct detail<R(C::*)() volatile>       : type_if<true>  {};
+    template <typename R, typename C>       struct detail<R(C::*)() const volatile> : type_if<true>  {};
 #define NX_IS_POINTER_(n) \
     template <typename R, typename C, NX_PP_TYPE_1(n, typename P)> struct detail<R(C::*)(NX_PP_TYPE_1(n, P)) const> \
-        : Judge<true> {}; \
+        : type_if<true> {}; \
     template <typename R, typename C, NX_PP_TYPE_1(n, typename P)> struct detail<R(C::*)(NX_PP_TYPE_1(n, P)) volatile> \
-        : Judge<true> {}; \
+        : type_if<true> {}; \
     template <typename R, typename C, NX_PP_TYPE_1(n, typename P)> struct detail<R(C::*)(NX_PP_TYPE_1(n, P)) const volatile> \
-        : Judge<true> {};
+        : type_if<true> {};
     NX_PP_MULT_MAX(NX_IS_POINTER_)
 #undef NX_IS_POINTER_
 }

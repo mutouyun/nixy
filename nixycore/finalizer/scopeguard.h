@@ -22,7 +22,7 @@ NX_BEG
     Execute guard function when the enclosing scope exits
 */
 
-class scope_guard : nx::NonCopyable
+class scope_guard : noncopyable
 {
     nx::functor<void()> destructor_;
 

@@ -33,7 +33,7 @@ enum waiter_status_t
     wait for something is happen
 */
 
-class waiter : nx::NonCopyable
+class waiter : nx::noncopyable
 {
     mutable mutex lock_;
     condition     cond_;

@@ -23,31 +23,27 @@ NX_BEG
     The thread local storage singleton
 */
 
-template <class Alloc_>
-struct tls_singleton
+template <typename T, class Alloc_>
+class TLSSingleton
 {
-    template <typename T>
-    class type_t
+    typedef tls_ptr<T> tls_t;
+
+    static void destroy(void* p)
     {
-        typedef tls_ptr<T> tls_t;
+        if (!p) return;
+        nx_destruct(p, T);
+        Alloc_::free(p);
+    }
 
-        static void destroy(void* p)
-        {
-            if (!p) return;
-            nx_destruct(p, T);
-            Alloc_::free(p);
-        }
-
-    public:
-        static T& instance(void)
-        {
-            T* p = singleton<tls_t>(destroy);
-            if (p) return (*p);
-            singleton<tls_t>() = p = 
-                nx_construct(Alloc_::alloc(sizeof(T)), T);
-            return (*p);
-        }
-    };
+public:
+    static T& instance(void)
+    {
+        T* p = singleton<tls_t>(destroy);
+        if (p) return (*p);
+        singleton<tls_t>() = p =
+            nx_construct(Alloc_::alloc(sizeof(T)), T);
+        return (*p);
+    }
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -58,7 +54,7 @@ namespace private_memalloc
 
     inline tls_pool& create_pool(void)
     {
-        return tls_singleton<by_alloc_std>::type_t<tls_pool>::instance();
+        return TLSSingleton<tls_pool, by_alloc_std>::instance();
     }
 }
 

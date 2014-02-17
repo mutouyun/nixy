@@ -29,7 +29,7 @@ struct thread_model : Model_
     none_lock, for single-thread model
 */
 
-class none_lock : nx::NonCopyable
+class none_lock : nx::noncopyable
 {
 public:
     typedef none_lock lock_t;

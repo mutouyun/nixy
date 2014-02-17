@@ -13,15 +13,15 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-class NonCopyable
+class noncopyable
 {
 protected:
-    NonCopyable() {}
-    ~NonCopyable() {}
+    noncopyable() {}
+    ~noncopyable() {}
 
 private:
-    NonCopyable(const NonCopyable&);
-    NonCopyable& operator=(const NonCopyable&);
+    noncopyable(const noncopyable&);
+    noncopyable& operator=(const noncopyable&);
 };
 
 //////////////////////////////////////////////////////////////////////////

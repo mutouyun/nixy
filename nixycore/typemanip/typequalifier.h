@@ -21,12 +21,12 @@ NX_BEG
 */
 
 #define NX_QUALIFIER_DEF(q) \
-template <typename T>           struct NX_PP_JOIN(is_, q)         : Judge<false> {}; \
-template <typename T>           struct NX_PP_JOIN(is_, q)<q T>    : Judge<true>  {}; \
-template <typename T>           struct NX_PP_JOIN(is_, q)<q T&>   : Judge<true>  {}; \
-template <typename T>           struct NX_PP_JOIN(is_, q)<q T[]>  : Judge<true>  {}; \
-template <typename T, size_t N> struct NX_PP_JOIN(is_, q)<q T[N]> : Judge<true>  {}; \
-template <typename T>           struct NX_PP_JOIN(is_, q)<T* q>   : Judge<true>  {};
+template <typename T>           struct NX_PP_JOIN(is_, q)         : type_if<false> {}; \
+template <typename T>           struct NX_PP_JOIN(is_, q)<q T>    : type_if<true>  {}; \
+template <typename T>           struct NX_PP_JOIN(is_, q)<q T&>   : type_if<true>  {}; \
+template <typename T>           struct NX_PP_JOIN(is_, q)<q T[]>  : type_if<true>  {}; \
+template <typename T, size_t N> struct NX_PP_JOIN(is_, q)<q T[N]> : type_if<true>  {}; \
+template <typename T>           struct NX_PP_JOIN(is_, q)<T* q>   : type_if<true>  {};
 
 NX_QUALIFIER_DEF(const)
 NX_QUALIFIER_DEF(volatile)

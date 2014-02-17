@@ -18,7 +18,7 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-class semaphore : nx::NonCopyable
+class semaphore : nx::noncopyable
 {
     mutable mutex lock_;
     condition     cond_;

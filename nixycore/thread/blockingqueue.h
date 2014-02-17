@@ -23,7 +23,7 @@ NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
 template <typename Type_, class Alloc_ = NX_DEFAULT_ALLOC>
-class blocking_queue : NonCopyable
+class blocking_queue : noncopyable
 {
     mutable mutex        lock_;
     condition            task_coming_;
