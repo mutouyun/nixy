@@ -30,7 +30,7 @@ NX_BEG
 */
 
 template <typename T>
-class task : NonCopyable
+class task
 {
 public:
     typedef T type_t;
@@ -86,6 +86,8 @@ private:
     typedef data<type_t> data_t;
     pointer<data_t> data_;
 
+    task& operator=(const task&); /* = delete */
+
 public:
     task(const functor<type_t()>& t)
         : data_(nx::alloc<data_t>())
@@ -94,16 +96,9 @@ public:
         nx_verify(data_->task_ = nx::move(t)); // always get the ownership of the data
     }
 
-    task(const rvalue<functor<type_t()> >& t)
-        : data_(nx::alloc<data_t>())
+    task(const task& r)
     {
-        nx_assert(data_);
-        nx_verify(data_->task_ = t);
-    }
-
-    task(const rvalue<task>& r)
-    {
-        swap(unmove(r));
+        swap(const_cast<task&>(r));
     }
 
 public:
