@@ -55,7 +55,7 @@ public:
 protected:
     pvoid operator()(size_t* count_ptr)
     {
-        nx_assert(block_size_);
+        nx_assert(block_size_ >= sizeof(pvoid));
         return Alloc_::alloc( block_size_ * ( (*count_ptr) = (*(++count_ite_)) ) );
     }
 };
