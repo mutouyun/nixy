@@ -289,7 +289,7 @@ namespace private_gc
         static void set_gc(T tp, pvoid gc)
         {
             if (get_gc(tp) == gc) return;
-            nx_auto(ite, erase(tp));
+            typename nx_auto(ite, erase(tp));
             tp->gc_ = gc;
             insert(ite);
         }
@@ -337,8 +337,8 @@ namespace private_gc
         static typename enable_if<is_pointer<T>::value // only pointer need link_handles
         >::type_t link_handles(const T& r, res* tp)
         {
-            nx_auto(& res_link_tags, get_gc(tp)->res_link_tags_);
-            nx_auto(ret, res_link_tags.find(horrible_cast<pvoid>(r)));
+            typename nx_auto(& res_link_tags, get_gc(tp)->res_link_tags_);
+            typename nx_auto(ret, res_link_tags.find(horrible_cast<pvoid>(r)));
             if (ret == res_link_tags.end()) return;
             tp->links_.swap(ret->second);
             res_link_tags.erase(ret);
@@ -419,7 +419,7 @@ namespace private_gc
         T& assign_to(U& r)
         {
             if (rh_ == r) return rh_;
-            nx_auto(ite, manager_single_t::instance().find(r));
+            typename nx_auto(ite, manager_single_t::instance().find(r));
             connecter::refresh_gc(ite->second, rh_tp_->gc_);
             connecter::link_to(rh_tp_, ite->second);
             return rh_ = r;
