@@ -85,27 +85,28 @@ void testGC(void)
     TEST_CASE();
 
     using namespace test_gc;
-    //{
-    //    nx_gc_scope();
+    {
+        nx_gc_scope();
 
-    //    A* pa = nx::nulptr;
-    //    A* pb = nx::nulptr;
+        A* pa = nx::nulptr;
+        A* pb = nx::nulptr;
 
-    //    gc(pa)(new A(1), new_dest<A>);
-    //    gc(pb) = nx::alloc<A>(2);
-    //    gc(pb) = pa;
+        gc(pa)(new A(1), new_dest<A>);
+        gc(pb) = nx::alloc<A>(2);
+        gc(pb) = pa;
 
-    //    B* pd = nx::nulptr;
-    //    gc(pd) = nx::alloc<B>(3);
+        B* pd = nx::nulptr;
+        gc(pd) = nx::alloc<B>(3);
 
-    //    strout << "...scope in..." << endl;
-    //    func_scope(pd);
-    //    strout << "...scope out..." << endl;
+        strout << "...scope in..." << endl;
+        func_scope(pd);
+        strout << "...scope out..." << endl;
 
-    //    gc(pd) = nx::alloc<B>(5);
+        gc(pd) = nx::alloc<B>(5);
 
-    //    strout << "...start dest..." << endl;
-    //}
+        strout << "...start dest..." << endl;
+    }
+    strout << endl << "Finish Scope" << endl << endl;
     {
         nx_gc_scope();
         B* NX_UNUSED pb = gc(nx::alloc<B>(2));
