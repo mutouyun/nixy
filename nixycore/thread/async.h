@@ -26,6 +26,65 @@ NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
 /*
+    task status enum
+*/
+
+enum task_status_t
+{
+    task_Deferred,
+    task_Ready,
+    task_TimeOut
+};
+
+/*
+    task data storage
+*/
+
+namespace private_task
+{
+    template <typename T>
+    struct data_base
+    {
+        mutable mutex lock_;
+        condition     done_;
+        task_status_t status_;
+
+        functor<T()> task_;
+
+        data_base(void)
+            : done_(lock_)
+            , status_(task_Deferred)
+        {}
+    };
+
+    template <typename T>
+    struct data : data_base<T>
+    {
+        typename rm_rvalue<T>::type_t result_;
+
+        static void onProcess(pointer<data>& d)
+        {
+            d->result_ = d->task_(); // no need lock
+            nx_lock_scope(d->lock_);
+            d->status_ = task_Ready;
+            d->done_.notify();
+        }
+    };
+
+    template <>
+    struct data<void> : data_base<void>
+    {
+        static void onProcess(pointer<data>& d)
+        {
+            d->task_();
+            nx_lock_scope(d->lock_);
+            d->status_ = task_Ready;
+            d->done_.notify();
+        }
+    };
+}
+
+/*
     async task
 */
 
@@ -35,55 +94,8 @@ class task
 public:
     typedef T type_t;
 
-    enum status_t
-    {
-        Deferred,
-        Ready,
-        TimeOut
-    };
-
 private:
-    struct data_base
-    {
-        mutable mutex lock_;
-        condition     done_;
-        status_t      status_;
-
-        functor<type_t()> task_;
-
-        data_base(void)
-            : done_(lock_)
-            , status_(Deferred)
-        {}
-    };
-
-    template <typename U, typename = nx::null_t>
-    struct data : data_base
-    {
-        typename rm_rvalue<U>::type_t result_;
-
-        static void onProcess(pointer<data>& d)
-        {
-            d->result_ = d->task_(); // no need lock
-            nx_lock_scope(d->lock_);
-            d->status_ = Ready;
-            d->done_.notify();
-        }
-    };
-
-    template <typename Dummy_>
-    struct data<void, Dummy_> : data_base
-    {
-        static void onProcess(pointer<data>& d)
-        {
-            d->task_();
-            nx_lock_scope(d->lock_);
-            d->status_ = Ready;
-            d->done_.notify();
-        }
-    };
-
-    typedef data<type_t> data_t;
+    typedef private_task::data<type_t> data_t;
     pointer<data_t> data_;
 
     task& operator=(const task&); /* = delete */
@@ -114,19 +126,19 @@ public:
     {
         nx_assert(data_);
         nx_lock_scope(data_->lock_);
-        while (data_->status_ != Ready) // used to avoid spurious wakeups
+        while (data_->status_ != task_Ready) // used to avoid spurious wakeups
         {
             bool ret = data_->done_.wait(tm_ms);
             if (!ret)
             {
-                data_->status_ = TimeOut;
+                data_->status_ = task_TimeOut;
                 return false;
             }
         }
         return true;
     }
 
-    status_t status(void) const
+    task_status_t status(void) const
     {
         nx_assert(data_);
         nx_lock_scope(data_->lock_);

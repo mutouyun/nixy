@@ -18,60 +18,77 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
+/*
+    waiter status enum
+*/
+
+enum waiter_status_t
+{
+    waiter_Resting,
+    waiter_Excited,
+    waiter_AutoRet
+};
+
+/*
+    wait for something is happen
+*/
+
 class waiter : nx::NonCopyable
 {
     mutable mutex lock_;
     condition     cond_;
 
-    enum
-    {
-        Resting,
-        Excited,
-        AutoRet
-    } signaled_;
+    waiter_status_t signaled_;
 
 public:
     waiter(void)
         : cond_(lock_)
-        , signaled_(Resting)
+        , signaled_(waiter_Resting)
     {}
+
+    waiter_status_t status(void) const
+    {
+        nx_lock_scope(lock_);
+        return signaled_;
+    }
 
     bool is_signaled(void) const
     {
         nx_lock_scope(lock_);
-        return (signaled_ != Resting);
+        return (signaled_ != waiter_Resting);
     }
 
     void reset(void)
     {
         nx_lock_scope(lock_);
-        signaled_ = Resting;
+        signaled_ = waiter_Resting;
     }
 
 public:
     bool wait(int tm_ms = -1)
     {
         nx_lock_scope(lock_);
-        while (signaled_ == Resting)
+        while (signaled_ == waiter_Resting)
         {
             bool ret = cond_.wait(tm_ms);
             if (!ret) return false;
         }
-        if (signaled_ == AutoRet) signaled_ = Resting;
+        if (signaled_ == waiter_AutoRet)
+            signaled_ =  waiter_Resting;
         return true;
     }
 
     void notify(void)
     {
         nx_lock_scope(lock_);
-        signaled_ = AutoRet;
+        signaled_ = waiter_AutoRet;
         cond_.broadcast();
     }
 
     void broadcast(void)
     {
         nx_lock_scope(lock_);
-        signaled_ = Excited;
+        signaled_ = waiter_Excited;
         cond_.broadcast();
     }
 };
