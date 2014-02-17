@@ -76,9 +76,17 @@ const T&>::type_t move(const T& rv)
 }
 
 template <typename T>
-inline T& unmove(const rvalue<T>& rv)
+inline typename enable_if<is_class<T>::value,
+T&>::type_t unmove(const rvalue<T>& rv)
 {
     return const_cast<T&>(static_cast<const T&>(rv));
+}
+
+template <typename T>
+inline typename enable_if<!is_class<T>::value,
+T>::type_t unmove(const rvalue<T>& rv)
+{
+    return rv;
 }
 
 //////////////////////////////////////////////////////////////////////////
