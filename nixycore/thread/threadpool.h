@@ -258,9 +258,10 @@ public:
         base_t::limit(min_sz, max_sz);
     }
 
-    void put(const task_t& task)
+    template <typename F>
+    void put(const F& f)
     {
-        task_queue_.put(task);
+        task_queue_.put(f);
         if (task_queue_.size() > idle_count())
             base_t::increase(); // try to expansion storage
     }

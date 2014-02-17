@@ -152,11 +152,12 @@ public:
         thr_dat_ = nx::nulptr;
     }
 
-    void post(const task_t& t)
+    template <typename F>
+    void post(const F& f)
     {
         nx_lock_scope(lock_);
         if (thr_dat_ && thr_dat_->task_queue_)
-            thr_dat_->task_queue_->put(t);
+            thr_dat_->task_queue_->put(f);
     }
 
 #define NX_THREAD_CONSTRUCT_(n) \
