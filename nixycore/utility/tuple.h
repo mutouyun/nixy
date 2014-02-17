@@ -15,6 +15,7 @@
 
 #include "nixycore/general/general.h"
 #include "nixycore/preprocessor/preprocessor.h"
+#include "nixycore/algorithm/algorithm.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
