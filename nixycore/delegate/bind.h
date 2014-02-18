@@ -314,7 +314,9 @@ namespace private_bind
         L        l_;
 
     public:
-        detail(F f, const L& l) : f_(f), l_(l) {}
+        detail(const F& f, const L& l)
+            : f_(f), l_(l)
+        {}
 
         result_t operator()(void)
         {
