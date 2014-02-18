@@ -481,9 +481,9 @@ void testAsync(void)
 
     using namespace test_async;
 
-    nx_auto(t1, nx::async(&test_1, 100));
-    nx_auto(t2, nx::async(&test_2, 10));
-    nx_auto(t3, nx::async(&test_3));
+    nx::task<int> t1 = nx::async(&test_1, 100);
+    nx::task<int> t2 = nx::async(&test_2, 10);
+    nx::task<nx::rvalue<int> > t3 = nx::async(&test_3);
 
     strout << "Check task result: " << t1.result()
                              << " " << t2.result()

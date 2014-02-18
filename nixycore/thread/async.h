@@ -37,11 +37,15 @@ enum task_status_t
 };
 
 /*
-    task data storage
+    private definitions
 */
 
 namespace private_task
 {
+    /*
+        task data storage
+    */
+
     template <typename T>
     struct data_base
     {
@@ -64,7 +68,7 @@ namespace private_task
 
         static void onProcess(pointer<data>& d)
         {
-            d->result_ = d->task_(); // no need lock
+            d->result_ = d->task_(); // no need lock, because result can be access only after wait
             nx_lock_scope(d->lock_);
             d->status_ = task_Ready;
             d->done_.notify();
@@ -82,6 +86,25 @@ namespace private_task
             d->done_.notify();
         }
     };
+
+    /*
+        package the preparations for the task
+    */
+
+    template <typename T>
+    class prepare
+    {
+    public:
+        functor<T()> f_;
+
+        prepare(const functor<T()>& f)
+            : f_(nx::move(f))       // always get the ownership of the data
+        {}
+
+        prepare(const prepare& pp)
+            : f_(nx::move(pp.f_))   // always get the ownership of the data
+        {}
+    };
 }
 
 /*
@@ -96,32 +119,35 @@ public:
 
 private:
     typedef private_task::data<type_t> data_t;
+
     pointer<data_t> data_;
 
-    task& operator=(const task&); /* = delete */
+    task& operator=(const task&); // = deleted
 
 public:
-    task(const functor<type_t()>& t)
+    task(const private_task::prepare<type_t>& pp)
         : data_(nx::alloc<data_t>())
     {
         nx_assert(data_);
-        nx_verify(data_->task_ = nx::move(t)); // always get the ownership of the data
+        nx_verify(data_->task_ = nx::move(pp.f_));
+        start();
     }
 
-    task(const task& r)
-    {
-        swap(const_cast<task&>(r));
-    }
+    /*
+        if not define the copy constructor, gcc will get a compile error
+        when using like this: task<T> xx = async(F)
+    */
+    task(const task&) { nx_assert(false); } // = deleted
 
-public:
-    task& start(void)
+private:
+    void start(void)
     {
         nx_assert(data_);
         singleton<thread_pool>(0, limit_of<size_t>::upper)
             .put(bind(&data_t::onProcess, data_));
-        return (*this);
     }
 
+public:
     bool wait(int tm_ms = -1)
     {
         nx_assert(data_);
@@ -151,11 +177,6 @@ public:
         wait();
         return data_->result_;
     }
-
-    void swap(task& r)
-    {
-        data_.swap(r.data_);
-    }
 };
 
 /*
@@ -163,27 +184,27 @@ public:
 */
 
 template <typename F>
-inline rvalue<task<typename function_traits<F>::result_t> > async(F f)
+inline private_task::prepare<typename function_traits<F>::result_t> async(const F& f)
 {
-    return task<typename function_traits<F>::result_t>(f).start();
+    return private_task::prepare<typename function_traits<F>::result_t>(f);
 }
 
 template <typename R, typename F>
-inline rvalue<task<R> > async(F f)
+inline private_task::prepare<R> async(const F& f)
 {
-    return task<R>(f).start();
+    return private_task::prepare<R>(f);
 }
 
 #define NX_ASYNC_(n) \
 template <typename F, NX_PP_TYPE_1(n, typename P)> \
-inline rvalue<task<typename function_traits<F>::result_t> > async(F f, NX_PP_TYPE_2(n, P, p)) \
+inline private_task::prepare<typename function_traits<F>::result_t> async(const F& f, NX_PP_TYPE_2(n, P, p)) \
 { \
-    return task<typename function_traits<F>::result_t>(bind(f, NX_PP_TYPE_1(n, p))).start(); \
+    return private_task::prepare<typename function_traits<F>::result_t>(bind(f, NX_PP_TYPE_1(n, p))); \
 } \
 template <typename R, typename F, NX_PP_TYPE_1(n, typename P)> \
-inline rvalue<task<R> > async(F f, NX_PP_TYPE_2(n, P, p)) \
+inline private_task::prepare<R> async(const F& f, NX_PP_TYPE_2(n, P, p)) \
 { \
-    return task<R>(bind<R>(f, NX_PP_TYPE_1(n, p))).start(); \
+    return private_task::prepare<R>(bind<R>(f, NX_PP_TYPE_1(n, p))); \
 }
 NX_PP_MULT_MAX(NX_ASYNC_)
 #undef NX_ASYNC_
