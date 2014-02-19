@@ -95,15 +95,30 @@ namespace private_task
     class prepare
     {
     public:
-        functor<T()> f_;
+        pointer<data<T> > data_;
 
-        prepare(const functor<T()>& f)
-            : f_(nx::move(f))       // always get the ownership of the data
-        {}
+        template <typename F>
+        prepare(const F& f)
+            : data_(nx::alloc<data<T> >())
+        {
+            nx_assert(data_);
+            nx_verify(data_->task_ = f);
+            start();
+        }
 
         prepare(const prepare& pp)
-            : f_(nx::move(pp.f_))   // always get the ownership of the data
-        {}
+            : data_(nx::move(pp.data_)) // always get the ownership of the data
+        {
+            nx_assert(data_);
+        }
+
+    private:
+        void start(void)
+        {
+            nx_assert(data_);
+            singleton<thread_pool>(0, limit_of<size_t>::upper)
+                .put(bind(&data<T>::onProcess, data_));
+        }
     };
 }
 
@@ -126,11 +141,9 @@ private:
 
 public:
     task(const private_task::prepare<type_t>& pp)
-        : data_(nx::alloc<data_t>())
+        : data_(nx::move(pp.data_))
     {
         nx_assert(data_);
-        nx_verify(data_->task_ = nx::move(pp.f_));
-        start();
     }
 
     /*
@@ -138,14 +151,6 @@ public:
         when using like this: task<T> xx = async(F)
     */
     task(const task&) { nx_assert(false); } // = deleted
-
-private:
-    void start(void)
-    {
-        nx_assert(data_);
-        singleton<thread_pool>(0, limit_of<size_t>::upper)
-            .put(bind(&data_t::onProcess, data_));
-    }
 
 public:
     bool wait(int tm_ms = -1)
