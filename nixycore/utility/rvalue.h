@@ -89,6 +89,19 @@ T>::type_t unmove(const rvalue<T>& rv)
     return rv;
 }
 
+/*
+    type detected
+*/
+
+template <typename T>             struct is_rvalue               : type_if<false> {};
+template <typename T>             struct is_rvalue<rvalue<T> >   : type_if<true>  {};
+
+template <typename T>             struct rm_rvalue               { typedef T type_t; };
+template <typename T>             struct rm_rvalue<rvalue<T> >   { typedef T type_t; };
+
+template <typename T, typename R> struct cp_rvalue               { typedef R type_t; };
+template <typename T, typename R> struct cp_rvalue<rvalue<T>, R> { typedef rvalue<R> type_t; };
+
 //////////////////////////////////////////////////////////////////////////
 NX_END
 //////////////////////////////////////////////////////////////////////////
