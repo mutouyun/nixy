@@ -217,10 +217,45 @@ void testBind(void)
 
 //////////////////////////////////////////////////////////////////////////
 
+namespace test_signal
+{
+    class Foo
+    {
+    public:
+        nx::signal<void(int, int, int, int)> notify;
+    };
+}
+
+void testSignal(void)
+{
+    TEST_CASE();
+
+    using namespace test_delegate;
+    using namespace test_signal;
+
+    Foo foo;
+
+    strout << endl << "1st notify ..." << endl;
+    foo.notify(3, 1, 2, 4);
+
+    strout << endl << "2nd notify ..." << endl;
+    B x1; A x2;
+    foo.notify.connect(&x1, &A::func);
+    foo.notify.connect(&x2, &A::func);
+    foo.notify(3, 1, 2, 4);
+
+    strout << endl << "3rd notify ..." << endl;
+    foo.notify.clear();
+    foo.notify(3, 1, 2, 4);
+}
+
+//////////////////////////////////////////////////////////////////////////
+
 void testDelegate(void)
 {
     TEST_FUNCTION();
 
-    testFunctor();
-    testBind();
+    //testFunctor();
+    //testBind();
+    testSignal();
 }

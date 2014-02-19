@@ -46,7 +46,7 @@ void testAll(void)
     //testAlgorithm();
     //testUtility();
     //testTime();
-    //testDelegate();
+    testDelegate();
     //testFinalizer();
     testThread();
     //testMemory();
