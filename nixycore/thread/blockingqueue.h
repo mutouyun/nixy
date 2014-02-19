@@ -22,13 +22,13 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-template <typename Type_, class Alloc_ = NX_DEFAULT_ALLOC>
+template <typename Type_>
 class blocking_queue : noncopyable
 {
-    mutable mutex        lock_;
-    condition            task_coming_;
-    condition            until_empty_;
-    deque<Type_, Alloc_> queue_;
+    mutable mutex lock_;
+    condition     task_coming_;
+    condition     until_empty_;
+    deque<Type_>  queue_;
 
 public:
     typedef Type_ type_t;
