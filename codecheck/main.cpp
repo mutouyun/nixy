@@ -5,12 +5,11 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-//void dummy(void);
+void dummy(void);
 
 int main(void)
 {
-    //int* pp = &(nx::singleton<int>());
-    //dummy();
+    dummy();
     testAll();
     return 0;
 }

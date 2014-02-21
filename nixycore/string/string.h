@@ -1,0 +1,15 @@
+/*
+    The Nixy Library
+    Code covered by the MIT License
+
+    Author: mutouyun (http://darkc.at)
+*/
+
+#pragma once
+
+//////////////////////////////////////////////////////////////////////////
+
+#include "nixycore/string/transform.h"
+#include "nixycore/string/converter.h"
+
+//////////////////////////////////////////////////////////////////////////

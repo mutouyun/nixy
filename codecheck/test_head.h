@@ -5,6 +5,7 @@
 #ifndef CODECHECK_CUSTOM_STROUT
 
 #include <iostream>
+#include <string>
 using namespace std;
 
 #define strout cout
@@ -36,6 +37,7 @@ using namespace std;
 #include "test_thread.h"
 #include "test_memory.h"
 #include "test_finalizer.h"
+#include "test_string.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -50,6 +52,7 @@ void testAll(void)
     //testFinalizer();
     testThread();
     //testMemory();
+    testString();
 
     TEST_FUNCTION(<< "Finished ");
 }

@@ -157,7 +157,10 @@ else
         'nixycore/thread/threaddetail.h' \
         'nixycore/thread/threadpool.h' \
         'nixycore/thread/async.h' \
-        'nixycore/thread/thread.h'"
+        'nixycore/thread/thread.h' \
+        'nixycore/string/transform.h' \
+        'nixycore/string/converter.h' \
+        'nixycore/string/string.h'"
 }
 /* project test */
 {
@@ -177,7 +180,8 @@ else
         'codecheck/test_delegate.h' \
         'codecheck/test_finalizer.h' \
         'codecheck/test_thread.h' \
-        'codecheck/test_memory.h'"
+        'codecheck/test_memory.h' \
+        'codecheck/test_string.h'"
     prj.sources = "\
         'codecheck/main.cpp' \
         'codecheck/dummy.cpp'"
