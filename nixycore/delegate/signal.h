@@ -10,7 +10,6 @@
 #include "nixycore/delegate/functor.h"
 
 #include "nixycore/container/deque.h"
-#include "nixycore/algorithm/foreach.h"
 
 #include "nixycore/general/general.h"
 #include "nixycore/preprocessor/preprocessor.h"
@@ -27,7 +26,11 @@ class signal;
 template <typename R>
 class signal<R()>
 {
-    deque<functor<R()> > queue_;
+public:
+    typedef functor<R()> functor_t;
+
+private:
+    deque<functor_t> queue_;
 
 public:
     template <typename Fr_>
@@ -39,12 +42,13 @@ public:
     template <typename Fr_, typename Ob_>
     void connect(Ob_* o, Fr_ f) // object pointer is the first parameter
     {
-        queue_.push_back(nx::move(functor<R()>(f, o)));
+        queue_.push_back(nx::move(functor_t(f, o)));
     }
 
     void operator()(void) const
     {
-        nx_foreach(& f, queue_) f();
+        typename deque<functor_t>::const_iterator ite = queue_.begin();
+        for(; ite != queue_.end(); ++ite) (*ite)();
     }
 
     void clear(void)
@@ -57,7 +61,10 @@ public:
 template <typename R, NX_PP_TYPE_1(n, typename P)> \
 class signal<R(NX_PP_TYPE_1(n, P))> \
 { \
-    deque<functor<R(NX_PP_TYPE_1(n, P))> > queue_; \
+public: \
+    typedef functor<R(NX_PP_TYPE_1(n, P))> functor_t; \
+private: \
+    deque<functor_t> queue_; \
 public: \
     template <typename Fr_> \
     void connect(const Fr_& f) \
@@ -67,11 +74,12 @@ public: \
     template <typename Fr_, typename Ob_> \
     void connect(Ob_* o, Fr_ f) \
     { \
-        queue_.push_back(nx::move(functor<R(NX_PP_TYPE_1(n, P))>(f, o))); \
+        queue_.push_back(nx::move(functor_t(f, o))); \
     } \
     void operator()(NX_PP_TYPE_2(n, typename nx::traits<P, >::param_t par)) const \
     { \
-        nx_foreach(& f, queue_) f(NX_PP_TYPE_1(n, par)); \
+        typename deque<functor_t>::const_iterator ite = queue_.begin(); \
+        for(; ite != queue_.end(); ++ite) (*ite)(NX_PP_TYPE_1(n, par)); \
     } \
     void clear(void) \
     { \
