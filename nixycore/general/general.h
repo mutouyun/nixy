@@ -70,7 +70,7 @@ typedef unsigned char       byte;
 typedef std::size_t         size_t;
 typedef std::ptrdiff_t      ptrdiff_t;
 
-typedef signed char         sint8;
+typedef char                sint8;
 typedef uchar               uint8;
 typedef short               sint16;
 typedef ushort              uint16;
