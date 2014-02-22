@@ -92,7 +92,10 @@ namespace private_converter
         static typename enable_if<check<X, T>::value && check<Y, U>::value,
         size_t>::type_t utf(const T* src, U& des)
         {
-            return transform::utf((const src_t*)(src), (des_t&)(des));
+            des_t tmp;
+            size_t ret = transform::utf((const src_t*)(src), tmp);
+            des = tmp;
+            return ret;
         }
 
         template <typename T, typename U>
