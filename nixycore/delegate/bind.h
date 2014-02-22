@@ -8,6 +8,7 @@
 #pragma once
 
 #include "nixycore/delegate/functiontraits.h"
+#include "nixycore/delegate/functor.h"
 
 #include "nixycore/general/general.h"
 #include "nixycore/preprocessor/preprocessor.h"
@@ -199,29 +200,6 @@ namespace private_bind
 #   undef NX_BIND_FR_
     };
 
-    template <typename F, typename P>
-    class fr_mem : public fr<F>
-    {
-        P p_;
-
-    public:
-        fr_mem(F f, P p) : fr<F>(f), p_(p) {}
-
-        typename fr<F>::result_t operator()(void)
-        {
-            return fr<F>::operator()(p_);
-        }
-
-#   define NX_BIND_FR_(n) \
-        template <NX_PP_TYPE_1(n, typename P)> \
-        typename fr<F>::result_t operator()(NX_PP_TYPE_2(n, P, p)) \
-        { \
-            return fr<F>::operator()(p_, NX_PP_TYPE_1(n, p)); \
-        }
-        NX_PP_MULT(NX_PP_DEC(NX_PP_MAX), NX_BIND_FR_)
-#   undef NX_BIND_FR_
-    };
-
     /*
         Storage for saving function parameters
     */
@@ -355,10 +333,14 @@ inline private_bind::fr<F> bind(F f)
     return private_bind::fr<F>(f);
 }
 
+/*
+    Bind member function and the object pointer to a functor
+*/
+
 template <typename T, typename C, typename P>
-inline private_bind::fr_mem<T C::*, P> bind(T C::* f, P p)
+inline rvalue<functor<typename function_traits<T C::*>::type_t>, true> bind(T C::* f, P p)
 {
-    return private_bind::fr_mem<T C::*, P>(f, p);
+    return functor<typename function_traits<T C::*>::type_t>(f, p);
 }
 
 /*

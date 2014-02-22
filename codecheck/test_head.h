@@ -52,7 +52,7 @@ void testAll(void)
     //testFinalizer();
     testThread();
     //testMemory();
-    testString();
+    //testString();
 
     TEST_FUNCTION(<< "Finished ");
 }

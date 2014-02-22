@@ -395,7 +395,7 @@ public:
     functor(const functor& fr)
         : base_t(static_cast<const base_t&>(fr))
     {}
-    functor(const rvalue<functor>& fr)
+    functor(const rvalue<functor, true>& fr)
         : base_t()
     { swap(unmove(fr)); }
 public:
@@ -439,7 +439,7 @@ public: \
     functor(const functor& fr) \
         : base_t(static_cast<const base_t&>(fr)) \
     {} \
-    functor(const rvalue<functor>& fr) \
+    functor(const rvalue<functor, true>& fr) \
         : base_t() \
     { swap(unmove(fr)); } \
 public: \

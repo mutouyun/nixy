@@ -255,7 +255,7 @@ void testDelegate(void)
 {
     TEST_FUNCTION();
 
-    //testFunctor();
-    //testBind();
+    testFunctor();
+    testBind();
     testSignal();
 }
