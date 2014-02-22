@@ -16,7 +16,9 @@
     - Nixy的核心部分, 基于泛型思想搭建的C++库
     - 目标: 代码轻巧,功能灵活,使用方便
 
+    > string	           ...working     - 字符串相关，包括字符编码处理、字符串存储等
     > container            ...done        - 各种泛型容器
+    > delegate	           ...done        - 委托，包括泛化仿函数、绑定器等
     > finalizer            ...done        - 资源管理，包括通用rc和gc实现等
     > memory               ...done        - 内存管理，包括内存池、通用内存分配器、rc智能指针等
     > preprocessor	       ...done        - 预处理器，用于对编译器的预处理阶段编程，一般用于自动代码生成
@@ -25,8 +27,7 @@
     > utility              ...done        - 各种实用小工具
     > al(Abstract Layer)   ...ongoing     - 抽象层，提供跨平台的兼容适配
     > general              ...ongoing     - 全库的通用部分
-    > algorithm	           ...working     - 提供一些基本的算法
-    > delegate	           ...working     - 委托，包括泛化仿函数、绑定器等
+    > algorithm	           ...preparing   - 提供一些基本的算法
     > bugfix               ...preparing   - 用于简化调试和排错
     > pattern              ...preparing   - 模式，包括一部分可以通用化的设计模式
     > random               ...preparing   - 随机数生成器
