@@ -53,7 +53,7 @@ public:
     size_t block_size(void) const { return block_size_; }
 
 protected:
-    pvoid operator()(size_t* count_ptr)
+    pvoid expand(size_t* count_ptr)
     {
         nx_assert(block_size_ >= sizeof(pvoid));
         return Alloc_::alloc( block_size_ * ( (*count_ptr) = (*(++count_ite_)) ) );
@@ -95,10 +95,10 @@ public:
     }
 
 protected:
-    pvoid operator()(size_t* count_ptr)
+    pvoid expand(size_t* count_ptr)
     {
         blocks_t* block = (blocks_t*)Alloc_::alloc(sizeof(blocks_t));
-        block->block_ = base_t::operator()(count_ptr);
+        block->block_ = base_t::expand(count_ptr);
         block->pnext_ = nx::nulptr;
         if (ptail_) ptail_->pnext_ = block;
         ptail_ = block;
@@ -150,7 +150,7 @@ private:
     void expand(void)
     {
         size_t count = 0;
-        pvoid* p = (pvoid*)(cursor_ = (*this)(&count));
+        pvoid* p = (pvoid*)(cursor_ = base_t::expand(&count));
         for(size_t i = 1; i < count; ++i)
             p = (pvoid*)( (*p) = ((byte*)p) + base_t::block_size() );
         (*p) = nx::nulptr;
