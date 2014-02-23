@@ -92,7 +92,7 @@ namespace private_converter
         static typename enable_if<check<X, T>::value && check<Y, U>::value,
         size_t>::type_t utf(const T* src, U& des)
         {
-            des_t tmp;
+            des_t tmp; // for disable the warning strict-aliasing from gcc 4.4
             size_t ret = transform::utf((const src_t*)(src), tmp);
             des = tmp;
             return ret;
