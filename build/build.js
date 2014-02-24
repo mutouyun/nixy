@@ -159,7 +159,6 @@ else
         'nixycore/thread/async.h' \
         'nixycore/thread/thread.h' \
         'nixycore/string/transform.h' \
-        'nixycore/string/converter.h' \
         'nixycore/string/string.h'"
 }
 /* project test */

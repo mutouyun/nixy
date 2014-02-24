@@ -48,11 +48,11 @@ void testAll(void)
     //testAlgorithm();
     //testUtility();
     //testTime();
-    testDelegate();
+    //testDelegate();
     //testFinalizer();
-    testThread();
+    //testThread();
     //testMemory();
-    //testString();
+    testString();
 
     TEST_FUNCTION(<< "Finished ");
 }

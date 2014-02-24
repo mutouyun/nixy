@@ -10,6 +10,9 @@
 
 #pragma once
 
+#include "nixycore/typemanip/typetools.h"
+#include "nixycore/typemanip/typebehavior.h"
+
 #include "nixycore/general/general.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -18,11 +21,28 @@ NX_BEG
 
 namespace transform
 {
+    namespace private_
+    {
+        template <size_t X> struct utf_type;
+        template <>         struct utf_type<1> { typedef uint8  type_t; };
+        template <>         struct utf_type<2> { typedef uint16 type_t; };
+        template <>         struct utf_type<4> { typedef uint32 type_t; };
+
+        template <typename T, size_t X>
+        struct check
+            : type_if<(sizeof(T) == sizeof(typename utf_type<X>::type_t)) && !is_pointer<T>::value>
+        {};
+    }
+
+    using namespace transform::private_;
+
     /*
         UTF-32 to UTF-8
     */
 
-    inline static size_t utf(uint32 src, uint8* des)
+    template <typename T, typename U>
+    typename enable_if<check<T, 4>::value && check<U, 1>::value,
+    size_t>::type_t utf(T src, U* des)
     {
         if (src == 0) return 0;
 
@@ -48,10 +68,10 @@ namespace transform
         {
             for(; i > 0; --i)
             {
-                des[i] = static_cast<uint8>((src & 0x3F) | 0x80);
+                des[i] = static_cast<U>((src & 0x3F) | 0x80);
                 src >>= 6;
             }
-            des[0] = static_cast<uint8>(src | PREFIX[len - 1]);
+            des[0] = static_cast<U>(src | PREFIX[len - 1]);
         }
         return len;
     }
@@ -60,7 +80,9 @@ namespace transform
         UTF-8 to UTF-32
     */
 
-    inline static size_t utf(const uint8* src, uint32& des)
+    template <typename T, typename U>
+    typename enable_if<check<T, 1>::value && check<U, 4>::value,
+    size_t>::type_t utf(const T* src, U& des)
     {
         if (!src || (*src) == 0) return 0;
 
@@ -119,13 +141,15 @@ namespace transform
         UTF-32 to UTF-16
     */
 
-    inline static size_t utf(uint32 src, uint16* des)
+    template <typename T, typename U>
+    typename enable_if<check<T, 4>::value && check<U, 2>::value,
+    size_t>::type_t utf(T src, U* des)
     {
         if (src == 0) return 0;
 
         if (src <= 0xFFFF)
         {
-            if (des) (*des) = static_cast<uint16>(src);
+            if (des) (*des) = static_cast<U>(src);
             return 1;
         }
         else
@@ -133,8 +157,8 @@ namespace transform
         {
             if (des)
             {
-                des[0] = static_cast<uint16>(0xD800 + (src >> 10) - 0x40);  // high
-                des[1] = static_cast<uint16>(0xDC00 + (src & 0x03FF));      // low
+                des[0] = static_cast<U>(0xD800 + (src >> 10) - 0x40);  // high
+                des[1] = static_cast<U>(0xDC00 + (src & 0x03FF));      // low
             }
             return 2;
         }
@@ -145,7 +169,9 @@ namespace transform
         UTF-16 to UTF-32
     */
 
-    inline static size_t utf(const uint16* src, uint32& des)
+    template <typename T, typename U>
+    typename enable_if<check<T, 2>::value && check<U, 4>::value,
+    size_t>::type_t utf(const T* src, U& des)
     {
         if (!src || (*src) == 0) return 0;
 
@@ -174,7 +200,9 @@ namespace transform
         UTF-16 to UTF-8
     */
 
-    inline static size_t utf(uint16 src, uint8* des)
+    template <typename T, typename U>
+    typename enable_if<check<T, 2>::value && check<U, 1>::value,
+    size_t>::type_t utf(T src, U* des)
     {
         // make utf-16 to utf-32
         uint32 tmp;
@@ -187,7 +215,9 @@ namespace transform
         UTF-8 to UTF-16
     */
 
-    inline static size_t utf(const uint8* src, uint16& des)
+    template <typename T, typename U>
+    typename enable_if<check<T, 1>::value && check<U, 2>::value,
+    size_t>::type_t utf(const T* src, U& des)
     {
         // make utf-8 to utf-32
         uint32 tmp;
@@ -202,8 +232,9 @@ namespace transform
         UTF-X: string to string
     */
 
-    template <typename T>
-    size_t utf(const uint32* src, T* des)   // UTF-32 to UTF-X(8/16)
+    template <typename T, typename U>
+    typename enable_if<check<T, 4>::value && (check<U, 1>::value || check<U, 2>::value),
+    size_t>::type_t utf(const T* src, U* des)   // UTF-32 to UTF-X(8/16)
     {
         if (!src || (*src) == 0) return 0;
 
@@ -219,8 +250,9 @@ namespace transform
         return num;
     }
 
-    template <typename T>
-    size_t utf(const T* src, uint32* des)   // UTF-X(8/16) to UTF-32
+    template <typename T, typename U>
+    typename enable_if<(check<T, 1>::value || check<T, 2>::value) && check<U, 4>::value,
+    size_t>::type_t utf(const T* src, U* des)   // UTF-X(8/16) to UTF-32
     {
         if (!src || (*src) == 0) return 0;
 
@@ -243,19 +275,21 @@ namespace transform
     }
 
     template <typename T, typename U>
-    size_t utf(const T* src, U* des)    // UTF-X(8/16) to UTF-Y(16/8)
+    typename enable_if<(check<T, 1>::value && check<U, 2>::value) ||
+                       (check<T, 2>::value && check<U, 1>::value),
+    size_t>::type_t utf(const T* src, U* des)    // UTF-X(8/16) to UTF-Y(16/8)
     {
         if (!src || (*src) == 0) return 0;
 
         size_t num = 0;
         while(*src)
         {
-            // make utf-x to ucs4
+            // make utf-x to utf-32
             uint32 tmp;
             size_t len = utf(src, tmp);
             if (len == 0) break;
             src += len;
-            // make ucs4 to utf-y
+            // make utf-32 to utf-y
             len = utf(tmp, des);
             if (len == 0) break;
             if (des) des += len;
