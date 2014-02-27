@@ -19,7 +19,7 @@ void testConverter(void)
     //wchar_t* s = new wchar_t[n];
     //size_t m = nx::transform::utf(c, s);
     //strout << n << " " << m << endl;
-
+/*
     wstring s;
     size_t n; nx::wchar w;
     while (!!(n = nx::transform::utf(c, w)))
@@ -29,7 +29,7 @@ void testConverter(void)
     }
     FILE* fp = fopen("test_converter.txt", "wb");
     fwrite(s.c_str(), sizeof(nx::wchar), s.length(), fp);
-    fclose(fp);
+    fclose(fp);*/
 }
 
 //////////////////////////////////////////////////////////////////////////
