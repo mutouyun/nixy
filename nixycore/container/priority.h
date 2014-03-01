@@ -9,6 +9,8 @@
 
 #include "nixycore/container/vector.h"
 
+#include "nixycore/utility/rvalue.h"
+
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
 #include "nixycore/algorithm/algorithm.h"
@@ -31,17 +33,30 @@ public:
     typedef std::priority_queue<Type_, Seq_, Comp_> base_t;
 
 public:
-    explicit priority(const Comp_& c = Comp_(),
-                      const Seq_& s = Seq_())
+    explicit priority(const Comp_& c = Comp_(), const Seq_& s = Seq_())
         : base_t(c, s)
     {}
 
     template <typename Iterator_>
     priority(Iterator_ f, Iterator_ l,
-             const Comp_& c = Comp_(),
-             const Seq_& s = Seq_())
+             const Comp_& c = Comp_(), const Seq_& s = Seq_())
         : base_t(f, l, c, s)
     {}
+
+    priority(const priority& rhs)
+        : base_t(rhs)
+    {}
+    priority(const rvalue<priority>& rhs)
+        : base_t()
+    {
+        base_t::swap(unmove(rhs));
+    }
+
+    priority& operator=(priority rhs)
+    {
+        rhs.swap(*this);
+        return (*this);
+    }
 };
 
 /*

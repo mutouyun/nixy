@@ -69,8 +69,16 @@ public:
         : content_(nx::clone(other.content_))
     {}
 
+    any(const rvalue<any>& rhs)
+        : content_(nx::nulptr)
+    {
+        swap(unmove(rhs));
+    }
+
     ~any()
-    { nx::free(content_); }
+    {
+        nx::free(content_);
+    }
 
 public:
     void swap(any& rhs)

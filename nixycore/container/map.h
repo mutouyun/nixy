@@ -9,6 +9,8 @@
 
 #include "nixycore/memory/alloc.h"
 
+#include "nixycore/utility/rvalue.h"
+
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
 #include "nixycore/algorithm/algorithm.h"
@@ -27,7 +29,7 @@ public:
     typedef std::map<Key_, Type_, Comp_, typename Alloc_::template std_allocator<std::pair<const Key_, Type_> >::type_t> base_t;
 
 public:
-    map()
+    map(void)
         : base_t()
     {}
     map(const base_t& x)
@@ -50,6 +52,21 @@ public:
         const typename base_t::allocator_type& a = typename base_t::allocator_type())
         : base_t(f, l, c, a)
     {}
+
+    map(const map& rhs)
+        : base_t(rhs)
+    {}
+    map(const rvalue<map>& rhs)
+        : base_t()
+    {
+        base_t::swap(unmove(rhs));
+    }
+
+    map& operator=(map rhs)
+    {
+        rhs.swap(*this);
+        return (*this);
+    }
 };
 
 /*
@@ -71,6 +88,16 @@ struct container_traits<nx::map<K_, T_, C_, A_> >
     typedef typename nx::map<K_, T_, C_, A_>::iterator   ite_t;
     typedef std::pair<K_, T_>                            pair_t;
 };
+
+/*
+    Special swap algorithm
+*/
+
+template <typename K_, typename T_, typename C_, class A_>
+inline void swap(map<K_, T_, C_, A_>& x, map<K_, T_, C_, A_>& y)
+{
+    x.swap(y);
+}
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

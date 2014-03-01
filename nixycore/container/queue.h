@@ -9,6 +9,8 @@
 
 #include "nixycore/container/deque.h"
 
+#include "nixycore/utility/rvalue.h"
+
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
 #include "nixycore/algorithm/algorithm.h"
@@ -30,6 +32,21 @@ public:
     explicit queue(const Seq_& s = Seq_())
         : base_t(s)
     {}
+
+    queue(const queue& rhs)
+        : base_t(rhs)
+    {}
+    queue(const rvalue<queue>& rhs)
+        : base_t()
+    {
+        base_t::swap(unmove(rhs));
+    }
+
+    queue& operator=(queue rhs)
+    {
+        rhs.swap(*this);
+        return (*this);
+    }
 };
 
 /*

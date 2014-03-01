@@ -361,6 +361,8 @@ namespace test_rvalue
     }
 }
 
+#include "nixycore/container/container.h"
+
 void testRvalue(void)
 {
     TEST_CASE();
@@ -395,6 +397,11 @@ void testRvalue(void)
     nx::rvalue<int> b(a), c(b);
     a = nx::unmove(c);
     int NX_UNUSED d = nx::move(a);
+
+    nx::list<Big> q1, q2;
+    q2.push_back("It's BIG");
+    q1 = nx::move(q2);
+    strout << "q1: " << q1.back().str_ << endl;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -491,7 +498,7 @@ void testUtility(void)
     //testLimitOf();
     //testSafeBool();
     //testRefer();
-    //testRvalue();
+    testRvalue();
     //testValid();
-    testTuple();
+    //testTuple();
 }

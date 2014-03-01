@@ -9,8 +9,11 @@
 
 #include "nixycore/memory/alloc.h"
 
+#include "nixycore/utility/rvalue.h"
+
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
+#include "nixycore/algorithm/algorithm.h"
 
 // std::list
 #include <list>
@@ -26,7 +29,7 @@ public:
     typedef std::list<Type_, typename Alloc_::template std_allocator<Type_>::type_t> base_t;
 
 public:
-    list()
+    list(void)
         : base_t()
     {}
     list(const base_t& x)
@@ -48,7 +51,32 @@ public:
          const typename base_t::allocator_type& a = typename base_t::allocator_type())
         : base_t(f, l, a)
     {}
+
+    list(const list& rhs)
+        : base_t(rhs)
+    {}
+    list(const rvalue<list>& rhs)
+        : base_t()
+    {
+        base_t::swap(unmove(rhs));
+    }
+
+    list& operator=(list rhs)
+    {
+        rhs.swap(*this);
+        return (*this);
+    }
 };
+
+/*
+    Special swap algorithm
+*/
+
+template <typename T_, class A_>
+inline void swap(list<T_, A_>& x, list<T_, A_>& y)
+{
+    x.swap(y);
+}
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

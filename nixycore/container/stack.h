@@ -9,6 +9,8 @@
 
 #include "nixycore/container/deque.h"
 
+#include "nixycore/utility/rvalue.h"
+
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
 #include "nixycore/algorithm/algorithm.h"
@@ -30,6 +32,21 @@ public:
     explicit stack(const Seq_& s = Seq_())
         : base_t(s)
     {}
+
+    stack(const stack& rhs)
+        : base_t(rhs)
+    {}
+    stack(const rvalue<stack>& rhs)
+        : base_t()
+    {
+        base_t::swap(unmove(rhs));
+    }
+
+    stack& operator=(stack rhs)
+    {
+        rhs.swap(*this);
+        return (*this);
+    }
 };
 
 /*

@@ -46,13 +46,13 @@ void testAll(void)
     //testPreprocessor();
     //testTypeManip();
     //testAlgorithm();
-    //testUtility();
+    testUtility();
     //testTime();
     //testDelegate();
     //testFinalizer();
     //testThread();
     //testMemory();
-    testString();
+    //testString();
 
     TEST_FUNCTION(<< "Finished ");
 }
