@@ -4,17 +4,26 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-void testConverter(void)
+void testTransform(void)
 {
     TEST_CASE();
 
-    //printf("Hello world\n");
-    //printf("你好世界\n");
-    //printf("こんにちわ、世界\n");
+    const char* c = "Hello world 你好世界 こんにちわ、世界";
+    size_t n = nx::transform::local_to_utf(c);
+    wchar_t* s = new wchar_t[n];
+    n = nx::transform::local_to_utf(c, s, n);
+    FILE* fp = fopen("test_converter_s.txt", "wb");
+    fwrite(s, sizeof(wchar_t), n - 1, fp);
+    fclose(fp);
+    strout << "local_to_utf size: " << n << endl;
 
-    const char* c = "こんにちわ、世界";
-    size_t n = nx::transform::utf(c, (long*)0);
-    //strout << n << " " << (int)(unsigned char)*c << endl;
+    n = nx::transform::utf_to_local(s);
+    char* z = new char[n];
+    n = nx::transform::utf_to_local(s, z, n);
+    fp = fopen("test_converter_z.txt", "wb");
+    fwrite(z, sizeof(char), n - 1, fp);
+    fclose(fp);
+    strout << "utf_to_local size: " << n << endl;
 
     //wchar_t* s = new wchar_t[n];
     //size_t m = nx::transform::utf(c, s);
@@ -26,10 +35,7 @@ void testConverter(void)
     {
         s.push_back(w);
         c += n;
-    }
-    FILE* fp = fopen("test_converter.txt", "wb");
-    fwrite(s.c_str(), sizeof(nx::wchar), s.length(), fp);
-    fclose(fp);*/
+    }*/
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -38,5 +44,5 @@ void testString(void)
 {
     TEST_FUNCTION();
 
-    testConverter();
+    testTransform();
 }

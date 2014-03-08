@@ -21,6 +21,10 @@ NX_BEG
 
 namespace transform
 {
+    //////////////////////////////////////////////////////////////////////////
+    /// The transform between UTF-X and UTF-Y
+    //////////////////////////////////////////////////////////////////////////
+
     namespace private_
     {
         template <size_t X> struct utf_type;
@@ -29,7 +33,7 @@ namespace transform
         template <>         struct utf_type<4> { typedef uint32 type_t; };
 
         template <typename T, size_t X>
-        struct check
+        struct utf_check
             : type_if<(sizeof(T) == sizeof(typename utf_type<X>::type_t)) && !is_pointer<T>::value>
         {};
     }
@@ -41,7 +45,7 @@ namespace transform
     */
 
     template <typename T, typename U>
-    typename enable_if<check<T, 4>::value && check<U, 1>::value,
+    typename enable_if<utf_check<T, 4>::value && utf_check<U, 1>::value,
     size_t>::type_t utf(T src, U* des)
     {
         if (src == 0) return 0;
@@ -59,7 +63,7 @@ namespace transform
 
         size_t i, len = sizeof(CODE_UP) / sizeof(uint32);
         for(i = 0; i < len; ++i)
-            if (src < CODE_UP[i]) break;
+            if (static_cast<uint32>(src) < CODE_UP[i]) break;
 
         if (i == len) return 0; // the src is invalid
 
@@ -81,7 +85,7 @@ namespace transform
     */
 
     template <typename T, typename U>
-    typename enable_if<check<T, 1>::value && check<U, 4>::value,
+    typename enable_if<utf_check<T, 1>::value && utf_check<U, 4>::value,
     size_t>::type_t utf(const T* src, U& des)
     {
         if (!src || (*src) == 0) return 0;
@@ -142,7 +146,7 @@ namespace transform
     */
 
     template <typename T, typename U>
-    typename enable_if<check<T, 4>::value && check<U, 2>::value,
+    typename enable_if<utf_check<T, 4>::value && utf_check<U, 2>::value,
     size_t>::type_t utf(T src, U* des)
     {
         if (src == 0) return 0;
@@ -170,7 +174,7 @@ namespace transform
     */
 
     template <typename T, typename U>
-    typename enable_if<check<T, 2>::value && check<U, 4>::value,
+    typename enable_if<utf_check<T, 2>::value && utf_check<U, 4>::value,
     size_t>::type_t utf(const T* src, U& des)
     {
         if (!src || (*src) == 0) return 0;
@@ -201,7 +205,7 @@ namespace transform
     */
 
     template <typename T, typename U>
-    typename enable_if<check<T, 2>::value && check<U, 1>::value,
+    typename enable_if<utf_check<T, 2>::value && utf_check<U, 1>::value,
     size_t>::type_t utf(T src, U* des)
     {
         // make utf-16 to utf-32
@@ -216,7 +220,7 @@ namespace transform
     */
 
     template <typename T, typename U>
-    typename enable_if<check<T, 1>::value && check<U, 2>::value,
+    typename enable_if<utf_check<T, 1>::value && utf_check<U, 2>::value,
     size_t>::type_t utf(const T* src, U& des)
     {
         // make utf-8 to utf-32
@@ -233,7 +237,7 @@ namespace transform
     */
 
     template <typename T, typename U>
-    typename enable_if<check<T, 4>::value && (check<U, 1>::value || check<U, 2>::value),
+    typename enable_if<utf_check<T, 4>::value && (utf_check<U, 1>::value || utf_check<U, 2>::value),
     size_t>::type_t utf(const T* src, U* des)   // UTF-32 to UTF-X(8/16)
     {
         if (!src || (*src) == 0) return 0;
@@ -247,11 +251,11 @@ namespace transform
             num += len;
         }
         if (des) (*des) = 0;
-        return num;
+        return num + 1;
     }
 
     template <typename T, typename U>
-    typename enable_if<(check<T, 1>::value || check<T, 2>::value) && check<U, 4>::value,
+    typename enable_if<(utf_check<T, 1>::value || utf_check<T, 2>::value) && utf_check<U, 4>::value,
     size_t>::type_t utf(const T* src, U* des)   // UTF-X(8/16) to UTF-32
     {
         if (!src || (*src) == 0) return 0;
@@ -271,12 +275,12 @@ namespace transform
             num += 1;
         }
         if (des) (*des) = 0;
-        return num;
+        return num + 1;
     }
 
     template <typename T, typename U>
-    typename enable_if<(check<T, 1>::value && check<U, 2>::value) ||
-                       (check<T, 2>::value && check<U, 1>::value),
+    typename enable_if<(utf_check<T, 1>::value && utf_check<U, 2>::value) ||
+                       (utf_check<T, 2>::value && utf_check<U, 1>::value),
     size_t>::type_t utf(const T* src, U* des)    // UTF-X(8/16) to UTF-Y(16/8)
     {
         if (!src || (*src) == 0) return 0;
@@ -296,8 +300,14 @@ namespace transform
             num += len;
         }
         if (des) (*des) = 0;
-        return num;
+        return num + 1;
     }
+
+    //////////////////////////////////////////////////////////////////////////
+    /// The transform between local character set and UTF-X
+    //////////////////////////////////////////////////////////////////////////
+
+#   include "nixycore/al/string/transform.hxx"
 }
 
 //////////////////////////////////////////////////////////////////////////
