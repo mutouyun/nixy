@@ -2,7 +2,7 @@
 
 这是一个小巧灵活的 跨平台/编译器的 C++基础库
 
-* 目前支持的OS: Win32/64/CE, Linux
+* 目前支持的OS: Windows(32/64/CE), Linux(Desktop/ARM)
 * 目前支持的CC: VC(8.0+), gcc, clang
 
 ## nixyx
