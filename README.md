@@ -21,7 +21,7 @@
     > delegate	           ...done        - 委托，包括泛化仿函数、绑定器等
     > finalizer            ...done        - 资源管理，包括通用rc和gc实现等
     > memory               ...done        - 内存管理，包括内存池、通用内存分配器、rc智能指针等
-    > preprocessor	       ...done        - 预处理器，用于对编译器的预处理阶段编程，一般用于自动代码生成
+    > preprocessor         ...done        - 预处理器，用于对编译器的预处理阶段编程，一般用于自动代码生成
     > typemanip	           ...done        - 类型操作，用于对编译器的编译期编程，实现各种泛型技巧
     > thread               ...done        - 线程管理，包括原子类、各种线程同步对象、线程类等
     > utility              ...done        - 各种实用小工具
