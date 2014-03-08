@@ -31,7 +31,6 @@ else
         'nixycore/al/general/platdetect.hxx' \
         'nixycore/al/general/global_functions.hxx' \
         'nixycore/al/general/disable_warnings.hxx' \
-        'nixycore/al/typemanip/nx_friend_class.hxx' \
         'nixycore/al/typemanip/private_is_pod.hxx' \
         'nixycore/al/typemanip/typeof.hxx' \
         'nixycore/al/typemanip/typeof_msvc.hxx' \
