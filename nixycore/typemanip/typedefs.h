@@ -68,7 +68,7 @@ typedef ValueDef<bool, false>   false_t;
 */
 
 typedef char not_t;
-typedef class { not_t dummy_[2]; } yes_t;
+typedef struct { not_t dummy_[2]; } yes_t;
 
 #ifndef nx_rightof
 #define nx_rightof(...) NX_PP_VA(nx::ValueDef<bool, sizeof(__VA_ARGS__) == sizeof(nx::yes_t)>::value)

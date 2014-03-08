@@ -216,8 +216,8 @@ private:
         tp->wait();
         while (is_continue(tp))
         {
-            task_t task;
-            if (task = task_queue_.take()) // wait for a new task
+            task_t task = task_queue_.take(); // wait for a new task
+            if (task)
             {
                 set_busy(true);
                 task();

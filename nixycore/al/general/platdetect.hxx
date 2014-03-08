@@ -11,6 +11,7 @@
 
     MSVC    - Microsoft Visual C++
     GNUC    - GNU C++
+    CLANG   - C++ front-end for the LLVM compiler
 */
 //////////////////////////////////////////////////////////////////////////
 
@@ -24,6 +25,9 @@
 #   define NX_CC_MSVC   _MSC_VER
 #elif defined(__GNUC__)
 #   define NX_CC_GNUC
+#   if defined(__clang__)
+#       define NX_CC_CLANG                      // Clang also masquerades as GCC
+#   endif
 #else
 #   error "This CC is unsupported."
 #endif

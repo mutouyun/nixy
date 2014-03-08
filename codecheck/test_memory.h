@@ -16,6 +16,9 @@
 #pragma GCC diagnostic ignored "-Wunused-function"
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#   ifdef NX_CC_CLANG
+#   pragma GCC diagnostic ignored "-Wself-assign"
+#   endif
 #endif
 #include "nedmalloc/nedmalloc.c"
 #endif
@@ -296,9 +299,9 @@ void testMemory(void)
 {
     TEST_FUNCTION();
 
-    //testMemPool();
-    //testAlloc();
+    testMemPool();
+    testAlloc();
     //testMemGuard();
     //testPointer();
-    testObjectPool();
+    //testObjectPool();
 }

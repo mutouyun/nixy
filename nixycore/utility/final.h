@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include "nixycore/typemanip/typetools.h"
-
 #include "nixycore/general/general.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -17,29 +15,15 @@ NX_BEG
 
 namespace private_final
 {
-    template <class P, class T>
+    template <class T>
     class detail
     {
-        NX_FRIEND_CLASS(P);
-        NX_FRIEND_CLASS(T);
-
-    private:
-        detail() {}
-        ~detail() {}
+    protected:
+        detail(void) {}
     };
 }
 
-/*
-    final class interface
-*/
-
-template <class T>
-class final : virtual public private_final::detail<final<T>, T>
-{
-public:
-    final() {}
-    ~final() {}
-};
+#define nx_final(...) private virtual nx::private_final::detail<__VA_ARGS__ >
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

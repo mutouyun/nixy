@@ -54,7 +54,7 @@ private:
         {
             nx_guard_scope(thr_dat->task_queue_);
             task_t task;
-            while (task = thr_dat->task_queue_->take()) // wait for a new task
+            while (!!(task = thr_dat->task_queue_->take())) // wait for a new task
                 task();
         }
         else thr_dat->proc_();

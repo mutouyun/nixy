@@ -28,8 +28,6 @@ struct type_wrap
 template <int N>
 struct type_int {};
 
-#include "nixycore/al/typemanip/nx_friend_class.hxx"
-
 /*
     For judge bool value
 */

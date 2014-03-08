@@ -247,8 +247,8 @@ void testRefer(void)
     using namespace test_refer;
     {
         A a; B b(1);
-        nx_auto(ra, nx::ref(a));
-        nx_auto(rb, nx::ref(b));
+        nx_auto(NX_UNUSED ra, nx::ref(a));
+        nx_auto(NX_UNUSED rb, nx::ref(b));
     }
     strout << endl;
     {
