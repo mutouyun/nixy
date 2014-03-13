@@ -34,6 +34,7 @@ else
         'nixycore/al/typemanip/private_is_pod.hxx' \
         'nixycore/al/typemanip/typeof.hxx' \
         'nixycore/al/typemanip/typeof_msvc.hxx' \
+        'nixycore/al/algorithm/std_algorithm.hxx' \
         'nixycore/al/time/tickcount.hxx' \
         'nixycore/al/delegate/private_function_traits.hxx' \
         'nixycore/al/thread/barrier.hxx' \
@@ -154,11 +155,14 @@ else
         'nixycore/thread/tlsptr.h' \
         'nixycore/thread/threadops.h' \
         'nixycore/thread/threadmodel.h' \
+        'nixycore/thread/threadops_define.hxx' \
         'nixycore/thread/threaddetail.h' \
         'nixycore/thread/threadpool.h' \
         'nixycore/thread/async.h' \
         'nixycore/thread/thread.h' \
         'nixycore/string/transform.h' \
+        'nixycore/string/stringops_define.hxx' \
+        'nixycore/string/stringdetail.h' \
         'nixycore/string/string.h'"
 }
 /* project test */
