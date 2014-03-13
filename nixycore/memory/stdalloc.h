@@ -57,7 +57,7 @@ public:
     std_allocator<T, Alloc_>& operator=(const std_allocator<U, Alloc_>&) { return (*this); }
 
     template <class U>
-    bool operator==(const std_allocator<U, Alloc_>&) { return true; }
+    bool operator==(const std_allocator<U, Alloc_>&) const { return true; }
 
 public:
     pointer allocate(size_type count, const pvoid = nx::nulptr)
