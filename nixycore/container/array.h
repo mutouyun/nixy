@@ -91,7 +91,7 @@ public:
     template <typename T2>
     array<T, N>& operator=(const array<T2, N>& rhs)
     {
-        nx::copy(*this, rhs);
+        nx::copy(rhs, *this);
         return *this;
     }
 
@@ -109,6 +109,16 @@ public:
         return nx::compare(x, y);
     }
 };
+
+/*
+    Special swap algorithm
+*/
+
+template <typename T, size_t N>
+inline void swap(array<T, N>& x, array<T, N>& y)
+{
+    x.swap(y);
+}
 
 /*
     Special assign algorithm

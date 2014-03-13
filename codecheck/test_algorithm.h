@@ -14,13 +14,13 @@ namespace test_assign
         return 10.0;
     }
 
-    list<double>/*&*/ getLstContainer(void)
+    std::list<double>/*&*/ getLstContainer(void)
     {
         strout << __FUNCTION__ << endl;
 
         static struct List
         {
-            list<double> list_;
+            std::list<double> list_;
             List()
             { nx_assign(list_, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9); }
         } lst;

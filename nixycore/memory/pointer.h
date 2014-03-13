@@ -107,6 +107,16 @@ public:
     void swap(pointer& rhs) { base_t::swap(static_cast<base_t&>(rhs)); }
 };
 
+/*
+    Special swap algorithm
+*/
+
+template <typename T, class A, class M>
+inline void swap(pointer<T, A, M>& x, pointer<T, A, M>& y)
+{
+    x.swap(y);
+}
+
 //////////////////////////////////////////////////////////////////////////
 // cast pointer to another pointer type
 

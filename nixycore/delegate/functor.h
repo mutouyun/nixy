@@ -454,6 +454,16 @@ public: \
 NX_PP_MULT_MAX(NX_FUNCTOR_)
 #undef NX_FUNCTOR_
 
+/*
+    Special swap algorithm
+*/
+
+template <typename F>
+inline void swap(functor<F>& x, functor<F>& y)
+{
+    x.swap(y);
+}
+
 //////////////////////////////////////////////////////////////////////////
 NX_END
 //////////////////////////////////////////////////////////////////////////

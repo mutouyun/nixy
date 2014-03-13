@@ -123,6 +123,16 @@ public:
     void swap(holder& rhs) { base_t::swap(static_cast<base_t&>(rhs)); }
 };
 
+/*
+    Special swap algorithm
+*/
+
+template <typename T, class P, class A, class M>
+inline void swap(holder<T, P, A, M>& x, holder<T, P, A, M>& y)
+{
+    x.swap(y);
+}
+
 //////////////////////////////////////////////////////////////////////////
 NX_END
 //////////////////////////////////////////////////////////////////////////

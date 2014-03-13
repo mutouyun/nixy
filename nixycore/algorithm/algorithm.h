@@ -16,10 +16,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "nixycore/utility/rvalue.h"
-
 #include "nixycore/typemanip/typetools.h"
-#include "nixycore/typemanip/typeconcept.h"
 #include "nixycore/typemanip/typedetect.h"
 
 #include "nixycore/general/general.h"
@@ -33,28 +30,11 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
+#include "nixycore/al/algorithm/std_algorithm.hxx"
+
 /*
     Swap two variables
 */
-
-NX_CONCEPT(void_swap, void, swap, U&)
-NX_CONCEPT(refr_swap, U&  , swap, U&)
-
-template <typename T>
-inline typename enable_if<has_void_swap<T>::value || 
-                          has_refr_swap<T>::value
->::type_t swap(T& x, T& y)
-{
-    x.swap(y);
-}
-
-template <typename T>
-inline typename enable_if<!has_void_swap<T>::value && 
-                          !has_refr_swap<T>::value
->::type_t swap(T& x, T& y)
-{
-    std::swap(x, y);
-}
 
 template <typename T, size_t N>
 inline void swap(T(&x)[N], T(&y)[N])
@@ -63,63 +43,39 @@ inline void swap(T(&x)[N], T(&y)[N])
         nx::swap(x[i], y[i]);
 }
 
-template <typename T>
-inline void swap(T& x, const nx::rvalue<T>& y)
-{
-    nx::swap(x, unmove(y));
-}
-
-template <typename T>
-inline void swap(const nx::rvalue<T>& x, T& y)
-{
-    nx::swap(unmove(x), y);
-}
-
 /*
     Copy container/variable
 */
-
-template <typename R, typename Iter_>
-inline R copy(R r, Iter_ first, Iter_ last)
-{
-    return std::copy(first, last, r);
-}
 
 namespace private_copy
 {
     template <typename T, typename U>
     inline typename enable_if<is_container<T>::value && 
                               is_container<U>::value, 
-    T&>::type_t detail(T& dst, U& src)
+    T&>::type_t detail(T& src, U& dst)
     {
-        nx::copy(nx::begin(dst), nx::begin(src), nx::end(src));
+        nx::copy(nx::begin(src), nx::end(src), nx::begin(dst));
         return dst;
     }
 
     template <typename T, typename U>
     inline typename enable_if<!is_container<T>::value || 
                               !is_container<U>::value, 
-    T&>::type_t detail(T& dst, U& src)
+    T&>::type_t detail(T& src, U& dst)
     {
         return dst = src;
     }
 }
 
 template <typename T, typename U>
-inline T& copy(T& dst, U& src)
+inline T& copy(T& src, U& dst)
 {
-    return private_copy::detail(dst, src);
+    return private_copy::detail(src, dst);
 }
 
 /*
     Fill range
 */
-
-template <typename Iter_, typename V>
-inline void fill(Iter_ first, Iter_ last, const V& v)
-{
-    std::fill(first, last, v);
-}
 
 namespace private_fill
 {
@@ -144,27 +100,9 @@ inline void fill(T& dst, const V& v)
     private_fill::detail(dst, v);
 }
 
-template <typename T, typename S, typename V>
-inline T fill_n(T first, S n, const V& v)
-{
-    return std::fill_n(first, n, v);
-}
-
 /*
     Sort
 */
-
-template <typename Iter_>
-inline void sort(Iter_ first, Iter_ last)
-{
-    std::sort(first, last);
-}
-
-template <typename Iter_, typename Comp_>
-inline void sort(Iter_ first, Iter_ last, Comp_ func)
-{
-    std::sort(first, last, func);
-}
 
 template <typename T>
 inline void sort(T& dst)
@@ -181,18 +119,6 @@ inline void sort(T& dst, Comp_ func)
 /*
     Compare
 */
-
-template <typename Iter1_, typename Iter2_>
-inline bool equal(Iter1_ first1, Iter1_ last1, Iter2_ first2)
-{
-    return std::equal(first1, last1, first2);
-}
-
-template <typename Iter1_, typename Iter2_, typename Pred_>
-inline bool equal(Iter1_ first1, Iter1_ last1, Iter2_ first2, Pred_ func)
-{
-    return std::equal(first1, last1, first2, func);
-}
 
 namespace private_equal
 {
@@ -268,18 +194,6 @@ inline bool equal(T& x, U& y)
     return private_equal::detail(x, y);
 }
 
-template <typename Iter1_, typename Iter2_>
-inline bool compare(Iter1_ first1, Iter1_ last1, Iter2_ first2, Iter2_ last2)
-{
-    return std::lexicographical_compare(first1, last1, first2, last2);
-}
-
-template <typename Iter1_, typename Iter2_, typename Comp_>
-inline bool compare(Iter1_ first1, Iter1_ last1, Iter2_ first2, Iter2_ last2, Comp_ func)
-{
-    return std::lexicographical_compare(first1, last1, first2, last2, func);
-}
-
 template <typename T, typename U>
 inline bool compare(T& x, U& y)
 {
@@ -295,12 +209,6 @@ inline bool compare(T& x, U& y, Comp_ func)
 /*
     Find
 */
-
-template <typename Iter_, typename V>
-inline Iter_ find(Iter_ first, Iter_ last, const V& v)
-{
-    return std::find(first, last, v);
-}
 
 template <typename T, typename V>
 inline typename container_traits<T>::ite_t find(T& x, const V& v)

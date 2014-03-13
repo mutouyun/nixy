@@ -114,6 +114,15 @@ private:
 };
 
 /*
+    Special swap algorithm
+*/
+
+inline void swap(any& x, any& y)
+{
+    x.swap(y);
+}
+
+/*
     cast any to a exact type
 */
 

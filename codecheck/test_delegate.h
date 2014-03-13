@@ -74,7 +74,7 @@ namespace test_delegate
     class Func1
     {
     public:
-        const char* operator()(string& s)
+        const char* operator()(std::string& s)
         {
             strout << NX__FUNCTION__ << "(" << s.c_str() << ")" << " ->: ";
             return s.c_str();
@@ -164,8 +164,8 @@ void testFunctor(void)
     }
     {
         Func1 f;
-        nx::functor<const char*(string&)> fr;
-        string s("Hello functor");
+        nx::functor<const char*(std::string&)> fr;
+        std::string s("Hello functor");
         strout << (fr = f)(s) << endl;
     }
     strout << endl;
@@ -200,7 +200,7 @@ void testBind(void)
         strout << nx::bind(&func1, 2)() << endl;
         strout << nx::bind(&func2, nx::_2, nx::_2)(1, 2) << endl;
         strout << nx::bind(&A::func, &a, nx::_4, nx::_3, nx::_2, nx::_1)(4, 3, 2, 1) << endl;
-        string s("Hello bind");
+        std::string s("Hello bind");
         strout << nx::bind<const char*>(&f1, nx::ref(s))() << endl;
     }
     strout << endl;

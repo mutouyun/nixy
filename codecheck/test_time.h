@@ -20,7 +20,7 @@ void testStopwatch(void)
 {
     TEST_CASE();
 
-    strout << setiosflags(ios_base::showpoint);
+    strout << std::setiosflags(std::ios_base::showpoint);
     nx::stopwatch<> sw;
     STOPWATCH_CHECKER(start)
     STOPWATCH_CHECKER(pause)
@@ -28,7 +28,7 @@ void testStopwatch(void)
     STOPWATCH_CHECKER(stop)
     STOPWATCH_CHECKER(start)
     STOPWATCH_CHECKER(start)
-    strout << resetiosflags(ios_base::showpoint);
+    strout << std::resetiosflags(std::ios_base::showpoint);
 }
 
 #undef STOPWATCH_CHECKER
