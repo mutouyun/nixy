@@ -100,7 +100,7 @@ namespace private_
     }
 }
 
-inline handle_t create(proc_t proc, pvoid arg = nx::nulptr, id_t* thr_id = nx::nulptr)
+inline handle_t create(proc_t proc, pvoid arg = 0, id_t* thr_id = 0)
 {
     return private_::begin_thread(NULL, 0, proc, arg, 0, (unsigned*)(thr_id));
 }

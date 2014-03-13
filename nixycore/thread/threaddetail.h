@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include "nixycore/thread/threadops.h"
 #include "nixycore/thread/blockingqueue.h"
 #include "nixycore/thread/mutex.h"
 
@@ -29,13 +28,16 @@ NX_BEG
 class thread : noncopyable
 {
 public:
+#   include "nixycore/thread/threadops_define.hxx"
+
+public:
     typedef functor<void()> task_t;
 
 private:
     mutable mutex lock_;
 
-    thread_ops::handle_t handle_;
-    thread_ops::id_t     id_;
+    handle_t handle_;
+    id_t     id_;
 
     struct data
     {
@@ -120,13 +122,13 @@ public:
         start(nx::none);
     }
 
-    thread_ops::handle_t handle(void) const
+    handle_t handle(void) const
     {
         nx_lock_scope(lock_);
         return handle_;
     }
 
-    thread_ops::id_t id(void) const
+    id_t id(void) const
     {
         nx_lock_scope(lock_);
         return id_;
@@ -135,8 +137,7 @@ public:
     void join(void)
     {
         nx_lock_scope(lock_);
-        if (thr_dat_)
-            thread_ops::join(handle_);
+        if (thr_dat_) join(handle_);
         handle_ = 0;
         id_ = 0;
         thr_dat_ = nx::nulptr;
@@ -145,8 +146,7 @@ public:
     void detach(void)
     {
         nx_lock_scope(lock_);
-        if (thr_dat_)
-            thread_ops::detach(handle_);
+        if (thr_dat_) detach(handle_);
         handle_ = 0;
         id_ = 0;
         thr_dat_ = nx::nulptr;

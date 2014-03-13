@@ -18,7 +18,7 @@ typedef pthread_t   handle_t;
 #define NX_THREAD_PROC(name, ...) void* (name)(void* __VA_ARGS__)
 typedef NX_THREAD_PROC(*proc_t);
 
-inline handle_t create(proc_t proc, pvoid arg = nx::nulptr, id_t* thr_id = nx::nulptr)
+inline handle_t create(proc_t proc, pvoid arg = 0, id_t* thr_id = 0)
 {
     handle_t hd = 0;
     int err = pthread_create(&hd, NULL, proc, arg);
