@@ -8,12 +8,10 @@
 #pragma once
 
 #include "nixycore/memory/alloc.h"
-
 #include "nixycore/utility/rvalue.h"
 
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
-#include "nixycore/algorithm/algorithm.h"
 
 // std::set
 #include <set>
@@ -31,9 +29,6 @@ public:
 public:
     set(void)
         : base_t()
-    {}
-    set(const base_t& x)
-        : base_t(x)
     {}
 
     explicit set(const Comp_& c,
@@ -56,7 +51,8 @@ public:
     set(const set& rhs)
         : base_t(rhs)
     {}
-    set(const rvalue<set>& rhs)
+
+    set(const rvalue<set, true>& rhs)
         : base_t()
     {
         base_t::swap(unmove(rhs));

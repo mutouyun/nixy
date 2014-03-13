@@ -13,7 +13,6 @@
 
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
-#include "nixycore/algorithm/algorithm.h"
 
 // std::stack
 #include <stack>
@@ -36,7 +35,8 @@ public:
     stack(const stack& rhs)
         : base_t(rhs)
     {}
-    stack(const rvalue<stack>& rhs)
+
+    stack(const rvalue<stack, true>& rhs)
         : base_t()
     {
         base_t::swap(unmove(rhs));
@@ -48,6 +48,16 @@ public:
         return (*this);
     }
 };
+
+/*
+    Special swap algorithm
+*/
+
+template <typename T_, typename S_>
+inline void swap(stack<T_, S_>& x, stack<T_, S_>& y)
+{
+    x.swap(y);
+}
 
 /*
     Special assign algorithm

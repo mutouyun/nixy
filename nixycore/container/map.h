@@ -8,12 +8,10 @@
 #pragma once
 
 #include "nixycore/memory/alloc.h"
-
 #include "nixycore/utility/rvalue.h"
 
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
-#include "nixycore/algorithm/algorithm.h"
 
 // std::map
 #include <map>
@@ -31,9 +29,6 @@ public:
 public:
     map(void)
         : base_t()
-    {}
-    map(const base_t& x)
-        : base_t(x)
     {}
 
     explicit map(const Comp_& c,
@@ -56,7 +51,8 @@ public:
     map(const map& rhs)
         : base_t(rhs)
     {}
-    map(const rvalue<map>& rhs)
+
+    map(const rvalue<map, true>& rhs)
         : base_t()
     {
         base_t::swap(unmove(rhs));

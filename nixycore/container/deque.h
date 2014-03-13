@@ -8,12 +8,10 @@
 #pragma once
 
 #include "nixycore/memory/alloc.h"
-
 #include "nixycore/utility/rvalue.h"
 
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
-#include "nixycore/algorithm/algorithm.h"
 
 // std::deque
 #include <deque>
@@ -31,9 +29,6 @@ public:
 public:
     deque(void)
         : base_t()
-    {}
-    deque(const base_t& x)
-        : base_t(x)
     {}
 
     explicit deque(const typename base_t::allocator_type& a)
@@ -55,7 +50,8 @@ public:
     deque(const deque& rhs)
         : base_t(rhs)
     {}
-    deque(const rvalue<deque>& rhs)
+
+    deque(const rvalue<deque, true>& rhs)
         : base_t()
     {
         base_t::swap(unmove(rhs));

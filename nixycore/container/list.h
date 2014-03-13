@@ -8,12 +8,10 @@
 #pragma once
 
 #include "nixycore/memory/alloc.h"
-
 #include "nixycore/utility/rvalue.h"
 
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
-#include "nixycore/algorithm/algorithm.h"
 
 // std::list
 #include <list>
@@ -31,9 +29,6 @@ public:
 public:
     list(void)
         : base_t()
-    {}
-    list(const base_t& x)
-        : base_t(x)
     {}
 
     explicit list(const typename base_t::allocator_type& a)
@@ -55,7 +50,8 @@ public:
     list(const list& rhs)
         : base_t(rhs)
     {}
-    list(const rvalue<list>& rhs)
+
+    list(const rvalue<list, true>& rhs)
         : base_t()
     {
         base_t::swap(unmove(rhs));

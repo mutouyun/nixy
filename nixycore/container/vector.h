@@ -8,12 +8,10 @@
 #pragma once
 
 #include "nixycore/memory/alloc.h"
-
 #include "nixycore/utility/rvalue.h"
 
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
-#include "nixycore/algorithm/algorithm.h"
 
 // std::vector
 #include <vector>
@@ -31,9 +29,6 @@ public:
 public:
     vector(void)
         : base_t()
-    {}
-    vector(const base_t& x)
-        : base_t(x)
     {}
 
     explicit vector(const typename base_t::allocator_type& a)
@@ -55,7 +50,8 @@ public:
     vector(const vector& rhs)
         : base_t(rhs)
     {}
-    vector(const rvalue<vector>& rhs)
+
+    vector(const rvalue<vector, true>& rhs)
         : base_t()
     {
         base_t::swap(unmove(rhs));

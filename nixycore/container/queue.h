@@ -13,7 +13,6 @@
 
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
-#include "nixycore/algorithm/algorithm.h"
 
 // std::queue
 #include <queue>
@@ -36,7 +35,8 @@ public:
     queue(const queue& rhs)
         : base_t(rhs)
     {}
-    queue(const rvalue<queue>& rhs)
+
+    queue(const rvalue<queue, true>& rhs)
         : base_t()
     {
         base_t::swap(unmove(rhs));
@@ -48,6 +48,16 @@ public:
         return (*this);
     }
 };
+
+/*
+    Special swap algorithm
+*/
+
+template <typename T_, typename S_>
+inline void swap(queue<T_, S_>& x, queue<T_, S_>& y)
+{
+    x.swap(y);
+}
 
 /*
     Special assign algorithm

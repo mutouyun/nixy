@@ -13,7 +13,6 @@
 
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
-#include "nixycore/algorithm/algorithm.h"
 
 // std::priority_queue
 #include <queue>
@@ -46,7 +45,8 @@ public:
     priority(const priority& rhs)
         : base_t(rhs)
     {}
-    priority(const rvalue<priority>& rhs)
+
+    priority(const rvalue<priority, true>& rhs)
         : base_t()
     {
         base_t::swap(unmove(rhs));
@@ -58,6 +58,16 @@ public:
         return (*this);
     }
 };
+
+/*
+    Special swap algorithm
+*/
+
+template <typename T_, typename S_, typename C_>
+inline void swap(priority<T_, S_, C_>& x, priority<T_, S_, C_>& y)
+{
+    x.swap(y);
+}
 
 /*
     Special assign algorithm
