@@ -27,13 +27,14 @@ size_t local_to_utf(const char* src, wchar_t* des = 0, size_t len = 0)
     (void)len;
     return utf(src, des);
 #else
+    (void)src; (void)des; (void)len;
     return 0;
 #endif
 }
 
 size_t utf_to_local(const wchar_t* src, char* des = 0, size_t len = 0)
 {
-#if defined(NX_CC_MSVC)
+#if defined(NX_CC_MSVC) || defined(NX_OS_WIN)
     int n = 0;
     if (des)
     {
@@ -49,6 +50,7 @@ size_t utf_to_local(const wchar_t* src, char* des = 0, size_t len = 0)
     (void)len;
     return utf(src, des);
 #else
+    (void)src; (void)des; (void)len;
     return 0;
 #endif
 }
