@@ -386,7 +386,7 @@ namespace test_threaddetail
 
     void thread_proc_1(nx::pointer<A> pa)
     {
-        nx::thread_ops::sleep(1000);
+        nx::thread::sleep(1000);
         strout << NX__FUNCTION__ << " " << pa->a_ << endl;
     }
 
@@ -425,7 +425,7 @@ namespace test_threadpool
             nx_lock_sole(nx::spin_lock);
             strout << "Test thread: " << i << endl;
         }
-        nx::thread_ops::sleep(1000);
+        nx::thread::sleep(1000);
         {
             nx_lock_sole(nx::spin_lock);
             strout << "Test thread: " << i << " Finish..." << endl;
