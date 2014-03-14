@@ -2,19 +2,22 @@
     The Nixy Library
     Code covered by the MIT License
 
-    Author: mutouyun (http://darkc.at)
+    Modified from Extended STL string (http://www.gotroot.ca/ext_string)
+    Modified by : mutouyun (http://darkc.at)
+
+    Copyright (c) 2005, Keenan Tims (ktims@gotroot.ca) All rights reserved.
 */
 
 //////////////////////////////////////////////////////////////////////////
 
 /*
-    split
+    split string to a vector
 */
 
 static bool split_check(const_iterator i, const_iterator* t)                    // default check
 {
     if (t) (*t) = i + 1;
-    return (*i == L' ' || *i == L'\n' || *i == L'\t' || *i == L'\r');
+    return (*i == ' ' || *i == '\n' || *i == '\t' || *i == '\r');
 }
 
 static bool split_check(const_iterator i, const_iterator* t, value_type sep)    // check with separator
@@ -29,22 +32,21 @@ static bool split_check(const_iterator i, const_iterator* t, const string& sep) 
     return (string(i, i + sep.length()) == sep);
 }
 
-static rvalue<vector<string>, true> split(const string& src,
-                                          const functor<bool(const_iterator, const_iterator*)>& do_check,
-                                          size_type limit = npos)
+rvalue<vector<string>, true> split(const functor<bool(const_iterator, const_iterator*)>& do_check,
+                                   size_type limit = npos) const
 {
     vector<string> v;
-    const_iterator i = src.begin(), last = i;
-    for (; i != src.end(); ++i)
+    const_iterator i = begin(), last = i;
+    for (; i != end(); ++i)
     {
         const_iterator t;
         if (!do_check(i, &t)) continue;
-        if (t != src.end() && do_check(t, 0)) continue;
+        if (t != end() && do_check(t, 0)) continue;
         v.push_back(string(last, i));
         last = t;
         if (v.size() >= limit - 1)
         {
-            v.push_back(string(last, src.end()));
+            v.push_back(string(last, end()));
             return v;
         }
     }
@@ -53,66 +55,294 @@ static rvalue<vector<string>, true> split(const string& src,
     return v;
 }
 
-static rvalue<vector<string>, true> split(const string& src, size_type limit = npos)
+rvalue<vector<string>, true> split(size_type limit = npos) const
 {
-    return split(src, static_cast<bool(*)(const_iterator, const_iterator*)>(&string::split_check), limit);
+    return split(static_cast<bool(*)(const_iterator, const_iterator*)>(&string::split_check), limit);
 }
 
-static rvalue<vector<string>, true> split(const string& src, value_type sep, size_type limit = npos)
+rvalue<vector<string>, true> split(value_type sep, size_type limit = npos) const
 {
-    return split(src, 
-                 bind(static_cast<bool(*)(const_iterator, const_iterator*, value_type)>(&string::split_check),
+    return split(bind(static_cast<bool(*)(const_iterator, const_iterator*, value_type)>(&string::split_check),
                       nx::_1, nx::_2, sep), 
                  limit);
 }
 
-static rvalue<vector<string>, true> split(const string& src, const string& sep, size_type limit = npos)
+rvalue<vector<string>, true> split(const string& sep, size_type limit = npos) const
 {
-    return split(src, 
-                 bind(static_cast<bool(*)(const_iterator, const_iterator*, const string&)>(&string::split_check),
+    return split(bind(static_cast<bool(*)(const_iterator, const_iterator*, const string&)>(&string::split_check),
                       nx::_1, nx::_2, ref(sep)), 
                  limit);
 }
+
+rvalue<vector<string>, true> split_to_chunks(size_type chunk_len) const
+{
+    vector<string> v;
+    v.reserve(size() / chunk_len + 1);
+    size_type count = 0;
+    const_iterator i = begin(), last = i;
+    for (; i != end(); ++i, ++count)
+    {
+        if (count == chunk_len)
+        {
+            count = 0;
+            v.push_back(string(last, i));
+            last = i;
+        }
+    }
+    if (last != i)
+        v.push_back(string(last, i));
+    return v;
+}
+
+/*
+    replace
+*/
+
+string& replace(const string& needle, const string& s)
+{
+    size_type lastpos = 0, thispos;
+    while ((thispos = find(needle, lastpos)) != npos)
+    {
+        base_t::replace(thispos, needle.length(), s);
+        lastpos = thispos + 1;
+    }
+    return (*this);
+}
+
+string& replace(value_type needle, value_type c)
+{
+    for (iterator i = begin(); i != end(); ++i)
+        if (*i == needle) *i = c;
+    return (*this);
+}
+
+/*
+    string multiplication
+*/
+
+rvalue<string> operator*(size_type n)
+{
+    string ret;
+    for (size_type i = 0; i < n; ++i)
+        ret.append(*this);
+    return ret;
+}
+
+/*
+    case conversion
+*/
+
+string& to_lower(void)
+{
+    for (iterator i = begin(); i != end(); ++i)
+        if (*i >= 'A' && *i <= 'Z')
+            *i += ('a' - 'A');
+    return (*this);
+}
+
+string& to_upper(void)
+{
+    for (iterator i = begin(); i != end(); ++i)
+        if (*i >= 'a' && *i <= 'z')
+            *i -= ('a' - 'A');
+    return (*this);
+}
+
+string& swap_case(void)
+{
+    for (iterator i = begin(); i != end(); ++i)
+    {
+        if (*i >= 'A' && *i <= 'Z')
+            *i += ('a' - 'A');
+        else
+        if (*i >= 'a' && *i <= 'z')
+            *i -= ('a' - 'A');
+    }
+    return (*this);
+}
+
+/*
+    count the substring from this string
+*/
+
+size_type count(const string& sub) const
+{
+    size_type num = 0, last = 0, cur = 0;
+    while ((cur = find(sub, last + 1)) != npos)
+    {
+        num += 1;
+        last = cur;
+    }
+    return num;
+}
+
+/*
+    judgement
+*/
+
+bool is_alphabet(void) const
+{
+    if (empty()) return false;
+    for (const_iterator i = begin(); i != end(); ++i)
+        if (*i < 'A' || (*i > 'Z' && (*i < 'a' || *i > 'z')))
+            return false;
+    return true;
+}
+
+bool is_allnumber(void) const
+{
+    if (empty()) return false;
+    for (const_iterator i = begin(); i != end(); ++i)
+        if (*i < '0' || *i > '9')
+            return false;
+    return true;
+}
+
+bool is_integral(void) const
+{
+    if (empty()) return false;
+    for (const_iterator i = begin(); i != end(); ++i)
+    {
+        if (i == begin() && (*i == '-' || *i == '+'))
+            continue;
+        if (*i < '0' || *i > '9')
+            return false;
+    }
+    return true;
+}
+
+bool is_float(void) const
+{
+    if (empty()) return false;
+    bool dot = false;
+    for (const_iterator i = begin(); i != end(); ++i)
+    {
+        if (i == begin() && (*i == '-' || *i == '+'))
+            continue;
+        if (!dot && *i == '.')
+        {
+            dot = true;
+            continue;
+        }
+        if (*i < '0' || *i > '9')
+            return false;
+    }
+    return dot;
+}
+
+bool is_numeric(void) const
+{
+    if (empty()) return false;
+    bool dot = false;
+    for (const_iterator i = begin(); i != end(); ++i)
+    {
+        if (i == begin() && (*i == '-' || *i == '+'))
+            continue;
+        if (!dot && *i == '.')
+        {
+            dot = true;
+            continue;
+        }
+        if (*i < '0' || *i > '9')
+            return false;
+    }
+    return true;
+}
+
+bool is_nonsymbol(void) const
+{
+    if (empty()) return false;
+    for (const_iterator i = begin(); i != end(); ++i)
+    {
+        if (*i < 'A' || *i > 'Z')
+            if (*i < '0' || *i > '9')
+                if (*i < 'a' || *i > 'z')
+                    return false;
+    }
+    return true;
+}
+
+bool is_lower(void) const
+{
+    if (empty()) return false;
+    for (const_iterator i = begin(); i != end(); ++i)
+        if (*i < 'a' || *i > 'z')
+            return false;
+    return true;
+}
+
+bool is_upper(void) const
+{
+    if (empty()) return false;
+    for (const_iterator i = begin(); i != end(); ++i)
+        if (*i < 'A' || *i > 'Z')
+            return false;
+    return true;
+}
+
+/*
+    format string for printf
+*/
+
+template <typename T, typename = value_type> struct printf_format;
+template <typename R> struct printf_format<char   , R> { static const R* val(void) { return L"%c"    ; } };
+template <typename R> struct printf_format<uchar  , R> { static const R* val(void) { return L"%c"    ; } };
+template <typename R> struct printf_format<wchar  , R> { static const R* val(void) { return L"%lc"   ; } };
+template <typename R> struct printf_format<short  , R> { static const R* val(void) { return L"%d"    ; } };
+template <typename R> struct printf_format<ushort , R> { static const R* val(void) { return L"%u"    ; } };
+template <typename R> struct printf_format<int    , R> { static const R* val(void) { return L"%d"    ; } };
+template <typename R> struct printf_format<uint   , R> { static const R* val(void) { return L"%u"    ; } };
+template <typename R> struct printf_format<long   , R> { static const R* val(void) { return L"%ld"   ; } };
+template <typename R> struct printf_format<ulong  , R> { static const R* val(void) { return L"%lu"   ; } };
+template <typename R> struct printf_format<llong  , R> { static const R* val(void) { return L"%lld"  ; } };
+template <typename R> struct printf_format<ullong , R> { static const R* val(void) { return L"%llu"  ; } };
+template <typename R> struct printf_format<float  , R> { static const R* val(void) { return L"%.6g"  ; } };
+template <typename R> struct printf_format<double , R> { static const R* val(void) { return L"%.15g" ; } };
+template <typename R> struct printf_format<ldouble, R> { static const R* val(void) { return L"%.17Lg"; } };
+template <typename R> struct printf_format<pchar  , R> { static const R* val(void) { return L"%s"    ; } };
+template <typename R> struct printf_format<pwchar , R> { static const R* val(void) { return L"%ls"   ; } };
+template <typename R> struct printf_format<pvoid  , R> { static const R* val(void) { return L"%p"    ; } };
 
 /*
     number transform
 */
 
+#include "nixycore/al/string/stringops.hxx"
+
 template <typename T>
-T to_number(void) const
+typename enable_if<nx::is_integral<T>::value,
+string&>::type_t from_number(T num)
 {
-    T retval = 0; long dotval = 0;
-    bool neg = false;
-    for (const_iterator i = begin(); i != end(); ++i)
-    {
-        if (i == begin())
-        {
-            if (*i == L'-')
-            {
-                neg = true;
-                continue;
-            }
-            else
-            if (*i == L'+')
-            {
-                continue;
-            }
-        }
-        if (*i >= L'0' && *i <= L'9')
-        {
-            if (dotval > 0) dotval *= 10;
-            retval *= 10;
-            retval += *i - L'0';
-        }
-        else
-        if (dotval == 0 && *i == L'.') dotval = 1;
-        else break;
-    }
-    if (neg)
-        retval *= -1;
-    if (dotval > 1)
-        retval /= dotval;
-    return retval;
+    value_type buf[sizeof(num) * 3] = {0};
+    if (NX_SWPRINTF_(buf, printf_format<T>::val(), num) <= 0) return (*this);
+    return assign(buf);
+}
+
+template <typename T>
+typename enable_if<nx::is_float<T>::value,
+string&>::type_t from_number(T num)
+{
+    value_type buf[sizeof(num) * 6] = {0};
+    if (NX_SWPRINTF_(buf, printf_format<T>::val(), num) <= 0) return (*this);
+    return assign(buf);
+}
+
+template <typename T>
+typename enable_if<nx::is_integral<T>::value,
+T>::type_t to_number(void) const
+{
+    T ret = 0;
+    if (NX_SWSCANF_(c_str(), printf_format<T>::val(), &ret) <= 0) return 0;
+    return ret;
+}
+
+template <typename T>
+typename enable_if<nx::is_float<T>::value,
+T>::type_t to_number(void) const
+{
+    T ret = 0;
+    if (NX_SWSCANF_(c_str(), printf_format<T>::val(), &ret) <= 0) return 0;
+    return ret;
 }
 
 //////////////////////////////////////////////////////////////////////////

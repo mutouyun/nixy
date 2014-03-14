@@ -12,5 +12,7 @@ endlocal
 
 rd /q /s "build/!bin"
 rd /q /s "build/!tmp"
+rd /q /s "build/debug"
+rd /q /s "build/release"
 
 del /f /q /s /a *.user *.ncb *.suo *.sdf *.i

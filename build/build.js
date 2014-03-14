@@ -57,6 +57,7 @@ else
         'nixycore/al/thread/threadops_linux.hxx' \
         'nixycore/al/thread/threadops_win.hxx' \
         'nixycore/al/string/transform.hxx' \
+        'nixycore/al/string/stringops.hxx' \
         'nixycore/general/general.h' \
         'nixycore/preprocessor/ppmacros.h' \
         'nixycore/preprocessor/ppcount.h' \

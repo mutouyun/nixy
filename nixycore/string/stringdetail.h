@@ -17,6 +17,7 @@
 #include "nixycore/delegate/bind.h"
 
 #include "nixycore/general/general.h"
+#include "nixycore/typemanip/typemanip.h"
 #include "nixycore/utility/utility.h"
 
 // std::basic_string
@@ -138,6 +139,12 @@ public:
     /*
         assignment
     */
+
+    string& assign(string rhs)
+    {
+        rhs.swap(*this);
+        return (*this);
+    }
 
     string& operator =(string rhs)
     {
@@ -291,7 +298,6 @@ public:
     using base_t::length;
     using base_t::empty;
     using base_t::clear;
-    using base_t::assign;
     using base_t::append;
     using base_t::insert;
     using base_t::erase;
