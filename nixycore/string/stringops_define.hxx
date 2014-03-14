@@ -285,23 +285,23 @@ bool is_upper(void) const
 */
 
 template <typename T, typename = value_type> struct printf_format;
-template <typename R> struct printf_format<char   , R> { static const R* val(void) { return L"%c"    ; } };
-template <typename R> struct printf_format<uchar  , R> { static const R* val(void) { return L"%c"    ; } };
-template <typename R> struct printf_format<wchar  , R> { static const R* val(void) { return L"%lc"   ; } };
-template <typename R> struct printf_format<short  , R> { static const R* val(void) { return L"%d"    ; } };
-template <typename R> struct printf_format<ushort , R> { static const R* val(void) { return L"%u"    ; } };
-template <typename R> struct printf_format<int    , R> { static const R* val(void) { return L"%d"    ; } };
-template <typename R> struct printf_format<uint   , R> { static const R* val(void) { return L"%u"    ; } };
-template <typename R> struct printf_format<long   , R> { static const R* val(void) { return L"%ld"   ; } };
-template <typename R> struct printf_format<ulong  , R> { static const R* val(void) { return L"%lu"   ; } };
-template <typename R> struct printf_format<llong  , R> { static const R* val(void) { return L"%lld"  ; } };
-template <typename R> struct printf_format<ullong , R> { static const R* val(void) { return L"%llu"  ; } };
-template <typename R> struct printf_format<float  , R> { static const R* val(void) { return L"%.6g"  ; } };
-template <typename R> struct printf_format<double , R> { static const R* val(void) { return L"%.15g" ; } };
-template <typename R> struct printf_format<ldouble, R> { static const R* val(void) { return L"%.17Lg"; } };
-template <typename R> struct printf_format<pchar  , R> { static const R* val(void) { return L"%s"    ; } };
-template <typename R> struct printf_format<pwchar , R> { static const R* val(void) { return L"%ls"   ; } };
-template <typename R> struct printf_format<pvoid  , R> { static const R* val(void) { return L"%p"    ; } };
+template <typename R> struct printf_format<char   , R> { static const R* val(void) { return L"%c"  ; } };
+template <typename R> struct printf_format<uchar  , R> { static const R* val(void) { return L"%c"  ; } };
+template <typename R> struct printf_format<wchar  , R> { static const R* val(void) { return L"%lc" ; } };
+template <typename R> struct printf_format<short  , R> { static const R* val(void) { return L"%d"  ; } };
+template <typename R> struct printf_format<ushort , R> { static const R* val(void) { return L"%u"  ; } };
+template <typename R> struct printf_format<int    , R> { static const R* val(void) { return L"%d"  ; } };
+template <typename R> struct printf_format<uint   , R> { static const R* val(void) { return L"%u"  ; } };
+template <typename R> struct printf_format<long   , R> { static const R* val(void) { return L"%ld" ; } };
+template <typename R> struct printf_format<ulong  , R> { static const R* val(void) { return L"%lu" ; } };
+template <typename R> struct printf_format<llong  , R> { static const R* val(void) { return L"%lld"; } };
+template <typename R> struct printf_format<ullong , R> { static const R* val(void) { return L"%llu"; } };
+template <typename R> struct printf_format<float  , R> { static const R* val(void) { return L"%f"  ; } };
+template <typename R> struct printf_format<double , R> { static const R* val(void) { return L"%g"  ; } };
+template <typename R> struct printf_format<ldouble, R> { static const R* val(void) { return L"%Lg" ; } };
+template <typename R> struct printf_format<pchar  , R> { static const R* val(void) { return L"%s"  ; } };
+template <typename R> struct printf_format<pwchar , R> { static const R* val(void) { return L"%ls" ; } };
+template <typename R> struct printf_format<pvoid  , R> { static const R* val(void) { return L"%p"  ; } };
 
 /*
     number transform
