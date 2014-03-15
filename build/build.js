@@ -162,6 +162,7 @@ else
         'nixycore/thread/async.h' \
         'nixycore/thread/thread.h' \
         'nixycore/string/transform.h' \
+        'nixycore/string/format.h' \
         'nixycore/string/stringops_define.hxx' \
         'nixycore/string/stringdetail.h' \
         'nixycore/string/string.h'"

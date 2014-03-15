@@ -8,6 +8,7 @@
 #pragma once
 
 #include "nixycore/string/transform.h"
+#include "nixycore/string/format.h"
 
 #include "nixycore/memory/alloc.h"
 #include "nixycore/utility/rvalue.h"
@@ -30,9 +31,9 @@ NX_BEG
 namespace private_string
 {
     typedef std::basic_string<char, std::char_traits<char>,
-            NX_DEFAULT_ALLOC::std_allocator<char>::type_t>    a_base_t;
-    typedef std::basic_string<wchar_t, std::char_traits<wchar_t>,
-            NX_DEFAULT_ALLOC::std_allocator<wchar_t>::type_t> w_base_t;
+            NX_DEFAULT_ALLOC::std_allocator<char>::type_t>  a_base_t;
+    typedef std::basic_string<wchar, std::char_traits<wchar>,
+            NX_DEFAULT_ALLOC::std_allocator<wchar>::type_t> w_base_t;
 }
 
 /*

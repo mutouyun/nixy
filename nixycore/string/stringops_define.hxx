@@ -281,29 +281,6 @@ bool is_upper(void) const
 }
 
 /*
-    format string for printf
-*/
-
-template <typename T, typename = value_type> struct printf_format;
-template <typename R> struct printf_format<char   , R> { static const R* val(void) { return L"%c"  ; } };
-template <typename R> struct printf_format<uchar  , R> { static const R* val(void) { return L"%c"  ; } };
-template <typename R> struct printf_format<wchar  , R> { static const R* val(void) { return L"%lc" ; } };
-template <typename R> struct printf_format<short  , R> { static const R* val(void) { return L"%d"  ; } };
-template <typename R> struct printf_format<ushort , R> { static const R* val(void) { return L"%u"  ; } };
-template <typename R> struct printf_format<int    , R> { static const R* val(void) { return L"%d"  ; } };
-template <typename R> struct printf_format<uint   , R> { static const R* val(void) { return L"%u"  ; } };
-template <typename R> struct printf_format<long   , R> { static const R* val(void) { return L"%ld" ; } };
-template <typename R> struct printf_format<ulong  , R> { static const R* val(void) { return L"%lu" ; } };
-template <typename R> struct printf_format<llong  , R> { static const R* val(void) { return L"%lld"; } };
-template <typename R> struct printf_format<ullong , R> { static const R* val(void) { return L"%llu"; } };
-template <typename R> struct printf_format<float  , R> { static const R* val(void) { return L"%f"  ; } };
-template <typename R> struct printf_format<double , R> { static const R* val(void) { return L"%g"  ; } };
-template <typename R> struct printf_format<ldouble, R> { static const R* val(void) { return L"%Lg" ; } };
-template <typename R> struct printf_format<pchar  , R> { static const R* val(void) { return L"%s"  ; } };
-template <typename R> struct printf_format<pwchar , R> { static const R* val(void) { return L"%ls" ; } };
-template <typename R> struct printf_format<pvoid  , R> { static const R* val(void) { return L"%p"  ; } };
-
-/*
     number transform
 */
 
@@ -314,7 +291,7 @@ typename enable_if<nx::is_integral<T>::value,
 string&>::type_t from_number(T num)
 {
     value_type buf[sizeof(num) * 3] = {0};
-    if (NX_SWPRINTF_(buf, printf_format<T>::val(), num) <= 0) return (*this);
+    if (NX_SWPRINTF_(buf, format<T, value_type>::val(), num) <= 0) return (*this);
     return assign(buf);
 }
 
@@ -323,7 +300,7 @@ typename enable_if<nx::is_float<T>::value,
 string&>::type_t from_number(T num)
 {
     value_type buf[sizeof(num) * 6] = {0};
-    if (NX_SWPRINTF_(buf, printf_format<T>::val(), num) <= 0) return (*this);
+    if (NX_SWPRINTF_(buf, format<T, value_type>::val(), num) <= 0) return (*this);
     return assign(buf);
 }
 
@@ -332,7 +309,7 @@ typename enable_if<nx::is_integral<T>::value,
 T>::type_t to_number(void) const
 {
     T ret = 0;
-    if (NX_SWSCANF_(c_str(), printf_format<T>::val(), &ret) <= 0) return 0;
+    if (NX_SWSCANF_(c_str(), format<T, value_type>::val(), &ret) <= 0) return 0;
     return ret;
 }
 
@@ -341,7 +318,7 @@ typename enable_if<nx::is_float<T>::value,
 T>::type_t to_number(void) const
 {
     T ret = 0;
-    if (NX_SWSCANF_(c_str(), printf_format<T>::val(), &ret) <= 0) return 0;
+    if (NX_SWSCANF_(c_str(), format<T, value_type>::val(), &ret) <= 0) return 0;
     return ret;
 }
 
