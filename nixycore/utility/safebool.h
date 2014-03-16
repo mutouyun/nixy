@@ -29,7 +29,7 @@ namespace private_safe_bool
 };
 
 template <typename T>
-class SafeBool : private_safe_bool::detail
+class safe_bool : private_safe_bool::detail
     // private or protected inheritance is very important here 
     // as it triggers the access control violation in main.
 {
@@ -40,7 +40,7 @@ public:
             &private_safe_bool::detail::this_type_does_not_support_comparisons : 0;
     }
 protected:
-    ~SafeBool() {}
+    ~safe_bool() {}
 };
 
 /*
@@ -48,7 +48,7 @@ protected:
 */
 
 template <typename T>
-bool operator==(const SafeBool<T>& lhs, bool b)
+bool operator==(const safe_bool<T>& lhs, bool b)
 {
     if (lhs)
         return b;
@@ -57,7 +57,7 @@ bool operator==(const SafeBool<T>& lhs, bool b)
 }
 
 template <typename T>
-bool operator!=(const SafeBool<T>& lhs, bool b)
+bool operator!=(const safe_bool<T>& lhs, bool b)
 {
     if (lhs)
         return (!b);
@@ -66,26 +66,26 @@ bool operator!=(const SafeBool<T>& lhs, bool b)
 }
 
 template <typename T>
-bool operator==(bool b, const SafeBool<T>& rhs)
+bool operator==(bool b, const safe_bool<T>& rhs)
 {
     return operator==(rhs, b);
 }
 
 template <typename T>
-bool operator!=(bool b, const SafeBool<T>& rhs)
+bool operator!=(bool b, const safe_bool<T>& rhs)
 {
     return operator!=(rhs, b);
 }
 
 template <typename T, typename U>
-bool operator==(const SafeBool<T>& lhs, const SafeBool<U>& /*rhs*/)
+bool operator==(const safe_bool<T>& lhs, const safe_bool<U>& /*rhs*/)
 {
     lhs.this_type_does_not_support_comparisons();
     return false;
 }
 
 template <typename T, typename U>
-bool operator!=(const SafeBool<T>& lhs, const SafeBool<U>& /*rhs*/)
+bool operator!=(const safe_bool<T>& lhs, const safe_bool<U>& /*rhs*/)
 {
     lhs.this_type_does_not_support_comparisons();
     return false;

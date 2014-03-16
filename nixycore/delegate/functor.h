@@ -209,8 +209,8 @@ namespace private_functor
 */
 
 template <typename Style_, typename Functor_, typename Invoker_>
-class functor_base : public SafeBool<functor_base<Style_, Functor_, Invoker_> >
-                   , public Unequal <Functor_>
+class functor_base : public safe_bool<functor_base<Style_, Functor_, Invoker_> >
+                   , public unequal<Functor_>
 {
 public:
     typedef Style_   style_type;

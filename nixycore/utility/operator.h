@@ -21,14 +21,14 @@ NX_BEG
 */
 
 template <typename T, typename Base_ = empty_t>
-struct Unequal : Base_
+struct unequal : Base_
 {
     // Need operator==
     friend bool operator!=(const T& x, const T& y) { return (!static_cast<bool>(x == y)); }
 };
 
 template <typename T, typename Base_ = empty_t>
-struct Alike : Base_
+struct alike : Base_
 {
     // Need operator<
     friend bool operator!=(const T& x, const T& y) { return (static_cast<bool>(x < y) && static_cast<bool>(y < x)); }
@@ -36,7 +36,7 @@ struct Alike : Base_
 };
 
 template <typename T, typename Base_ = empty_t>
-struct Comparable : Base_
+struct comparable : Base_
 {
     // Need operator<
     friend bool operator> (const T& x, const T& y) { return ( static_cast<bool>(y < x)); }
@@ -74,7 +74,7 @@ namespace private_operable
 }
 
 template <typename T, typename V = int, typename Base_ = empty_t>
-struct Operable : private_operable::detail<T, V, Base_>
+struct operable : private_operable::detail<T, V, Base_>
 {
     /*
         Must be the end of the nx_operator's parameters, 
@@ -91,13 +91,13 @@ struct Operable : private_operable::detail<T, V, Base_>
 /*
     nx_operator macro
 
-    nx_operator(T, nx::Unequal, nx::Comparable, nx::Operable)
+    nx_operator(T, nx::unequal, nx::comparable, nx::operable)
     -->
-    nx::Unequal<T, nx::Comparable<T, nx::Operable<T > > >
+    nx::unequal<T, nx::comparable<T, nx::operable<T > > >
 
-    nx_operatorex(T, double, nx::Unequal, nx::Comparable, nx::Operable)
+    nx_operatorex(T, double, nx::unequal, nx::comparable, nx::operable)
     -->
-    nx::Unequal<T, nx::Comparable<T, nx::Operable<T, double > > >
+    nx::unequal<T, nx::comparable<T, nx::operable<T, double > > >
 */
 
 #define NX_OPERATOR_1(data, ...)        NX_PP_A2(data)<NX_PP_A1(data), __VA_ARGS__ >

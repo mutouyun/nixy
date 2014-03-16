@@ -23,7 +23,7 @@ NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
 template <class Alloc_ = NX_DEFAULT_ALLOC, class Model_ = NX_DEFAULT_THREAD_MODEL>
-class RefBase : nx_operator(typename NX_SHIELD(RefBase<Alloc_, Model_>), Unequal)
+class ref_base : nx_operator(typename NX_SHIELD(ref_base<Alloc_, Model_>), unequal)
 {
 public:
     typedef typename Model_::template atomic<ulong>::type_t ref_t;
@@ -33,12 +33,12 @@ protected:
     scope_guard* guard_;
 
 public:
-    RefBase(void)
+    ref_base(void)
         : ref_(nx::nulptr), guard_(nx::nulptr)
     {}
 
 public:
-    friend bool operator==(const RefBase& r1, const RefBase& r2)
+    friend bool operator==(const ref_base& r1, const ref_base& r2)
     {
         return (r1.ref_ == r2.ref_);
     }
@@ -52,14 +52,14 @@ public:
         nx_assert(guard_);
     }
 
-    bool set(const RefBase& r)
+    bool set(const ref_base& r)
     {
         if ((*this) == r) return true;
         dec();
         return inc(r);
     }
 
-    bool inc(const RefBase& r)
+    bool inc(const ref_base& r)
     {
         ref_ = r.ref_;
         if (!ref_) return false;
@@ -85,7 +85,7 @@ public:
         return (ref_ ? (*ref_) : 0);
     }
 
-    void swap(RefBase& rhs)
+    void swap(ref_base& rhs)
     {
         nx::swap(ref_  , rhs.ref_);
         nx::swap(guard_, rhs.guard_);
@@ -97,28 +97,28 @@ public:
 */
 
 template <typename P>
-class RefCounter : public P
+class ref_counter : public P
 {
 public:
-    RefCounter(void) {}
+    ref_counter(void) {}
 
     template <typename T>
-    RefCounter(const T& r)
+    ref_counter(const T& r)
     {
         P::set(r);
     }
 
     template <typename T, typename F>
-    RefCounter(const T& r, const F& f)
+    ref_counter(const T& r, const F& f)
     {
         P::set(r, f);
     }
 
-    ~RefCounter() { P::dec(); }
+    ~ref_counter() { P::dec(); }
 
 public:
     template <typename T>
-    RefCounter& operator=(const T& r)
+    ref_counter& operator=(const T& r)
     {
         P::set(r);
         return (*this);

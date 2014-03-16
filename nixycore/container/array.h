@@ -22,7 +22,7 @@ NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
 template <typename T, size_t N>
-class array : nx_operator(typename NX_SHIELD(array<T, N>), Unequal, Comparable)
+class array : nx_operator(typename NX_SHIELD(array<T, N>), unequal, comparable)
 {
 public:
     // type definitions

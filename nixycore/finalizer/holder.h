@@ -21,9 +21,9 @@ NX_BEG
 namespace private_holder
 {
     template <typename T, class P, class Alloc_, class Model_>
-    class detail : public RefBase<Alloc_, Model_>, public P
+    class detail : public ref_base<Alloc_, Model_>, public P
     {
-        typedef RefBase<Alloc_, Model_> base_t;
+        typedef ref_base<Alloc_, Model_> base_t;
 
     public:
         typedef T      type_t;
@@ -86,10 +86,10 @@ namespace private_holder
 
 template <typename T, class P, class Alloc_ = NX_DEFAULT_ALLOC, class Model_ = NX_DEFAULT_THREAD_MODEL>
 class holder
-    : public RefCounter<private_holder::detail<T, P, Alloc_, Model_> >
-    , public SafeBool<holder<T, P, Alloc_, Model_> >
+    : public ref_counter<private_holder::detail<T, P, Alloc_, Model_> >
+    , public safe_bool<holder<T, P, Alloc_, Model_> >
 {
-    typedef RefCounter<private_holder::detail<T, P, Alloc_, Model_> > base_t;
+    typedef ref_counter<private_holder::detail<T, P, Alloc_, Model_> > base_t;
 
 public:
     holder(void)

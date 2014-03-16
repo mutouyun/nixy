@@ -25,7 +25,7 @@ namespace private_valid
     class detail;
 
     template <typename T>
-    class detail<T, true> : public SafeBool<detail<T, true> >
+    class detail<T, true> : public safe_bool<detail<T, true> >
     {
     public:
         typedef typename rm_const<
@@ -61,7 +61,7 @@ namespace private_valid
     };
 
     template <typename T>
-    class detail<T, false> : public SafeBool<detail<T, false> >
+    class detail<T, false> : public safe_bool<detail<T, false> >
     {
     public:
         typedef typename rm_const<T>::type_t type_t;

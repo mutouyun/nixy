@@ -15,7 +15,7 @@ NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
 template <typename Model_>
-struct iterator : public Model_, nx_operator(iterator<Model_>, Operable)
+struct iterator : public Model_, nx_operator(iterator<Model_>, operable)
 {
     typedef typename Model_::type_t type_t;
 

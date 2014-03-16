@@ -35,8 +35,8 @@ void testOperator(void)
 {
     TEST_CASE();
 
-    strout << NX_PP_STR(nx_operator(T, nx::Unequal, nx::Comparable, nx::Operable)) << endl;
-    strout << NX_PP_STR(nx_operatorex(T, double, nx::Unequal, nx::Comparable, nx::Operable)) << endl;
+    strout << NX_PP_STR(nx_operator(T, nx::unequal, nx::comparable, nx::operable)) << endl;
+    strout << NX_PP_STR(nx_operatorex(T, double, nx::unequal, nx::comparable, nx::operable)) << endl;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -159,7 +159,7 @@ void testLimitOf(void)
 
 namespace test_safe_bool
 {
-    class TestBool : public nx::SafeBool<TestBool>
+    class TestBool : public nx::safe_bool<TestBool>
     {
     public:
         bool checkSafeBool(void) const
