@@ -9,7 +9,7 @@
 
 #include "nixycore/algorithm/container.h"
 
-#include "nixycore/stream/streambase.h"
+#include "nixycore/stream/streamwrap.h"
 #include "nixycore/typemanip/typetools.h"
 
 #include "nixycore/general/general.h"
@@ -96,9 +96,9 @@ namespace private_assign
     };
 
     template <typename T>
-    struct detail : stream_base<typename policy_type<T>::type_t>
+    struct detail : stream_wrap<typename policy_type<T>::type_t>
     {
-        typedef stream_base<typename policy_type<T>::type_t> base_t;
+        typedef stream_wrap<typename policy_type<T>::type_t> base_t;
 
         const detail& operator()(T& set)
         {

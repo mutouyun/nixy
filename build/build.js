@@ -165,7 +165,7 @@ else
         'nixycore/string/stringops_define.hxx' \
         'nixycore/string/stringdetail.h' \
         'nixycore/string/string.h' \
-        'nixycore/pattern/streambase.h' \
+        'nixycore/pattern/streamwrap.h' \
         'nixycore/pattern/stream.h'"
 }
 /* project test */
