@@ -97,7 +97,6 @@ else
         'nixycore/algorithm/assign.h' \
         'nixycore/algorithm/series.h' \
         'nixycore/algorithm/algorithm.h' \
-        'nixycore/pattern/stream.h' \
         'nixycore/pattern/prototype.h' \
         'nixycore/pattern/singleton.h' \
         'nixycore/pattern/iterator.h' \
@@ -165,7 +164,9 @@ else
         'nixycore/string/format.h' \
         'nixycore/string/stringops_define.hxx' \
         'nixycore/string/stringdetail.h' \
-        'nixycore/string/string.h'"
+        'nixycore/string/string.h' \
+        'nixycore/pattern/streambase.h' \
+        'nixycore/pattern/stream.h'"
 }
 /* project test */
 {

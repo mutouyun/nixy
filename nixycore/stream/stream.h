@@ -9,9 +9,6 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "nixycore/pattern/prototype.h"
-#include "nixycore/pattern/singleton.h"
-#include "nixycore/pattern/iterator.h"
-#include "nixycore/pattern/trackable.h"
+#include "nixycore/stream/streambase.h"
 
 //////////////////////////////////////////////////////////////////////////
