@@ -16,6 +16,7 @@
     - Nixy的核心部分, 基于泛型思想搭建的C++库
     - 目标: 代码轻巧,功能灵活,使用方便
 
+    > stream	           ...working     - 输入输出流，包括简单的format功能
     > string	           ...working     - 字符串相关，包括字符编码处理、字符串存储等
     > container            ...done        - 各种泛型容器
     > delegate	           ...done        - 委托，包括泛化仿函数、绑定器等
