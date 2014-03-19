@@ -44,6 +44,17 @@ struct is_void
 {};
 
 /*
+    detect character
+*/
+
+typedef types<char, uchar, wchar>::type_t character_types_t;
+
+template <typename T>
+struct is_character
+    : types_exist<character_types_t, typename rm_cv<T>::type_t>
+{};
+
+/*
     detect integral
 */
 
