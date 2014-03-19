@@ -9,6 +9,9 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "nixycore/stream/streambase.h"
+#include "nixycore/stream/printf_format.h"
+#include "nixycore/stream/stream_wrap.h"
+#include "nixycore/stream/stream_buffer.h"
+#include "nixycore/stream/stream_detail.h"
 
 //////////////////////////////////////////////////////////////////////////

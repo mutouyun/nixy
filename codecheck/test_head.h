@@ -40,6 +40,7 @@ using std::endl;
 #include "test_memory.h"
 #include "test_finalizer.h"
 #include "test_string.h"
+#include "test_stream.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -54,7 +55,8 @@ void testAll(void)
     //testFinalizer();
     //testThread();
     //testMemory();
-    testString();
+    //testString();
+    testStream();
 
     TEST_FUNCTION(<< "Finished ");
 }

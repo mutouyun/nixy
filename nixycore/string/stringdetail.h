@@ -8,7 +8,6 @@
 #pragma once
 
 #include "nixycore/string/transform.h"
-#include "nixycore/string/format.h"
 
 #include "nixycore/memory/alloc.h"
 #include "nixycore/utility/rvalue.h"
@@ -141,12 +140,6 @@ public:
         assignment
     */
 
-    string& assign(string rhs)
-    {
-        rhs.swap(*this);
-        return (*this);
-    }
-
     string& operator =(string rhs)
     {
         rhs.swap(*this);
@@ -241,9 +234,9 @@ public:
     {
         size_t n = transform::local_to_utf(str);
         if (n == 0) return (*this);
-        base_t::resize(n);
-        transform::local_to_utf(str, const_cast<value_type*>(base_t::data()), n);
-        base_t::resize(n - 1);
+        resize(n);
+        transform::local_to_utf(str, const_cast<value_type*>(data()), n);
+        resize(n - 1);
         return (*this);
     }
 
@@ -275,6 +268,20 @@ public:
     }
 
     /*
+        for stream
+    */
+
+    friend void operator<<(string& buf, string& val) // out
+    {
+        buf.append(val);
+    }
+
+    friend void operator>>(string& buf, string& val) // in
+    {
+        buf.swap(val);
+    }
+
+    /*
         others
     */
 
@@ -296,9 +303,11 @@ public:
 
 public:
     using base_t::npos;
+    using base_t::resize;
     using base_t::length;
     using base_t::empty;
     using base_t::clear;
+    using base_t::assign;
     using base_t::append;
     using base_t::insert;
     using base_t::erase;
@@ -311,6 +320,8 @@ public:
     using base_t::end;
     using base_t::rbegin;
     using base_t::rend;
+    using base_t::push_back;
+    using base_t::data;
     using base_t::c_str;
     using base_t::at;
     using base_t::operator [];

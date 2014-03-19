@@ -70,10 +70,6 @@ void testStringDetail(void)
     nx::vector<nx::string> arr = str.split();
     nx_foreach(s, arr)
         strout << s.to_local().c_str() << endl;
-
-    strout << endl << "number transform ->:" << endl;
-    strout << nx::string(L"-0009876").to_number<long>() << endl;
-    strout << nx::string().from_number<double>(314159265857.314159265857).to_local().c_str() << endl;
 }
 
 //////////////////////////////////////////////////////////////////////////

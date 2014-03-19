@@ -57,7 +57,7 @@ else
         'nixycore/al/thread/threadops_linux.hxx' \
         'nixycore/al/thread/threadops_win.hxx' \
         'nixycore/al/string/transform.hxx' \
-        'nixycore/al/string/stringops.hxx' \
+        'nixycore/al/stream/swprintf.hxx' \
         'nixycore/general/general.h' \
         'nixycore/preprocessor/ppmacros.h' \
         'nixycore/preprocessor/ppcount.h' \
@@ -161,12 +161,16 @@ else
         'nixycore/thread/async.h' \
         'nixycore/thread/thread.h' \
         'nixycore/string/transform.h' \
-        'nixycore/string/format.h' \
         'nixycore/string/stringops_define.hxx' \
         'nixycore/string/stringdetail.h' \
         'nixycore/string/string.h' \
-        'nixycore/pattern/streamwrap.h' \
-        'nixycore/pattern/stream.h'"
+        'nixycore/stream/printf_format.h' \
+        'nixycore/stream/stream_wrap.h' \
+        'nixycore/stream/stream_buffer_out.hxx' \
+        'nixycore/stream/stream_buffer_in.hxx' \
+        'nixycore/stream/stream_buffer.h' \
+        'nixycore/stream/stream_detail.h' \
+        'nixycore/stream/stream.h'"
 }
 /* project test */
 {
@@ -187,7 +191,8 @@ else
         'codecheck/test_finalizer.h' \
         'codecheck/test_thread.h' \
         'codecheck/test_memory.h' \
-        'codecheck/test_string.h'"
+        'codecheck/test_string.h' \
+        'codecheck/test_stream.h'"
     prj.sources = "\
         'codecheck/main.cpp' \
         'codecheck/dummy.cpp'"

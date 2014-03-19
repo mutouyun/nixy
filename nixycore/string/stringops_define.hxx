@@ -14,10 +14,15 @@
     split string to a vector
 */
 
+static bool default_check(value_type c)
+{
+    return (c == ' ' || c == '\n' || c == '\t' || c == '\r');
+}
+
 static bool split_check(const_iterator i, const_iterator* t)                    // default check
 {
     if (t) (*t) = i + 1;
-    return (*i == ' ' || *i == '\n' || *i == '\t' || *i == '\r');
+    return default_check(*i);
 }
 
 static bool split_check(const_iterator i, const_iterator* t, value_type sep)    // check with separator
@@ -41,7 +46,7 @@ rvalue<vector<string>, true> split(const functor<bool(const_iterator, const_iter
     {
         const_iterator t;
         if (!do_check(i, &t)) continue;
-        if (t != end() && do_check(t, 0)) continue;
+        if (t != end() && do_check(t, nx::nulptr)) continue;
         v.push_back(string(last, i));
         last = t;
         if (v.size() >= limit - 1)
@@ -278,48 +283,6 @@ bool is_upper(void) const
         if (*i < 'A' || *i > 'Z')
             return false;
     return true;
-}
-
-/*
-    number transform
-*/
-
-#include "nixycore/al/string/stringops.hxx"
-
-template <typename T>
-typename enable_if<nx::is_integral<T>::value,
-string&>::type_t from_number(T num)
-{
-    value_type buf[sizeof(num) * 3] = {0};
-    if (NX_SWPRINTF_(buf, format<T, value_type>::val(), num) <= 0) return (*this);
-    return assign(buf);
-}
-
-template <typename T>
-typename enable_if<nx::is_float<T>::value,
-string&>::type_t from_number(T num)
-{
-    value_type buf[sizeof(num) * 6] = {0};
-    if (NX_SWPRINTF_(buf, format<T, value_type>::val(), num) <= 0) return (*this);
-    return assign(buf);
-}
-
-template <typename T>
-typename enable_if<nx::is_integral<T>::value,
-T>::type_t to_number(void) const
-{
-    T ret = 0;
-    if (NX_SWSCANF_(c_str(), format<T, value_type>::val(), &ret) <= 0) return 0;
-    return ret;
-}
-
-template <typename T>
-typename enable_if<nx::is_float<T>::value,
-T>::type_t to_number(void) const
-{
-    T ret = 0;
-    if (NX_SWSCANF_(c_str(), format<T, value_type>::val(), &ret) <= 0) return 0;
-    return ret;
 }
 
 //////////////////////////////////////////////////////////////////////////

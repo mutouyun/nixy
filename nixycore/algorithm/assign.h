@@ -9,7 +9,7 @@
 
 #include "nixycore/algorithm/container.h"
 
-#include "nixycore/stream/streamwrap.h"
+#include "nixycore/stream/stream_wrap.h"
 #include "nixycore/typemanip/typetools.h"
 
 #include "nixycore/general/general.h"
