@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "nixycore/thread/threaddetail.h"
-#include "nixycore/thread/blockingqueue.h"
-#include "nixycore/thread/lockguard.h"
+#include "nixycore/thread/thread_detail.h"
+#include "nixycore/thread/blocking_queue.h"
+#include "nixycore/thread/lock_guard.h"
 #include "nixycore/thread/mutex.h"
 #include "nixycore/thread/atomic.h"
 #include "nixycore/thread/condition.h"

@@ -8,9 +8,9 @@
 #pragma once
 
 #include "nixycore/memory/alloc.h"
-#include "nixycore/memory/memguard.h"
+#include "nixycore/memory/mem_guard.h"
 
-#include "nixycore/thread/threadmodel.h"
+#include "nixycore/thread/thread_model.h"
 #include "nixycore/finalizer/holder.h"
 
 #include "nixycore/general/general.h"

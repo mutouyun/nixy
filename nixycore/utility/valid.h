@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "nixycore/utility/safebool.h"
+#include "nixycore/utility/safe_bool.h"
 #include "nixycore/utility/refer.h"
 #include "nixycore/utility/final.h"
 

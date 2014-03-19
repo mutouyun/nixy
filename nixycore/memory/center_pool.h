@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include "nixycore/memory/fixedpool.h"
+#include "nixycore/memory/fixed_pool.h"
 
 #include "nixycore/bugfix/assert.h"
-#include "nixycore/thread/threadmodel.h"
+#include "nixycore/thread/thread_model.h"
 #include "nixycore/pattern/singleton.h"
 
 #include "nixycore/general/general.h"

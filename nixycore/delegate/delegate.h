@@ -9,7 +9,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "nixycore/delegate/functiontraits.h"
+#include "nixycore/delegate/function_traits.h"
 #include "nixycore/delegate/functor.h"
 #include "nixycore/delegate/bind.h"
 #include "nixycore/delegate/signal.h"

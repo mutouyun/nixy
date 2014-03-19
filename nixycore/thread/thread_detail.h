@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "nixycore/thread/blockingqueue.h"
+#include "nixycore/thread/blocking_queue.h"
 #include "nixycore/thread/mutex.h"
 
 #include "nixycore/delegate/functor.h"
@@ -28,7 +28,7 @@ NX_BEG
 class thread : noncopyable
 {
 public:
-#   include "nixycore/thread/threadops_define.hxx"
+#   include "nixycore/thread/thread_ops_define.hxx"
 
 public:
     typedef functor<void()> task_t;

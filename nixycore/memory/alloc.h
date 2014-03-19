@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "nixycore/memory/stdalloc.h"
-#include "nixycore/memory/memalloc.h"
+#include "nixycore/memory/std_alloc.h"
+#include "nixycore/memory/mem_alloc.h"
 
 #include "nixycore/general/general.h"
 #include "nixycore/preprocessor/preprocessor.h"

@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "nixycore/memory/stdalloc.h"
-#include "nixycore/memory/fixedpool.h"
-#include "nixycore/memory/centerpool.h"
+#include "nixycore/memory/std_alloc.h"
+#include "nixycore/memory/fixed_pool.h"
+#include "nixycore/memory/center_pool.h"
 
 #include "nixycore/bugfix/assert.h"
 

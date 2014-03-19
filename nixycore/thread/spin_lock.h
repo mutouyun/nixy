@@ -8,7 +8,7 @@
 #pragma once
 
 #include "nixycore/thread/atomic.h"
-#include "nixycore/thread/threadops.h"
+#include "nixycore/thread/thread_ops.h"
 
 #include "nixycore/bugfix/assert.h"
 

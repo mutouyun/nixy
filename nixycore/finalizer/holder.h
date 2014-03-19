@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "nixycore/finalizer/refcounter.h"
+#include "nixycore/finalizer/ref_counter.h"
 
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"

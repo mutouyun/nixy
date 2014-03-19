@@ -8,7 +8,7 @@
 #pragma once
 
 #include "nixycore/general/general.h"
-#include "nixycore/preprocessor/ppmacros.h"
+#include "nixycore/preprocessor/pp_macros.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

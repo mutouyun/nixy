@@ -10,15 +10,15 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "nixycore/memory/construct.h"
-#include "nixycore/memory/stdalloc.h"
-#include "nixycore/memory/fixedpool.h"
-#include "nixycore/memory/centerpool.h"
-#include "nixycore/memory/mempool.h"
-#include "nixycore/memory/memalloc.h"
+#include "nixycore/memory/std_alloc.h"
+#include "nixycore/memory/fixed_pool.h"
+#include "nixycore/memory/center_pool.h"
+#include "nixycore/memory/mem_pool.h"
+#include "nixycore/memory/mem_alloc.h"
 #include "nixycore/memory/alloc.h"
-#include "nixycore/memory/unfixedpool.h"
-#include "nixycore/memory/objectpool.h"
-#include "nixycore/memory/memguard.h"
+#include "nixycore/memory/unfixed_pool.h"
+#include "nixycore/memory/object_pool.h"
+#include "nixycore/memory/mem_guard.h"
 #include "nixycore/memory/pointer.h"
 
 //////////////////////////////////////////////////////////////////////////

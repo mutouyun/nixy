@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "nixycore/memory/fixedpool.h"
+#include "nixycore/memory/fixed_pool.h"
 #include "nixycore/memory/construct.h"
 
 #include "nixycore/delegate/functor.h"

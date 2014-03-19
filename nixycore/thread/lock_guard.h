@@ -8,7 +8,7 @@
 #pragma once
 
 #include "nixycore/pattern/singleton.h"
-#include "nixycore/finalizer/scopeguard.h"
+#include "nixycore/finalizer/scope_guard.h"
 #include "nixycore/delegate/bind.h"
 
 #include "nixycore/general/general.h"

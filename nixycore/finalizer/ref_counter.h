@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include "nixycore/finalizer/scopeguard.h"
+#include "nixycore/finalizer/scope_guard.h"
 
 #include "nixycore/memory/alloc.h"
-#include "nixycore/thread/threadmodel.h"
+#include "nixycore/thread/thread_model.h"
 #include "nixycore/bugfix/assert.h"
 
 #include "nixycore/general/general.h"

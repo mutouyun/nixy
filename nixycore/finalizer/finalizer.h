@@ -9,8 +9,8 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "nixycore/finalizer/scopeguard.h"
-#include "nixycore/finalizer/refcounter.h"
+#include "nixycore/finalizer/scope_guard.h"
+#include "nixycore/finalizer/ref_counter.h"
 #include "nixycore/finalizer/holder.h"
 #include "nixycore/finalizer/gc.h"
 

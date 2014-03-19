@@ -8,7 +8,7 @@
 #pragma once
 
 // NX_PP_COUNT
-#include "nixycore/preprocessor/ppcount.h"
+#include "nixycore/preprocessor/pp_count.h"
 
 //////////////////////////////////////////////////////////////////////////
 

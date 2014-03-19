@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include "nixycore/memory/stdalloc.h"
-#include "nixycore/memory/mempool.h"
+#include "nixycore/memory/std_alloc.h"
+#include "nixycore/memory/mem_pool.h"
 
-#include "nixycore/thread/tlsptr.h"
+#include "nixycore/thread/tls_ptr.h"
 #include "nixycore/pattern/singleton.h"
 
 #include "nixycore/general/general.h"
@@ -48,7 +48,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 
-namespace private_memalloc
+namespace private_mem_alloc
 {
     typedef mem_pool<> tls_pool;
 
@@ -66,17 +66,17 @@ struct pool_alloc_model
 {
     static pvoid alloc(size_t size)
     {
-        return private_memalloc::create_pool().alloc(size);
+        return private_mem_alloc::create_pool().alloc(size);
     }
 
     static void free(pvoid p)
     {
-        private_memalloc::create_pool().free(p);
+        private_mem_alloc::create_pool().free(p);
     }
 
     static pvoid realloc(pvoid p, size_t size)
     {
-        return private_memalloc::create_pool().realloc(p, size);
+        return private_mem_alloc::create_pool().realloc(p, size);
     }
 };
 

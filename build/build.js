@@ -28,7 +28,7 @@ else
     var prj = Projects.create("nixycore")
     prj.type = "lib"
     prj.heads = "\
-        'nixycore/al/general/platdetect.hxx' \
+        'nixycore/al/general/plat_detect.hxx' \
         'nixycore/al/general/global_functions.hxx' \
         'nixycore/al/general/disable_warnings.hxx' \
         'nixycore/al/typemanip/private_is_pod.hxx' \
@@ -59,12 +59,12 @@ else
         'nixycore/al/string/transform.hxx' \
         'nixycore/al/stream/swprintf.hxx' \
         'nixycore/general/general.h' \
-        'nixycore/preprocessor/ppmacros.h' \
-        'nixycore/preprocessor/ppcount.h' \
-        'nixycore/preprocessor/pparg.h' \
-        'nixycore/preprocessor/pprepeat.h' \
-        'nixycore/preprocessor/ppnest.h' \
-        'nixycore/preprocessor/ppmult.h' \
+        'nixycore/preprocessor/pp_macros.h' \
+        'nixycore/preprocessor/pp_count.h' \
+        'nixycore/preprocessor/pp_arg.h' \
+        'nixycore/preprocessor/pp_repeat.h' \
+        'nixycore/preprocessor/pp_nest.h' \
+        'nixycore/preprocessor/pp_mult.h' \
         'nixycore/preprocessor/preprocessor.h' \
         'nixycore/typemanip/typedefs.h' \
         'nixycore/typemanip/typetools.h' \
@@ -78,15 +78,15 @@ else
         'nixycore/typemanip/typeof.h' \
         'nixycore/typemanip/typemanip.h' \
         'nixycore/utility/addressof.h' \
-        'nixycore/utility/typecast.h' \
+        'nixycore/utility/type_cast.h' \
         'nixycore/utility/countof.h' \
         'nixycore/utility/operator.h' \
         'nixycore/utility/noncopyable.h' \
         'nixycore/utility/final.h' \
         'nixycore/utility/initialize.h' \
-        'nixycore/utility/maxmin.h' \
-        'nixycore/utility/limitof.h' \
-        'nixycore/utility/safebool.h' \
+        'nixycore/utility/max_min.h' \
+        'nixycore/utility/limit_of.h' \
+        'nixycore/utility/safe_bool.h' \
         'nixycore/utility/refer.h' \
         'nixycore/utility/rvalue.h' \
         'nixycore/utility/valid.h' \
@@ -105,31 +105,31 @@ else
         'nixycore/time/tickcount.h' \
         'nixycore/time/stopwatch.h' \
         'nixycore/time/time.h' \
-        'nixycore/random/randstd.h' \
-        'nixycore/random/randmt19937.h' \
+        'nixycore/random/rand_std.h' \
+        'nixycore/random/rand_mt19937.h' \
         'nixycore/random/random.h' \
-        'nixycore/delegate/functiontraits.h' \
+        'nixycore/delegate/function_traits.h' \
         'nixycore/delegate/functor.h' \
         'nixycore/delegate/bind.h' \
         'nixycore/delegate/delegate.h' \
         'nixycore/delegate/signal.h' \
         'nixycore/bugfix/assert.h' \
-        'nixycore/finalizer/scopeguard.h' \
-        'nixycore/finalizer/refcounter.h' \
+        'nixycore/finalizer/scope_guard.h' \
+        'nixycore/finalizer/ref_counter.h' \
         'nixycore/finalizer/holder.h' \
         'nixycore/finalizer/gc.h' \
         'nixycore/finalizer/finalizer.h' \
         'nixycore/memory/construct.h' \
-        'nixycore/memory/stdalloc.h' \
-        'nixycore/memory/fixedpool.h' \
-        'nixycore/memory/centerpool.h' \
-        'nixycore/memory/mempool.h' \
-        'nixycore/memory/memalloc.h' \
+        'nixycore/memory/std_alloc.h' \
+        'nixycore/memory/fixed_pool.h' \
+        'nixycore/memory/center_pool.h' \
+        'nixycore/memory/mem_pool.h' \
+        'nixycore/memory/mem_alloc.h' \
         'nixycore/memory/alloc.h' \
-        'nixycore/memory/unfixedpool.h' \
-        'nixycore/memory/objectpool.h' \
+        'nixycore/memory/unfixed_pool.h' \
+        'nixycore/memory/object_pool.h' \
         'nixycore/memory/pointer.h' \
-        'nixycore/memory/memguard.h' \
+        'nixycore/memory/mem_guard.h' \
         'nixycore/memory/memory.h' \
         'nixycore/container/any.h' \
         'nixycore/container/array.h' \
@@ -145,24 +145,24 @@ else
         'nixycore/thread/barrier.h' \
         'nixycore/thread/interlocked.h' \
         'nixycore/thread/atomic.h' \
-        'nixycore/thread/spinlock.h' \
-        'nixycore/thread/lockguard.h' \
+        'nixycore/thread/spin_lock.h' \
+        'nixycore/thread/lock_guard.h' \
         'nixycore/thread/mutex.h' \
         'nixycore/thread/condition.h' \
         'nixycore/thread/semaphore.h' \
         'nixycore/thread/waiter.h' \
-        'nixycore/thread/blockingqueue.h' \
-        'nixycore/thread/tlsptr.h' \
-        'nixycore/thread/threadops.h' \
-        'nixycore/thread/threadmodel.h' \
-        'nixycore/thread/threadops_define.hxx' \
-        'nixycore/thread/threaddetail.h' \
-        'nixycore/thread/threadpool.h' \
+        'nixycore/thread/blocking_queue.h' \
+        'nixycore/thread/tls_ptr.h' \
+        'nixycore/thread/thread_ops.h' \
+        'nixycore/thread/thread_model.h' \
+        'nixycore/thread/thread_ops_define.hxx' \
+        'nixycore/thread/thread_detail.h' \
+        'nixycore/thread/thread_pool.h' \
         'nixycore/thread/async.h' \
         'nixycore/thread/thread.h' \
         'nixycore/string/transform.h' \
-        'nixycore/string/stringops_define.hxx' \
-        'nixycore/string/stringdetail.h' \
+        'nixycore/string/string_ops_define.hxx' \
+        'nixycore/string/string_detail.h' \
         'nixycore/string/string.h' \
         'nixycore/stream/printf_format.h' \
         'nixycore/stream/stream_wrap.h' \

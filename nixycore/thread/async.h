@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "nixycore/thread/lockguard.h"
+#include "nixycore/thread/lock_guard.h"
 #include "nixycore/thread/mutex.h"
-#include "nixycore/thread/threadpool.h"
+#include "nixycore/thread/thread_pool.h"
 
 #include "nixycore/pattern/singleton.h"
 

@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "nixycore/delegate/functiontraits.h"
+#include "nixycore/delegate/function_traits.h"
 #include "nixycore/delegate/functor.h"
 
 #include "nixycore/general/general.h"

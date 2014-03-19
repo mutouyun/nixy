@@ -33,7 +33,7 @@
 */
 
 // NX_OS, NX_CC, NDEBUG, ...
-#include "nixycore/al/general/platdetect.hxx"
+#include "nixycore/al/general/plat_detect.hxx"
 
 //////////////////////////////////////////////////////////////////////////
 

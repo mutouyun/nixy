@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "nixycore/memory/stdalloc.h"
+#include "nixycore/memory/std_alloc.h"
 
 #include "nixycore/bugfix/assert.h"
 #include "nixycore/pattern/iterator.h"

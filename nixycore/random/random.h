@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "nixycore/random/randstd.h"
-#include "nixycore/random/randmt19937.h"
+#include "nixycore/random/rand_std.h"
+#include "nixycore/random/rand_mt19937.h"
 
 #include "nixycore/time/tickcount.h"
 

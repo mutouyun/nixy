@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "nixycore/utility/maxmin.h"
+#include "nixycore/utility/max_min.h"
 
 #include "nixycore/typemanip/typetools.h"
 #include "nixycore/typemanip/typeconcept.h"

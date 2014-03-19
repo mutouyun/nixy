@@ -8,7 +8,7 @@
 #pragma once
 
 #include "nixycore/thread/atomic.h"
-#include "nixycore/thread/spinlock.h"
+#include "nixycore/thread/spin_lock.h"
 #include "nixycore/thread/mutex.h"
 
 #include "nixycore/general/general.h"
