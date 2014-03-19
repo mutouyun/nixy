@@ -49,6 +49,21 @@ namespace private_functor
         }
     };
 
+    template <typename T, bool = is_function<T>::value>
+    struct check_type;
+
+    template <typename T>
+    struct check_type<T, true>
+    {
+        typedef nx::true_t type_t;
+    };
+
+    template <typename T>
+    struct check_type<T, false>
+    {
+        typedef nx::false_t type_t;
+    };
+
     /*
         The invoker for call a function
     */
@@ -320,16 +335,14 @@ public:
 
 protected:
     template <typename Func_>
-    typename enable_if<is_function<Func_>::value
-    >::type_t assign_to(Func_ f)
+    void assign_to(Func_ f, nx::true_t)
     {
         handler_.fun_ptr = reinterpret_cast<void(*)()>(f);
         invoker_ = &private_functor::invoker<style_type, Func_>::invoke;
     }
 
     template <typename Func_>
-    typename enable_if<!is_function<Func_>::value
-    >::type_t assign_to(Func_ f)
+    void assign_to(Func_ f, nx::false_t)
     {
         std::memcpy(&(handler_.obj_ptr), &f, sizeof(pvoid)); // f may be not a pointer
         invoker_ = &private_functor::invoker<style_type, Func_>::invoke;
@@ -348,7 +361,7 @@ public:
     typename nx::enable_if<is_pointer<Func_>::value || (sizeof(Func_) <= sizeof(pvoid)),
     functor_type&>::type_t bind(Func_ f)
     {
-        assign_to(f);
+        assign_to(f, typename private_functor::check_type<Func_>::type_t());
         return (*reinterpret_cast<functor_type*>(this));
     }
 
@@ -356,7 +369,7 @@ public:
     typename nx::enable_if<!is_pointer<Func_>::value && (sizeof(Func_) > sizeof(pvoid)),
     functor_type&>::type_t bind(const Func_& f)
     {
-        assign_to(guard(f));
+        assign_to(guard(f), nx::false_t());
         return (*reinterpret_cast<functor_type*>(this));
     }
 
