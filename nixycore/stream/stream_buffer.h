@@ -60,8 +60,8 @@ public:
     }
 
 private:
-#   include "nixycore/stream/stream_buffer_out.hxx"
-#   include "nixycore/stream/stream_buffer_in.hxx"
+#   include "detail/stream_buffer_out.hxx"
+#   include "detail/stream_buffer_in.hxx"
 
 public:
     stream_buffer(void)

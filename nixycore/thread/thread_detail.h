@@ -28,7 +28,7 @@ NX_BEG
 class thread : noncopyable
 {
 public:
-#   include "nixycore/thread/thread_ops_define.hxx"
+#   include "detail/thread_ops_define.hxx"
 
 public:
     typedef functor<void()> task_t;

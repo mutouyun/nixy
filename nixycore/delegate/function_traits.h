@@ -75,7 +75,13 @@ namespace private_function_traits
 #undef NX_FUNC_TRAITS_
 #undef NX_FUNC_MEM_
 
-#include "nixycore/al/delegate/private_function_traits.hxx"
+#if !(defined(NX_OS_WINCE) && (NX_CC_MSVC <= 1400))
+
+    template <typename T>
+    struct detail<T*, false> : detail<nx_typeof(&T::operator())>
+    {};
+
+#endif
 }
 
 template <typename T>

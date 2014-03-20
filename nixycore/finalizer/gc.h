@@ -479,7 +479,7 @@ namespace private_gc
 }
 
 //////////////////////////////////////////////////////////////////////////
-#include "nixycore/al/general/disable_warnings.hxx"
+#include "nixycore/general/disable_warnings.h"
 
 /*
     Execute gc when the enclosing scope exits
@@ -521,7 +521,7 @@ public:
     }
 };
 
-#include "nixycore/al/general/disable_warnings.hxx"
+#include "nixycore/general/disable_warnings.h"
 //////////////////////////////////////////////////////////////////////////
 
 /*

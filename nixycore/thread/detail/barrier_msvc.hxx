@@ -7,7 +7,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "nixycore/al/thread/interlocked_def_msvc.hxx"
+#include "interlocked_def_msvc.hxx"
 
 #if defined(NX_OS_WINCE)
 #   define NX_CC_BARRIER()

@@ -30,7 +30,7 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-#include "nixycore/al/algorithm/std_algorithm.hxx"
+#include "detail/std_algorithm.hxx"
 
 /*
     Swap two variables

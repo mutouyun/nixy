@@ -28,36 +28,9 @@ else
     var prj = Projects.create("nixycore")
     prj.type = "lib"
     prj.heads = "\
-        'nixycore/al/general/plat_detect.hxx' \
-        'nixycore/al/general/global_functions.hxx' \
-        'nixycore/al/general/disable_warnings.hxx' \
-        'nixycore/al/typemanip/private_is_pod.hxx' \
-        'nixycore/al/typemanip/typeof.hxx' \
-        'nixycore/al/typemanip/typeof_msvc.hxx' \
-        'nixycore/al/algorithm/std_algorithm.hxx' \
-        'nixycore/al/time/tickcount.hxx' \
-        'nixycore/al/delegate/private_function_traits.hxx' \
-        'nixycore/al/thread/barrier.hxx' \
-        'nixycore/al/thread/barrier_gnuc.hxx' \
-        'nixycore/al/thread/barrier_msvc.hxx' \
-        'nixycore/al/thread/interlocked.hxx' \
-        'nixycore/al/thread/interlocked_gnuc.hxx' \
-        'nixycore/al/thread/interlocked_def_msvc.hxx' \
-        'nixycore/al/thread/interlocked_msvc.hxx' \
-        'nixycore/al/thread/mutex.hxx' \
-        'nixycore/al/thread/mutex_linux.hxx' \
-        'nixycore/al/thread/mutex_win.hxx' \
-        'nixycore/al/thread/condition.hxx' \
-        'nixycore/al/thread/condition_linux.hxx' \
-        'nixycore/al/thread/condition_win.hxx' \
-        'nixycore/al/thread/tlsptr.hxx' \
-        'nixycore/al/thread/tlsptr_linux.hxx' \
-        'nixycore/al/thread/tlsptr_win.hxx' \
-        'nixycore/al/thread/threadops.hxx' \
-        'nixycore/al/thread/threadops_linux.hxx' \
-        'nixycore/al/thread/threadops_win.hxx' \
-        'nixycore/al/string/transform.hxx' \
-        'nixycore/al/stream/swprintf.hxx' \
+        'nixycore/general/disable_warnings.h' \
+        'nixycore/general/plat_detect.h' \
+        'nixycore/general/global_functions.h' \
         'nixycore/general/general.h' \
         'nixycore/preprocessor/pp_macros.h' \
         'nixycore/preprocessor/pp_count.h' \
@@ -155,19 +128,15 @@ else
         'nixycore/thread/tls_ptr.h' \
         'nixycore/thread/thread_ops.h' \
         'nixycore/thread/thread_model.h' \
-        'nixycore/thread/thread_ops_define.hxx' \
         'nixycore/thread/thread_detail.h' \
         'nixycore/thread/thread_pool.h' \
         'nixycore/thread/async.h' \
         'nixycore/thread/thread.h' \
         'nixycore/string/transform.h' \
-        'nixycore/string/string_ops_define.hxx' \
         'nixycore/string/string_detail.h' \
         'nixycore/string/string.h' \
         'nixycore/stream/printf_format.h' \
         'nixycore/stream/stream_wrap.h' \
-        'nixycore/stream/stream_buffer_out.hxx' \
-        'nixycore/stream/stream_buffer_in.hxx' \
         'nixycore/stream/stream_buffer.h' \
         'nixycore/stream/stream_detail.h' \
         'nixycore/stream/stream.h'"

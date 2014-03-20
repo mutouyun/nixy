@@ -16,10 +16,12 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-#include "nixycore/al/typemanip/typeof.hxx"
-
-#ifndef NX_TYPEOF_
-#define NX_TYPEOF_(...) nx::null_t
+#if defined(NX_CC_GNUC)
+#   define NX_TYPEOF_(...) __typeof(__VA_ARGS__)
+#elif defined(NX_CC_MSVC)
+#   include "detail/typeof_msvc.hxx"
+#else
+#   define NX_TYPEOF_(...) nx::null_t
 #endif
 
 #ifndef nx_typeof

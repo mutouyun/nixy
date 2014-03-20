@@ -30,8 +30,11 @@ void swprintf_buf(V val, size_t buf_count)
 {
     size_t eof_index = buf_.length();
     buf_.resize(eof_index + buf_count);
-#   include "nixycore/al/stream/swprintf.hxx"
-    int n = NX_SWPRINTF_(const_cast<wchar*>(buf_.data()) + eof_index, buf_count, printf_format<V, wchar>::val(), val);
+    int n = std::swprintf(const_cast<wchar*>(buf_.data()) + eof_index, 
+#if defined(NX_OS_LINUX)
+                          buf_count, 
+#endif
+                          printf_format<V, wchar>::val(), val);
     if (n < 0) return;
     buf_.resize(eof_index + n);
 }

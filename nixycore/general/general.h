@@ -33,7 +33,7 @@
 */
 
 // NX_OS, NX_CC, NDEBUG, ...
-#include "nixycore/al/general/plat_detect.hxx"
+#include "nixycore/general/plat_detect.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -85,6 +85,6 @@ NX_END
 
 // global functions
 
-#include "nixycore/al/general/global_functions.hxx"
+#include "nixycore/general/global_functions.h"
 
 //////////////////////////////////////////////////////////////////////////

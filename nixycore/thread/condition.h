@@ -14,7 +14,11 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "nixycore/al/thread/condition.hxx"
+#if defined(NX_OS_WIN)
+#   include "detail/condition_win.hxx"
+#elif defined(NX_OS_LINUX)
+#   include "detail/condition_linux.hxx"
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

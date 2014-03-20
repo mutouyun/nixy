@@ -299,7 +299,7 @@ public:
         string operations
     */
 
-#   include "nixycore/string/string_ops_define.hxx"
+#   include "detail/string_ops_define.hxx"
 
 public:
     using base_t::npos;
