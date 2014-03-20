@@ -26,7 +26,6 @@
     > typemanip	           ...done        - 类型操作，用于对编译器的编译期编程，实现各种泛型技巧
     > thread               ...done        - 线程管理，包括原子类、各种线程同步对象、线程类等
     > utility              ...done        - 各种实用小工具
-    > al(Abstract Layer)   ...ongoing     - 抽象层，提供跨平台的兼容适配
     > general              ...ongoing     - 全库的通用部分
     > algorithm	           ...preparing   - 提供一些基本的算法
     > bugfix               ...preparing   - 用于简化调试和排错
