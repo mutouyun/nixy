@@ -51,7 +51,7 @@ stream<T> format(T* tp, const S& fs)
 }
 
 template <class T>
-stream<T> make_stream(T* tp)
+stream<T> io(T* tp)
 {
     return nx::move(stream<T>(tp));
 }

@@ -15,7 +15,7 @@ void testStreamDetail(void)
     }
     strout << text.to_local().c_str() << endl << endl;
     {
-        nx::make_stream(&text) << 3.1415 << L"926" << true << false;
+        nx::io(&text) << 3.1415 << L"926" << true << false;
     }
     strout << text.to_local().c_str() << endl << endl;
     {
