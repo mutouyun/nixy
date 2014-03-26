@@ -35,6 +35,7 @@ using std::endl;
 #include "test_algorithm.h"
 #include "test_utility.h"
 #include "test_time.h"
+#include "test_random.h"
 #include "test_delegate.h"
 #include "test_thread.h"
 #include "test_memory.h"
@@ -51,12 +52,13 @@ void testAll(void)
     //testAlgorithm();
     //testUtility();
     //testTime();
+    testRandom();
     //testDelegate();
     //testFinalizer();
     //testThread();
     //testMemory();
     //testString();
-    testStream();
+    //testStream();
 
     TEST_FUNCTION(<< "Finished ");
 }

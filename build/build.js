@@ -156,6 +156,7 @@ else
         'codecheck/test_algorithm.h' \
         'codecheck/test_utility.h' \
         'codecheck/test_time.h' \
+        'codecheck/test_random.h' \
         'codecheck/test_delegate.h' \
         'codecheck/test_finalizer.h' \
         'codecheck/test_thread.h' \
