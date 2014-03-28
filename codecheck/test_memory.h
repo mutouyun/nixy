@@ -62,9 +62,10 @@ namespace test_mempool
     }
 
 #define TEST_MEMPOOL(alloc_name, test_count) do { \
-    for(int i = 0; i < (int)(test_count); ++i) \
+    for(int i = 0; i < (int)(test_count / 2); ++i) \
     { \
         alloc_name alc; \
+        for(int x = 0; x < 2; ++x) \
         for(int n = 0; n < TestLast; ++n) \
         { \
             void*(& p) = test[indx[n]]; \
@@ -153,7 +154,7 @@ namespace test_alloc
         using namespace test_mempool; \
         alloc_name& alc = *(alloc_name*)alcptr; \
         void* (test[TestLast]) = {0}; \
-        TEST_MEMPOOL(alloc_name, TestCont / nx_countof(hd)); \
+        TEST_MEMPOOL((void), TestCont / nx_countof(hd)); \
         return 0; \
     }
     THREAD_ALLOC(new_alloc)

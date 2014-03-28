@@ -30,33 +30,23 @@ template
     class Alloc_, size_t IterCount_,
     template <typename, size_t> class Model_
 >
-struct by_pool_expand_keep
+struct by_pool_expand_keep // Never return memory back to system
 {
     nx_assert_static(IterCount_);
 
 private:
-    size_t block_size_;
     nx::iterator<Model_<size_t, IterCount_> > count_ite_;
 
-public:
-    explicit by_pool_expand_keep(size_t block_size)
-        : block_size_(block_size)
-    {}
-    /* Never return memory back to system */
-
-    void init_block_size(size_t block_size)
+protected:
+    size_t count(void) const
     {
-        nx_assert(block_size_ == 0);
-        nx_verify(block_size_ = block_size);
+        return (*count_ite_);
     }
 
-    size_t block_size(void) const { return block_size_; }
-
-protected:
-    pvoid expand(size_t* count_ptr)
+    pvoid expand(size_t block_size)
     {
-        nx_assert(block_size_ >= sizeof(pvoid));
-        return Alloc_::alloc( block_size_ * ( (*count_ptr) = (*(++count_ite_)) ) );
+        nx_assert(block_size);
+        return Alloc_::alloc( block_size * (*(++count_ite_)) );
     }
 };
 
@@ -72,38 +62,33 @@ private:
 
     struct blocks_t
     {
-        pvoid     block_;
-        blocks_t* pnext_;
-    } * phead_, * ptail_;
+        pvoid     data_;
+        blocks_t* next_;
+    } * blocks_head_;
 
-public:
-    explicit by_pool_expand_return(size_t block_size)
-        : base_t(block_size)
-        , phead_(nx::nulptr)
-        , ptail_(nx::nulptr)
+protected:
+    by_pool_expand_return(void)
+        : blocks_head_(nx::nulptr)
     {}
 
     ~by_pool_expand_return()
     {
-        while(phead_)
+        while(blocks_head_)
         {
-            blocks_t* block = phead_;
-            phead_ = phead_->pnext_;
-            Alloc_::free(block->block_);
-            Alloc_::free(block);
+            blocks_t* blocks = blocks_head_;
+            blocks_head_ = blocks_head_->next_;
+            Alloc_::free(blocks->data_);
+            Alloc_::free(blocks);
         }
     }
 
-protected:
-    pvoid expand(size_t* count_ptr)
+    pvoid expand(size_t block_size)
     {
-        blocks_t* block = (blocks_t*)Alloc_::alloc(sizeof(blocks_t));
-        block->block_ = base_t::expand(count_ptr);
-        block->pnext_ = nx::nulptr;
-        if (ptail_) ptail_->pnext_ = block;
-        ptail_ = block;
-        if(!phead_) phead_ = ptail_;
-        return (block->block_);
+        blocks_t* blocks = (blocks_t*)Alloc_::alloc(sizeof(blocks_t));
+        blocks->data_ = base_t::expand(block_size);
+        blocks->next_ = blocks_head_;
+        blocks_head_ = blocks;
+        return blocks->data_;
     }
 };
 
@@ -139,28 +124,38 @@ template
 
     size_t IterCount_ = NX_FIXEDPOOL_ITERCOUNT  /* Iteration count */
 >
-class fixed_pool : public Expand_<Alloc_, IterCount_, Model_>, noncopyable
+class fixed_pool : Expand_<Alloc_, IterCount_, Model_>, noncopyable
 {
 public:
     typedef Expand_<Alloc_, IterCount_, Model_> base_t;
 
 private:
+    size_t block_size_;
     pvoid cursor_;
 
     void expand(void)
     {
-        size_t count = 0;
-        pvoid* p = (pvoid*)(cursor_ = base_t::expand(&count));
-        for(size_t i = 1; i < count; ++i)
-            p = (pvoid*)( (*p) = ((byte*)p) + base_t::block_size() );
+        pvoid* p = (pvoid*)(cursor_ = base_t::expand(block_size_));
+        nx_assert(p);
+        for(size_t i = 0; i < base_t::count() - 1; ++i)
+            p = (pvoid*)( (*p) = ((byte*)p) + block_size() );
         (*p) = nx::nulptr;
     }
 
 public:
     explicit fixed_pool(size_t size = 0)
-        : base_t(size)
+        : block_size_(size)
         , cursor_(nx::nulptr)
     {}
+
+    void init_block_size(size_t block_size)
+    {
+        nx_assert(block_size_ == 0);
+        block_size_ = block_size;
+        nx_assert(block_size_ > sizeof(pvoid));
+    }
+
+    size_t block_size(void) const { return block_size_; }
 
 public:
     pvoid alloc(void)
@@ -173,6 +168,7 @@ public:
 
     void free(pvoid p)
     {
+        if (!p) return;
         *(pvoid*)p = cursor_;
         cursor_ = p;            // Save free block
     }

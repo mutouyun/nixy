@@ -134,7 +134,7 @@ public:
 */
 
 template <class Stack_>
-class center_pool : Stack_, noncopyable
+class center_pool : noncopyable
 {
 public:
     typedef Stack_ stack_t;

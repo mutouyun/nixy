@@ -2,7 +2,10 @@
     The Nixy Library
     Code covered by the MIT License
 
-    Author: mutouyun (http://darkc.at)
+    Modified from StdExt - C++ STL Extensions (http://code.google.com/p/stdext/)
+    Modified by : mutouyun (http://darkc.at)
+
+    Copyright (c) 2004 - 2008 xushiwei (xushiweizh@gmail.com)
 */
 
 #pragma once
