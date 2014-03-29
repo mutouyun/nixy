@@ -27,30 +27,30 @@ class Singleton : noncopyable
     static spin_lock  lc_;
     static atomic<T*> ip_;
 
-#define NX_SINGLETON_(...) \
-    if (!ip_) \
-    { \
-        lc_.lock(); \
-        if (!(ip_.get())) \
+#   define NX_SINGLETON_(...) \
+        if (!ip_) \
         { \
-            static T ir __VA_ARGS__; \
-            ip_ = &ir; \
+            lc_.lock(); \
+            if (!(ip_.get())) \
+            { \
+                static T ir __VA_ARGS__; \
+                ip_ = &ir; \
+            } \
+            lc_.unlock(); \
         } \
-        lc_.unlock(); \
-    } \
-    return (*(ip_.get()))
+        return (*(ip_.get()))
 
 #else /*NX_SINGLE_THREAD*/
 
     static T* ip_;
 
-#define NX_SINGLETON_(...) \
-    if (!ip_) \
-    { \
-        static T ir __VA_ARGS__; \
-        ip_ = &ir; \
-    } \
-    return (*ip_)
+#   define NX_SINGLETON_(...) \
+        if (!ip_) \
+        { \
+            static T ir __VA_ARGS__; \
+            ip_ = &ir; \
+        } \
+        return (*ip_)
 
 #endif/*NX_SINGLE_THREAD*/
 
@@ -71,15 +71,18 @@ public:
     }
     NX_PP_MULT_MAX(NX_INSTANCE_)
 #undef NX_INSTANCE_
-
 #undef NX_SINGLETON_
 };
 
 #ifndef NX_SINGLE_THREAD
+
 template <typename T> spin_lock  Singleton<T>::lc_;
 template <typename T> atomic<T*> Singleton<T>::ip_;
+
 #else /*NX_SINGLE_THREAD*/
+
 template <typename T> T* Singleton<T>::ip_;
+
 #endif/*NX_SINGLE_THREAD*/
 
 /*
