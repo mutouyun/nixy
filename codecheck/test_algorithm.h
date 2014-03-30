@@ -118,7 +118,7 @@ void testSeries(void)
 
     int n = 20;
     strout << "Fibonacci(0 - " << n << ") ->:" << endl;
-    nx::iterator<nx::by_iter_fibonacci<nx::llong> > iter;
+    nx::iterator<nx::use::iter_fibonacci<nx::llong> > iter;
     nx_foreach(i, n, ++iter)
     {
         strout << i << ":\t" << *iter << endl;

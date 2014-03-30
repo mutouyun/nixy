@@ -14,37 +14,37 @@
 #include "nixycore/general/general.h"
 
 //////////////////////////////////////////////////////////////////////////
-NX_BEG
+NX_BEG namespace use {
 //////////////////////////////////////////////////////////////////////////
 
 /*
     Mersenne Twister 19937 random policy
 */
 
-struct by_rand_mt19937
+struct rand_mt19937
 {
     typedef nx::uint32 rand_t;
 
     NX_STATIC_PROPERTY(rand_t, MAX, (rand_t)~0);
 
-    static const int    WORD_SIZE       = sizeof(rand_t) * CHAR_BIT;        // word size (in number of bits)
-    static const int    MASK_BITS       = WORD_SIZE - 1;                    // separation point of one word, or the number of bits of the lower bitmask
-    static const rand_t F_MASK          = (rand_t)~0;                       // 0xffffffff
-    static const rand_t H_MASK          = (F_MASK << MASK_BITS) & F_MASK;   // 0x80000000
-    static const rand_t L_MASK          = ~H_MASK & F_MASK;                 // 0x7fffffff
+    NX_STATIC_PROPERTY(int   , WORD_SIZE      , sizeof(rand_t) * CHAR_BIT);        // word size (in number of bits)
+    NX_STATIC_PROPERTY(int   , MASK_BITS      , WORD_SIZE - 1);                    // separation point of one word, or the number of bits of the lower bitmask
+    NX_STATIC_PROPERTY(rand_t, F_MASK         , (rand_t)~0);                       // 0xffffffff
+    NX_STATIC_PROPERTY(rand_t, H_MASK         , (F_MASK << MASK_BITS) & F_MASK);   // 0x80000000
+    NX_STATIC_PROPERTY(rand_t, L_MASK         , ~H_MASK & F_MASK);                 // 0x7fffffff
 
-    static const int    STATE_SIZE      = 624;                              // degree of recurrence
-    static const int    MID_SIZE        = 397;                              // middle word, or the number of parallel sequences
-    static const int    MOD_SIZE        = STATE_SIZE - MID_SIZE;
+    NX_STATIC_PROPERTY(int   , STATE_SIZE     , 624);                              // degree of recurrence
+    NX_STATIC_PROPERTY(int   , MID_SIZE       , 397);                              // middle word, or the number of parallel sequences
+    NX_STATIC_PROPERTY(int   , MOD_SIZE       , STATE_SIZE - MID_SIZE);
 
-    static const rand_t INIT_MULTIPLIER = 0x6c078965;
-    static const rand_t PARAMETER_A     = 0x9908b0df;                       // coefficients of the rational normal form twist matrix
-    static const rand_t OUTPUT_B        = 0x9d2c5680;                       // TGFSR(R) tempering bitmasks
-    static const rand_t OUTPUT_C        = 0xefc60000;
-    static const rand_t OUTPUT_S        = 7;                                // TGFSR(R) tempering bit shifts
-    static const rand_t OUTPUT_T        = 15;
-    static const rand_t OUTPUT_U        = 11;                               // additional Mersenne Twister tempering bit shifts
-    static const rand_t OUTPUT_L        = 18;
+    NX_STATIC_PROPERTY(rand_t, INIT_MULTIPLIER, 0x6c078965);
+    NX_STATIC_PROPERTY(rand_t, PARAMETER_A    , 0x9908b0df);                       // coefficients of the rational normal form twist matrix
+    NX_STATIC_PROPERTY(rand_t, OUTPUT_B       , 0x9d2c5680);                       // TGFSR(R) tempering bitmasks
+    NX_STATIC_PROPERTY(rand_t, OUTPUT_C       , 0xefc60000);
+    NX_STATIC_PROPERTY(rand_t, OUTPUT_S       , 7);                                // TGFSR(R) tempering bit shifts
+    NX_STATIC_PROPERTY(rand_t, OUTPUT_T       , 15);
+    NX_STATIC_PROPERTY(rand_t, OUTPUT_U       , 11);                               // additional Mersenne Twister tempering bit shifts
+    NX_STATIC_PROPERTY(rand_t, OUTPUT_L       , 18);
 
 private:
     rand_t MT_[STATE_SIZE]; // Create a length 624 array to store the state of the generator
@@ -112,5 +112,5 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////
-NX_END
+} NX_END
 //////////////////////////////////////////////////////////////////////////

@@ -227,9 +227,9 @@ namespace private_atomic
 
 #ifndef NX_DEFAULT_INTERLOCKED
 #   ifdef NX_SINGLE_THREAD
-#       define NX_DEFAULT_INTERLOCKED  nx::by_interlocked_st
+#       define NX_DEFAULT_INTERLOCKED  nx::use::interlocked_st
 #   else
-#       define NX_DEFAULT_INTERLOCKED  nx::by_interlocked_mt
+#       define NX_DEFAULT_INTERLOCKED  nx::use::interlocked_mt
 #   endif
 #endif
 

@@ -19,19 +19,16 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-/*
-    destructor policy for memory
-*/
-
-struct by_dest_memory
+namespace use
 {
-    template <typename T> bool is_valid(const T& r) const
-    { return !!r; }
-    template <typename T> void reset(T& r)
-    { r = nx::nulptr; }
-};
-
-//////////////////////////////////////////////////////////////////////////
+    struct dest_memory // destructor policy for memory
+    {
+        template <typename T> bool is_valid(const T& r) const
+        { return !!r; }
+        template <typename T> void reset(T& r)
+        { r = nx::nulptr; }
+    };
+}
 
 namespace private_pointer
 {
@@ -68,9 +65,9 @@ namespace private_pointer
 */
 
 template <typename T, class Alloc_ = NX_DEFAULT_ALLOC, class Model_ = NX_DEFAULT_THREAD_MODEL>
-class pointer : public private_pointer::opt<T, holder<T*, by_dest_memory, Alloc_, Model_> >
+class pointer : public private_pointer::opt<T, holder<T*, use::dest_memory, Alloc_, Model_> >
 {
-    typedef private_pointer::opt<T, holder<T*, by_dest_memory, Alloc_, Model_> > opt_t;
+    typedef private_pointer::opt<T, holder<T*, use::dest_memory, Alloc_, Model_> > opt_t;
 
 public:
     typedef typename opt_t::base_t   base_t;

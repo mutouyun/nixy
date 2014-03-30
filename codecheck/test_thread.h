@@ -10,7 +10,7 @@ void testInterlocked(void)
     TEST_CASE();
 
     long a = 3, b = 2, c = 2;
-    c = nx::by_interlocked_mt::compare_exchange(b, -a, c);
+    c = nx::use::interlocked_mt::compare_exchange(b, -a, c);
     strout << (int)a << " " << (int)b << " " << (int)c << endl;
 }
 

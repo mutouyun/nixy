@@ -19,50 +19,53 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-struct by_interlocked_st
+namespace use
 {
-    NX_STATIC_PROPERTY(int, supported_mask, 0xF);
-
-    template <typename R, typename T>
-    inline static R load(T& dest)
+    struct interlocked_st
     {
-        return (R)dest;
-    }
+        NX_STATIC_PROPERTY(int, supported_mask, 0xF);
 
-    template <typename T, typename U>
-    inline static void store(T& dest, U val)
-    {
-        dest = (T)val;
-    }
+        template <typename R, typename T>
+        inline static R load(T& dest)
+        {
+            return (R)dest;
+        }
 
-    template <typename T, typename U>
-    inline static T fetch_add(T& dest, U val)
-    {
-        T tmp = dest;
-        dest += (T)val;
-        return tmp;
-    }
-
-    template <typename T, typename U>
-    inline static T exchange(T& dest, U val)
-    {
-        T tmp = dest;
-        dest = (T)val;
-        return tmp;
-    }
-
-    template <typename T, typename U>
-    inline static bool compare_exchange(T& dest, U val, T comp)
-    {
-        if (dest == comp)
+        template <typename T, typename U>
+        inline static void store(T& dest, U val)
         {
             dest = (T)val;
-            return true;
         }
-        else
-            return false;
-    }
-};
+
+        template <typename T, typename U>
+        inline static T fetch_add(T& dest, U val)
+        {
+            T tmp = dest;
+            dest += (T)val;
+            return tmp;
+        }
+
+        template <typename T, typename U>
+        inline static T exchange(T& dest, U val)
+        {
+            T tmp = dest;
+            dest = (T)val;
+            return tmp;
+        }
+
+        template <typename T, typename U>
+        inline static bool compare_exchange(T& dest, U val, T comp)
+        {
+            if (dest == comp)
+            {
+                dest = (T)val;
+                return true;
+            }
+            else
+                return false;
+        }
+    };
+}
 
 namespace private_interlocked
 {

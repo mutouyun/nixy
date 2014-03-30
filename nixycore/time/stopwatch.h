@@ -15,21 +15,20 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-/*
-    Standard clock policy
-*/
-
-struct by_clock_std
+namespace use
 {
-    typedef ulong clock_t;
-    clock_t clock(void) { return tickcount(); }
-    static double second(const clock_t& cl) { return double(cl) / double(1000); }
-};
+    struct clock_std // Standard clock policy
+    {
+        typedef ulong clock_t;
+        clock_t clock(void) { return tickcount(); }
+        static double second(const clock_t& cl) { return double(cl) / double(1000); }
+    };
+}
 
 //////////////////////////////////////////////////////////////////////////
 
 #ifndef NX_DEFAULT_CLOCK
-#define NX_DEFAULT_CLOCK nx::by_clock_std
+#define NX_DEFAULT_CLOCK nx::use::clock_std
 #endif
 
 template <typename Model_ = NX_DEFAULT_CLOCK>

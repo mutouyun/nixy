@@ -18,7 +18,7 @@ NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
 #ifndef NX_DEFAULT_ALLOC
-#define NX_DEFAULT_ALLOC nx::by_alloc_pool
+#define NX_DEFAULT_ALLOC nx::use::alloc_pool
 #endif
 
 /*

@@ -49,12 +49,10 @@ public:
 
 struct single_thread_model
 {
-    typedef by_interlocked_st interlocked_t;
-    typedef none_lock         lock_t;
-    typedef none_lock         mutex_t;
+    typedef use::interlocked_st interlocked_t;
+    typedef none_lock   lock_t;
+    typedef none_lock   mutex_t;
 };
-
-typedef thread_model<single_thread_model> by_thread_single;
 
 /*
     multi-thread model
@@ -62,22 +60,26 @@ typedef thread_model<single_thread_model> by_thread_single;
 
 struct multi_thread_model
 {
-    typedef by_interlocked_mt interlocked_t;
-    typedef spin_lock         lock_t;
-    typedef mutex             mutex_t;
+    typedef use::interlocked_mt interlocked_t;
+    typedef spin_lock   lock_t;
+    typedef mutex       mutex_t;
 };
-
-typedef thread_model<multi_thread_model> by_thread_multi;
 
 /*
     default thread model
 */
 
+namespace use
+{
+    typedef thread_model<single_thread_model> thread_single;
+    typedef thread_model<multi_thread_model>  thread_multi;
+}
+
 #ifndef NX_DEFAULT_THREAD_MODEL
 #   ifdef NX_SINGLE_THREAD
-#       define NX_DEFAULT_THREAD_MODEL  nx::by_thread_single
+#       define NX_DEFAULT_THREAD_MODEL  nx::use::thread_single
 #   else
-#       define NX_DEFAULT_THREAD_MODEL  nx::by_thread_multi
+#       define NX_DEFAULT_THREAD_MODEL  nx::use::thread_multi
 #   endif
 #endif
 

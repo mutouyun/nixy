@@ -97,7 +97,7 @@ struct alloc_model : Model_
 };
 
 /*
-    standard alloc policy
+    standard alloc policy model
 */
 
 struct std_alloc_model
@@ -107,7 +107,10 @@ struct std_alloc_model
     static pvoid realloc(pvoid p, size_t size) { return ((p || size) ? ::realloc(p, size) : nx::nulptr); }
 };
 
-typedef alloc_model<std_alloc_model> by_alloc_std;
+namespace use
+{
+    typedef alloc_model<std_alloc_model> alloc_std;
+}
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

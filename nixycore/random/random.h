@@ -20,7 +20,7 @@ NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
 #ifndef NX_DEFAULT_RAND
-#define NX_DEFAULT_RAND nx::by_rand_mt19937
+#define NX_DEFAULT_RAND nx::use::rand_mt19937
 #endif
 
 template <typename Model_ = NX_DEFAULT_RAND>

@@ -54,12 +54,12 @@ namespace private_mem_alloc
 
     inline tls_pool& create_pool(void)
     {
-        return TLSSingleton<tls_pool, by_alloc_std>::instance();
+        return TLSSingleton<tls_pool, use::alloc_std>::instance();
     }
 }
 
 /*
-    memory alloc policy
+    memory alloc policy model
 */
 
 struct pool_alloc_model
@@ -80,7 +80,10 @@ struct pool_alloc_model
     }
 };
 
-typedef alloc_model<pool_alloc_model> by_alloc_pool;
+namespace use
+{
+    typedef alloc_model<pool_alloc_model> alloc_pool;
+}
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

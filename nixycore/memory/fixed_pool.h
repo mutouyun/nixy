@@ -21,83 +21,86 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-/*
-    Memory Expand Models
-*/
-
-template
-<
-    class Alloc_, size_t IterCount_,
-    template <typename, size_t> class Model_
->
-struct by_pool_expand_keep // Never return memory back to system
+namespace use
 {
-    nx_assert_static(IterCount_);
+    /*
+        Memory Expand Models
+    */
 
-private:
-    nx::iterator<Model_<size_t, IterCount_> > count_ite_;
-
-protected:
-    size_t count(void) const
+    template
+    <
+        class Alloc_, size_t IterCount_,
+        template <typename, size_t> class Model_
+    >
+    struct pool_expand_keep // Never return memory back to system
     {
-        return (*count_ite_);
-    }
+        nx_assert_static(IterCount_);
 
-    pvoid expand(size_t block_size)
-    {
-        nx_assert(block_size);
-        return Alloc_::alloc( block_size * (*(++count_ite_)) );
-    }
-};
+    private:
+        nx::iterator<Model_<size_t, IterCount_> > count_ite_;
 
-template
-<
-    class Alloc_, size_t IterCount_,
-    template <typename, size_t> class Model_
->
-struct by_pool_expand_return : by_pool_expand_keep<Alloc_, IterCount_, Model_>
-{
-private:
-    typedef by_pool_expand_keep<Alloc_, IterCount_, Model_> base_t;
-
-    struct blocks_t
-    {
-        pvoid     data_;
-        blocks_t* next_;
-    } * blocks_head_;
-
-protected:
-    by_pool_expand_return(void)
-        : blocks_head_(nx::nulptr)
-    {}
-
-    ~by_pool_expand_return()
-    {
-        while(blocks_head_)
+    protected:
+        size_t count(void) const
         {
-            blocks_t* blocks = blocks_head_;
-            blocks_head_ = blocks_head_->next_;
-            Alloc_::free(blocks->data_);
-            Alloc_::free(blocks);
+            return (*count_ite_);
         }
-    }
 
-    pvoid expand(size_t block_size)
+        pvoid expand(size_t block_size)
+        {
+            nx_assert(block_size);
+            return Alloc_::alloc( block_size * (*(++count_ite_)) );
+        }
+    };
+
+    template
+    <
+        class Alloc_, size_t IterCount_,
+        template <typename, size_t> class Model_
+    >
+    struct pool_expand_return : pool_expand_keep<Alloc_, IterCount_, Model_>
     {
-        blocks_t* blocks = (blocks_t*)Alloc_::alloc(sizeof(blocks_t));
-        blocks->data_ = base_t::expand(block_size);
-        blocks->next_ = blocks_head_;
-        blocks_head_ = blocks;
-        return blocks->data_;
-    }
-};
+    private:
+        typedef pool_expand_keep<Alloc_, IterCount_, Model_> base_t;
+
+        struct blocks_t
+        {
+            pvoid     data_;
+            blocks_t* next_;
+        } * blocks_head_;
+
+    protected:
+        pool_expand_return(void)
+            : blocks_head_(nx::nulptr)
+        {}
+
+        ~pool_expand_return()
+        {
+            while(blocks_head_)
+            {
+                blocks_t* blocks = blocks_head_;
+                blocks_head_ = blocks_head_->next_;
+                Alloc_::free(blocks->data_);
+                Alloc_::free(blocks);
+            }
+        }
+
+        pvoid expand(size_t block_size)
+        {
+            blocks_t* blocks = (blocks_t*)Alloc_::alloc(sizeof(blocks_t));
+            blocks->data_ = base_t::expand(block_size);
+            blocks->next_ = blocks_head_;
+            blocks_head_ = blocks;
+            return blocks->data_;
+        }
+    };
+}
 
 /*
     Default allocation parameters
 */
 
 #ifndef NX_FIXEDPOOL_MODEL
-#define NX_FIXEDPOOL_MODEL      nx::by_iter_powerof
+#define NX_FIXEDPOOL_MODEL      nx::use::iter_powerof
 #endif
 
 #ifndef NX_FIXEDPOOL_ITERCOUNT
@@ -110,14 +113,14 @@ protected:
 
 template
 <
-    class Alloc_ = by_alloc_std,
+    class Alloc_ = use::alloc_std,
 
     template
     <
         class, size_t,
         template <typename, size_t> class
     >
-    class Expand_ = by_pool_expand_return,      /* Memory growth model uses the by_pool_expand_return */
+    class Expand_ = use::pool_expand_return,    /* Memory growth model uses the pool_expand_return policy */
 
     template <typename, size_t>
     class Model_ = NX_FIXEDPOOL_MODEL,          /* Iterative algorithm using NX_FIXEDPOOL_MODEL */

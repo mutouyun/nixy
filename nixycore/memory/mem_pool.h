@@ -25,12 +25,12 @@ NX_BEG
 */
 
 #ifndef NX_MEMPOOL_STACK
-#define NX_MEMPOOL_STACK    nx::by_pool_stack_array
+#define NX_MEMPOOL_STACK    nx::use::pool_stack_array
 #endif
 
 template
 <
-    typename Alloc_ = nx::by_alloc_std, 
+    typename Alloc_ = nx::use::alloc_std, 
 
     template <class>
     class Stack_ = NX_MEMPOOL_STACK
