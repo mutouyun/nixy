@@ -50,18 +50,16 @@ class mem_pool : pool_center<Stack_<Alloc_> >
     pvoid    cast(alloc_t* p) { return static_cast<pvoid>(p + 1); }
     alloc_t* cast(pvoid p)    { return static_cast<alloc_t*>(p) - 1; }
 
-    template <typename>
-    pvoid alloc(size_t size)
+    pvoid do_alloc(size_t size)
     {
         pool_t* pool = find_pool(size);
-        alloc_t* p = (alloc_t*)(pool ? pool->alloc() : Alloc_::alloc(sizeof(alloc_t) + size));
-        nx_assert(p);
-        p->size_ = size;
-        return cast(p);
+        alloc_t* alc_p = (alloc_t*)(pool ? pool->alloc() : Alloc_::alloc(sizeof(alloc_t) + size));
+        nx_assert(alc_p);
+        alc_p->size_ = size;
+        return cast(alc_p);
     }
 
-    template <typename>
-    void free(pvoid p)
+    void do_free(pvoid p)
     {
         alloc_t* alc_p = cast(p);
         pool_t* pool = find_pool(alc_p->size_);
@@ -71,7 +69,7 @@ class mem_pool : pool_center<Stack_<Alloc_> >
             Alloc_::free(alc_p);
     }
 
-    alloc_t* memmove(alloc_t* dst, alloc_t* src, pool_t* src_pool)
+    alloc_t* mem_move(alloc_t* dst, alloc_t* src, pool_t* src_pool)
     {
         nx_assert(src_pool);
         std::memcpy(dst + 1, src + 1, src->size_);
@@ -79,8 +77,7 @@ class mem_pool : pool_center<Stack_<Alloc_> >
         return dst;
     }
 
-    template <typename>
-    pvoid realloc(pvoid p, size_t size)
+    pvoid do_realloc(pvoid p, size_t size)
     {
         alloc_t* old_p = cast(p);
         pool_t* old_pool = find_pool(old_p->size_);
@@ -94,7 +91,7 @@ class mem_pool : pool_center<Stack_<Alloc_> >
             alloc_t* new_p = (alloc_t*)new_pool->alloc();
             nx_assert(new_p);
             new_p->size_ = size;
-            return cast(memmove(new_p, old_p, old_pool));
+            return cast(mem_move(new_p, old_p, old_pool));
         }
         /* (new_pool == NULL) */
         if (old_pool)
@@ -102,7 +99,7 @@ class mem_pool : pool_center<Stack_<Alloc_> >
             alloc_t* new_p = (alloc_t*)Alloc_::alloc(sizeof(alloc_t) + size);
             nx_assert(new_p);
             new_p->size_ = size;
-            return cast(memmove(new_p, old_p, old_pool));
+            return cast(mem_move(new_p, old_p, old_pool));
         }
         /* (new_pool == old_pool == NULL) */
         return cast((alloc_t*)Alloc_::realloc(old_p, sizeof(alloc_t) + size));
@@ -112,12 +109,12 @@ public:
     pvoid alloc(size_t size)
     {
         if (size == 0) return nx::nulptr;
-        return alloc<alloc_t>(size);
+        return do_alloc(size);
     }
 
     void free(pvoid p)
     {
-        if (p) free<alloc_t>(p);
+        if (p) do_free(p);
     }
 
     pvoid realloc(pvoid p, size_t size)
@@ -129,7 +126,7 @@ public:
                 free(p);
                 return nx::nulptr;
             }
-            return realloc<alloc_t>(p, size);
+            return do_realloc(p, size);
         }
         return alloc(size);
     }
