@@ -33,7 +33,7 @@ public:
         , index_(TlsAlloc())
     {}
 
-    ~tls_data()
+    ~tls_data(void)
     {
         // free the tls index
         TlsFree(index_);

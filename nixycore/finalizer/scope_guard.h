@@ -31,7 +31,7 @@ public:
         : destructor_(destructor)
     {}
 
-    ~scope_guard()
+    ~scope_guard(void)
     { if (destructor_) destructor_(); }
 
     void dismiss()

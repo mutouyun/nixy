@@ -70,7 +70,7 @@ public:
         , mode_(mode_Non)
     {}
 
-    ~stream_buffer()
+    ~stream_buffer(void)
     {
         if (!ref_) return;
         if (mode_ == mode_Out)

@@ -29,7 +29,7 @@ public:
         pthread_condattr_destroy(&attr);
     }
 
-    ~detail()
+    ~detail(void)
     {
         broadcast();
         pthread_cond_destroy(&cond_);

@@ -31,7 +31,7 @@ protected:
     class PlaceHolder
     {
     public:
-        virtual ~PlaceHolder() {}
+        virtual ~PlaceHolder(void) {}
 
     public:
         virtual const std::type_info& type(void) const = 0;
@@ -75,7 +75,7 @@ public:
         swap(unmove(rhs));
     }
 
-    ~any()
+    ~any(void)
     {
         nx::free(content_);
     }

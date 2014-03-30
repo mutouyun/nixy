@@ -73,7 +73,7 @@ namespace use
             : blocks_head_(nx::nulptr)
         {}
 
-        ~pool_expand_return()
+        ~pool_expand_return(void)
         {
             while(blocks_head_)
             {

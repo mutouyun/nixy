@@ -240,7 +240,7 @@ public:
         limit(min_sz, max_sz);
     }
 
-    ~thread_pool()
+    ~thread_pool(void)
     {
         storage_.clear(functor<void(size_t)>(&thread_pool::shock, this));
     }

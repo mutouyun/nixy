@@ -29,7 +29,7 @@ public:
         pthread_mutexattr_destroy(&attr);
     }
 
-    ~detail()
+    ~detail(void)
     { pthread_mutex_destroy(&mx_); }
 
     typedef pthread_mutex_t handle_t;

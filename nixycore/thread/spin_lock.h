@@ -29,7 +29,7 @@ public:
     typedef spin_lock lock_t;
 
     spin_lock(void) : rc_(0), id_(0) {}
-    ~spin_lock() { nx_assert(rc_ <= 0); }
+    ~spin_lock(void) { nx_assert(rc_ <= 0); }
 
     typedef lock_t handle_t;
     handle_t&       operator*(void)       { return (*this); }

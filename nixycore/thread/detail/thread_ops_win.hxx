@@ -43,7 +43,7 @@ namespace private_
             : ptr_(static_cast<thread_data*>(p))
         {}
 
-        ~thread_data_ptr()
+        ~thread_data_ptr(void)
         { if (ptr_) delete ptr_; }
 
         void dismiss(void)

@@ -91,7 +91,7 @@ public:
     NX_PP_MULT_MAX(NX_THREAD_CONSTRUCT_)
 #undef NX_THREAD_CONSTRUCT_
 
-    ~thread() { join(); }
+    ~thread(void) { join(); }
 
 public:
     template <typename F>

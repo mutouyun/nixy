@@ -25,7 +25,7 @@ public:
 #   endif
     }
 
-    ~detail()
+    ~detail(void)
     {
         DeleteCriticalSection(&mx_);
     }

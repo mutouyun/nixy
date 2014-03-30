@@ -114,7 +114,10 @@ public:
         P::set(r, f);
     }
 
-    ~ref_counter() { P::dec(); }
+    ~ref_counter(void)
+    {
+        P::dec();
+    }
 
 public:
     template <typename T>

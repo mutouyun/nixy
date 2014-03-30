@@ -33,7 +33,7 @@ public:
         , counter_(0)
     {}
 
-    ~detail()
+    ~detail(void)
     {
         broadcast();
         CloseHandle(sema_);
@@ -92,7 +92,7 @@ public:
         InitializeConditionVariable(&cond_);
     }
 
-    ~detail()
+    ~detail(void)
     {
         broadcast();
     }

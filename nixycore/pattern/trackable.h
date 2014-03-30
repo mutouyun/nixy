@@ -67,7 +67,7 @@ public:
         : prev_(nx::nulptr)
         , next_(nx::nulptr) { init(); }
 
-    ~trackable() { dest(); }
+    ~trackable(void) { dest(); }
 
     trackable& operator=(const trackable&) { return (*this); }
 

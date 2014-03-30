@@ -16,8 +16,8 @@ NX_BEG
 class noncopyable
 {
 protected:
-    noncopyable() {}
-    ~noncopyable() {}
+    noncopyable(void) {}
+    ~noncopyable(void) {}
 
 private:
     noncopyable(const noncopyable&);

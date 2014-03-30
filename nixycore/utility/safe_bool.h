@@ -2,7 +2,8 @@
     The Nixy Library
     Code covered by the MIT License
 
-    Author: mutouyun (http://darkc.at)
+    Modified from http://en.wikibooks.org/wiki/More_C++_Idioms/Safe_bool
+    Modified by : mutouyun (http://darkc.at)
 */
 
 #pragma once
@@ -21,12 +22,12 @@ namespace private_safe_bool
         typedef void (detail::*bool_type)(void) const;
         void this_type_does_not_support_comparisons(void) const {}
     protected:
-        detail() {}
+        detail(void) {}
         detail(const detail&) {}
         detail& operator=(const detail&) { return *this; }
-        ~detail() {}
+        ~detail(void) {}
     };
-};
+}
 
 template <typename T>
 class safe_bool : private_safe_bool::detail
@@ -34,13 +35,13 @@ class safe_bool : private_safe_bool::detail
     // as it triggers the access control violation in main.
 {
 public:
-    operator bool_type() const
+    operator bool_type(void) const
     {
         return (static_cast<const T*>(this))->checkSafeBool() ? 
             &private_safe_bool::detail::this_type_does_not_support_comparisons : 0;
     }
 protected:
-    ~safe_bool() {}
+    ~safe_bool(void) {}
 };
 
 /*

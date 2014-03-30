@@ -26,7 +26,7 @@ public:
         pthread_key_create(&index_, destructor);
     }
 
-    ~detail()
+    ~detail(void)
     {
         pthread_key_delete(index_);
     }

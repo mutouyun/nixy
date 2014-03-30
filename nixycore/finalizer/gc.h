@@ -146,7 +146,7 @@ namespace private_gc
         index_map_t index_map_; // for index the iterators
 
     public:
-        ~handle_storage()
+        ~handle_storage(void)
         {
             nx_foreach(& pr, index_map_)
                 manager_single_t::instance().unregist(pr.second);
@@ -190,7 +190,7 @@ namespace private_gc
         index_map_t index_map_; // for index the res iterators
 
     public:
-        ~resour_storage()
+        ~resour_storage(void)
         {
             // collecting garbage
             nx_foreach(d, dest_list_) d->free();

@@ -59,7 +59,7 @@ public:
         , size_(0)
     {}
 
-    ~object_pool_storage()
+    ~object_pool_storage(void)
     {
         while (!is_empty()) destroy(take());
     }

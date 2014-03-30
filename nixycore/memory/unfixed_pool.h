@@ -62,7 +62,8 @@ public:
         : head_(nx::nulptr), tail_(nx::nulptr)
     { init(); }
 
-    ~unfixed_pool() { clear(); }
+    ~unfixed_pool(void)
+    { clear(); }
 
 public:
     size_t remain(void) const

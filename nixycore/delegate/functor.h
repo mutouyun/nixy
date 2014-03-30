@@ -240,7 +240,7 @@ private:
     class PlaceHolder
     {
     public:
-        virtual ~PlaceHolder() {}
+        virtual ~PlaceHolder(void) {}
 
     public:
         virtual pvoid handler(void) const = 0;
@@ -306,7 +306,7 @@ public:
             handler_ = fr.handler_;
     }
 
-    ~functor_base()
+    ~functor_base(void)
     { nx::free(any_guard_); }
 
 public:
