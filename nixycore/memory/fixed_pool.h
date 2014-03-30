@@ -143,15 +143,10 @@ private:
     }
 
 public:
-    explicit fixed_pool(size_t size = 0)
+    explicit fixed_pool(size_t size)
         : block_size_(size)
         , cursor_(nx::nulptr)
-    {}
-
-    void init_block_size(size_t block_size)
     {
-        nx_assert(block_size_ == 0);
-        block_size_ = block_size;
         nx_assert(block_size_ > sizeof(pvoid));
     }
 

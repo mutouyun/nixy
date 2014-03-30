@@ -9,7 +9,7 @@
 
 #include "nixycore/memory/std_alloc.h"
 #include "nixycore/memory/fixed_pool.h"
-#include "nixycore/memory/center_pool.h"
+#include "nixycore/memory/pool_center.h"
 
 #include "nixycore/bugfix/assert.h"
 
@@ -24,23 +24,27 @@ NX_BEG
     Scoped Memory Pool
 */
 
+#ifndef NX_MEMPOOL_STACK
+#define NX_MEMPOOL_STACK    nx::by_pool_stack_array
+#endif
+
 template
 <
     typename Alloc_ = nx::by_alloc_std, 
 
     template <class>
-    class Stack_ = nx::by_pool_stack_fixed
+    class Stack_ = NX_MEMPOOL_STACK
 >
-class mem_pool : center_pool<Stack_<Alloc_> >
+class mem_pool : pool_center<Stack_<Alloc_> >
 {
-    typedef center_pool<Stack_<Alloc_> > base_t;
+    typedef pool_center<Stack_<Alloc_> > base_t;
     typedef typename base_t::pool_t pool_t;
 
     struct alloc_t { size_t size_; };
 
     pool_t* find_pool(size_t size)
     {
-        return base_t::find_pool(size, sizeof(alloc_t));
+        return base_t::acquire_pool(size, sizeof(alloc_t));
     }
 
     pvoid    cast(alloc_t* p) { return static_cast<pvoid>(p + 1); }

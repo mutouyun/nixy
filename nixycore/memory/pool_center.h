@@ -26,7 +26,7 @@ NX_BEG
 */
 
 template <class Alloc_>
-class by_pool_stack_fixed
+struct pool_stack_base
 {
     typedef NX_DEFAULT_THREAD_MODEL::lock_t lock_t;
 
@@ -42,15 +42,36 @@ class by_pool_stack_fixed
         ~lock_guard() { lc_.unlock(); }
     };
 
-public:
     typedef fixed_pool<Alloc_, by_pool_expand_keep> pool_t;
 
-    NX_STATIC_PROPERTY(size_t, SMALL_NUM, 64);
-    NX_STATIC_PROPERTY(size_t, SMALL_INC, sizeof(pvoid));
+    struct node_t
+    {
+        pool_t* pool_;
+        node_t* next_;
+    };
+};
+
+/*
+    Using array for pool storage
+*/
+
+#ifndef NX_POOLSTACK_LEVELNUM
+#define NX_POOLSTACK_LEVELNUM   64
+#endif
+
+#ifndef NX_POOLSTACK_LEVELINC
+#define NX_POOLSTACK_LEVELINC   sizeof(nx::pvoid)
+#endif
+
+template <class Alloc_>
+class by_pool_stack_array : pool_stack_base<Alloc_>
+{
+    NX_STATIC_PROPERTY(size_t, SMALL_NUM, NX_POOLSTACK_LEVELNUM);
+    NX_STATIC_PROPERTY(size_t, SMALL_INC, NX_POOLSTACK_LEVELINC);
     NX_STATIC_PROPERTY(size_t, SMALL_SIZ, SMALL_NUM * SMALL_INC);
 
-    NX_STATIC_PROPERTY(size_t, LARGE_NUM, 64);
-    NX_STATIC_PROPERTY(size_t, LARGE_INC, SMALL_SIZ);
+    NX_STATIC_PROPERTY(size_t, LARGE_NUM, NX_POOLSTACK_LEVELNUM);
+    NX_STATIC_PROPERTY(size_t, LARGE_INC, SMALL_SIZ >> 2);
     NX_STATIC_PROPERTY(size_t, LARGE_SIZ, LARGE_NUM * LARGE_INC);
 
     NX_STATIC_PROPERTY(size_t, TOTAL_NUM, SMALL_NUM + LARGE_NUM - 1);
@@ -68,27 +89,32 @@ public:
         else
         if (size <= LARGE_SIZ)
         {
-            n = ((size - 1) / LARGE_INC) + SMALL_NUM - 1;
-            if (size_ptr) (*size_ptr) = (n - SMALL_NUM + 2) * LARGE_INC;
+            size -= SMALL_SIZ;
+            n = ((size - 1) / LARGE_INC) + SMALL_NUM;
+            if (size_ptr) (*size_ptr) = (n - SMALL_NUM + 1) * LARGE_INC + SMALL_SIZ;
         }
         else
             return ERROR_INDEX;
         return n;
     }
 
-    struct node_t
-    {
-        pool_t* pool_;
-        node_t* next_;
-    };
+public:
+    typedef typename pool_stack_base::pool_t pool_t;
+    typedef typename pool_stack_base::node_t node_t;
+    typedef node_t* (array_t[TOTAL_NUM]);
 
 private:
-    node_t* (pools_[TOTAL_NUM]);
+    array_t pools_;
 
 public:
-    by_pool_stack_fixed(void)
+    static void init_array(array_t& pools)
     {
-        std::memset(pools_, 0, sizeof(pools_));
+        std::memset(pools, 0, sizeof(pools));
+    }
+
+    by_pool_stack_array(void)
+    {
+        init_array(pools_);
     }
 
 public:
@@ -127,46 +153,59 @@ public:
         new_node->next_ = node;
         node = new_node;
     }
+
+    pool_t* acquire_pool(array_t& pools, size_t size, size_t head_size)
+    {
+        size_t n = calculate_index(size, &size);
+        if (n == ERROR_INDEX) return nx::nulptr;
+        node_t*(&node) = pools[n];
+        if (node) return node->pool_;
+        nx_verify(node = pop_node(n, head_size + size));
+        return node->pool_;
+    }
+
+    void release_all(const array_t& pools)
+    {
+        for (size_t n = 0; n < nx_countof(pools_); ++n)
+            push_node(n, pools[n]);
+    }
 };
 
+//////////////////////////////////////////////////////////////////////////
+
 /*
-    Center Memory Pool, get a fixed pool from here
+    Get a fixed pool from here
 */
 
 template <class Stack_>
-class center_pool : noncopyable
+class pool_center : noncopyable
 {
 public:
     typedef Stack_ stack_t;
 
-    typedef typename stack_t::node_t node_t;
-    typedef typename stack_t::pool_t pool_t;
+    typedef typename stack_t::node_t  node_t;
+    typedef typename stack_t::pool_t  pool_t;
+    typedef typename stack_t::array_t array_t;
 
 private:
     stack_t& stack_;
-    node_t* (pools_[stack_t::TOTAL_NUM]);
+    array_t pools_;
 
 protected:
-    center_pool(void)
+    pool_center(void)
         : stack_(singleton<stack_t>())
     {
-        std::memset(pools_, 0, sizeof(pools_));
+        stack_.init_array(pools_);
     }
 
-    ~center_pool()
+    ~pool_center(void)
     {
-        for(size_t n = 0; n < nx_countof(pools_); ++n)
-            stack_.push_node(n, pools_[n]);
+        stack_.release_all(pools_);
     }
 
-    pool_t* find_pool(size_t size, size_t head_size = 0)
+    pool_t* acquire_pool(size_t size, size_t head_size)
     {
-        size_t n = stack_t::calculate_index(size, &size);
-        if (n == stack_t::ERROR_INDEX) return nx::nulptr;
-        node_t* (&node) = pools_[n];
-        if (node) return node->pool_;
-        nx_verify(node = stack_.pop_node(n, head_size + size));
-        return node->pool_;
+        return stack_.acquire_pool(pools_, size, head_size);
     }
 };
 

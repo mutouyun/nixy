@@ -95,7 +95,7 @@ else
         'nixycore/memory/construct.h' \
         'nixycore/memory/std_alloc.h' \
         'nixycore/memory/fixed_pool.h' \
-        'nixycore/memory/center_pool.h' \
+        'nixycore/memory/pool_center.h' \
         'nixycore/memory/mem_pool.h' \
         'nixycore/memory/mem_alloc.h' \
         'nixycore/memory/alloc.h' \

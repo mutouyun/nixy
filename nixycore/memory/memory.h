@@ -12,7 +12,7 @@
 #include "nixycore/memory/construct.h"
 #include "nixycore/memory/std_alloc.h"
 #include "nixycore/memory/fixed_pool.h"
-#include "nixycore/memory/center_pool.h"
+#include "nixycore/memory/pool_center.h"
 #include "nixycore/memory/mem_pool.h"
 #include "nixycore/memory/mem_alloc.h"
 #include "nixycore/memory/alloc.h"

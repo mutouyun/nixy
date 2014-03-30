@@ -23,9 +23,7 @@ NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
 #ifndef NX_UNFIXEDPOOL_BLOCKSIZE
-#define NX_UNFIXEDPOOL_BLOCKSIZE \
-    (nx::by_pool_stack_fixed<Alloc_>::LARGE_SIZ - \
-     nx::by_pool_stack_fixed<Alloc_>::LARGE_INC)
+#define NX_UNFIXEDPOOL_BLOCKSIZE    (1023 * sizeof(nx::pvoid))
 #endif
 
 /*
