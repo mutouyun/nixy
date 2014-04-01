@@ -17,7 +17,7 @@ NX_BEG
 
 namespace private_function_traits
 {
-    template <typename Func_, bool = nx::is_function<Func_>::value>
+    template <typename FuncT, bool = nx::is_function<FuncT>::value>
     struct detail
     /* Circumvent MSVC's ETI errors */
     {

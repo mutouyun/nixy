@@ -49,10 +49,10 @@ namespace private_thread_pool
         void wait(void)  { wait_.lock(); }
     };
 
-    template <typename T, class FixedAlloc_>
-    class storage : public object_pool_storage<T, FixedAlloc_>
+    template <typename T, class FixedAllocT>
+    class storage : public object_pool_storage<T, FixedAllocT>
     {
-        typedef object_pool_storage<T, FixedAlloc_> base_t;
+        typedef object_pool_storage<T, FixedAllocT> base_t;
         typedef typename base_t::alloc_t alloc_t;
 
         using base_t::allocator_;

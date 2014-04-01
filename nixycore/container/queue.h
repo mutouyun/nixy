@@ -21,14 +21,14 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-template <typename Type_, typename Seq_ = nx::deque<Type_> >
-class queue : public std::queue<Type_, Seq_>
+template <typename T, typename SeqT = nx::deque<T> >
+class queue : public std::queue<T, SeqT>
 {
 public:
-    typedef std::queue<Type_, Seq_> base_t;
+    typedef std::queue<T, SeqT> base_t;
 
 public:
-    explicit queue(const Seq_& s = Seq_())
+    explicit queue(const SeqT& s = SeqT())
         : base_t(s)
     {}
 
@@ -53,8 +53,8 @@ public:
     Special swap algorithm
 */
 
-template <typename T_, typename S_>
-inline void swap(queue<T_, S_>& x, queue<T_, S_>& y)
+template <typename T, typename S>
+inline void swap(queue<T, S>& x, queue<T, S>& y)
 {
     x.swap(y);
 }
@@ -63,14 +63,14 @@ inline void swap(queue<T_, S_>& x, queue<T_, S_>& y)
     Special assign algorithm
 */
 
-template <typename T_, typename S_, typename V>
-inline void insert(queue<T_, S_>& set, typename queue<T_, S_>::iterator /*ite*/, const V& val)
+template <typename T, typename S, typename V>
+inline void insert(queue<T, S>& set, typename queue<T, S>::iterator /*ite*/, const V& val)
 {
     set.push(val);
 }
 
-template <typename T_, typename S_>
-inline void erase(queue<T_, S_>& set, typename queue<T_, S_>::iterator /*ite*/)
+template <typename T, typename S>
+inline void erase(queue<T, S>& set, typename queue<T, S>::iterator /*ite*/)
 {
     set.pop();
 }

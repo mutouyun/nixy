@@ -36,7 +36,7 @@ struct TypeList
     Get the types number of the typelist
 */
 
-template <class List_>
+template <class ListT>
 struct types_len;
 
 template <>
@@ -62,7 +62,7 @@ struct types_len<L_<T, U> >
     Get a type from the typelist with the index
 */
 
-template <class List_, int I>
+template <class ListT, int I>
 struct types_at;
 
 template <typename T, typename U, 
@@ -83,28 +83,28 @@ struct types_at<L_<T, U>, I>
     Find one type from the typelist
 */
 
-template <class List_, typename T>
+template <class ListT, typename T>
 struct types_find;
 
-template <typename Type_>
-struct types_find<null_t, Type_>
+template <typename TypeT>
+struct types_find<null_t, TypeT>
 {
     NX_STATIC_VALUE(int, -1);
 };
 
-template <typename U, typename Type_, 
+template <typename U, typename TypeT,
 template <typename, typename> class L_>
-struct types_find<L_<Type_, U>, Type_>
+struct types_find<L_<TypeT, U>, TypeT>
 {
     NX_STATIC_VALUE(int, 0);
 };
 
-template <typename T, typename U, typename Type_, 
+template <typename T, typename U, typename TypeT,
 template <typename, typename> class L_>
-struct types_find<L_<T, U>, Type_>
+struct types_find<L_<T, U>, TypeT>
 {
 private:
-    NX_STATIC_PROPERTY(int, tmp, types_find<U, Type_>::value);
+    NX_STATIC_PROPERTY(int, tmp, types_find<U, TypeT>::value);
 public:
     NX_STATIC_VALUE(int, tmp == -1 ? -1 : 1 + tmp);
 };
@@ -113,16 +113,16 @@ public:
     Check type is in the typelist
 */
 
-template <class List_, typename T>
+template <class ListT, typename T>
 struct types_exist : 
-    type_if<types_find<List_, T>::value != -1>
+    type_if<types_find<ListT, T>::value != -1>
 {};
 
 /*
     Add one Type to a List
 */
 
-template <class List_, typename T>
+template <class ListT, typename T>
 struct types_add;
 
 template <>
@@ -152,25 +152,25 @@ struct types_add<L_<null_t, null_t>, T>
     typedef L_<T, null_t> type_t;
 };
 
-template <typename T, typename Type_, 
+template <typename T, typename TypeT,
 template <typename, typename> class L_>
-struct types_add<L_<T, null_t>, Type_>
+struct types_add<L_<T, null_t>, TypeT>
 {
-    typedef L_<T, typename types_add<L_<null_t, null_t>, Type_>::type_t> type_t;
+    typedef L_<T, typename types_add<L_<null_t, null_t>, TypeT>::type_t> type_t;
 };
 
-template <typename T, typename U, typename Type_, 
+template <typename T, typename U, typename TypeT,
 template <typename, typename> class L_>
-struct types_add<L_<T, U>, Type_>
+struct types_add<L_<T, U>, TypeT>
 {
-    typedef L_<T, typename types_add<U, Type_>::type_t> type_t;
+    typedef L_<T, typename types_add<U, TypeT>::type_t> type_t;
 };
 
 /*
     Delete a Type from a List
 */
 
-template <class List_, typename T>
+template <class ListT, typename T>
 struct types_del;
 
 template <typename T>
@@ -179,25 +179,25 @@ struct types_del<null_t, T>
     typedef null_t type_t;
 };
 
-template <typename Type_, typename U, 
+template <typename TypeT, typename U,
 template <typename, typename> class L_>
-struct types_del<L_<Type_, U>, Type_>
+struct types_del<L_<TypeT, U>, TypeT>
 {
     typedef U type_t;
 };
 
-template <typename T, typename U, typename Type_, 
+template <typename T, typename U, typename TypeT,
 template <typename, typename> class L_>
-struct types_del<L_<T, U>, Type_>
+struct types_del<L_<T, U>, TypeT>
 {
-    typedef L_<T, typename types_del<U, Type_>::type_t> type_t;
+    typedef L_<T, typename types_del<U, TypeT>::type_t> type_t;
 };
 
 /*
     Erase all this Type from a List
 */
 
-template <class List_, typename T>
+template <class ListT, typename T>
 struct types_erase;
 
 template <typename T>
@@ -206,25 +206,25 @@ struct types_erase<null_t, T>
     typedef null_t type_t;
 };
 
-template <typename Type_, typename U, 
+template <typename TypeT, typename U,
 template <typename, typename> class L_>
-struct types_erase<L_<Type_, U>, Type_>
+struct types_erase<L_<TypeT, U>, TypeT>
 {
-    typedef typename types_erase<U, Type_>::type_t type_t;
+    typedef typename types_erase<U, TypeT>::type_t type_t;
 };
 
-template <typename T, typename U, typename Type_, 
+template <typename T, typename U, typename TypeT,
 template <typename, typename> class L_>
-struct types_erase<L_<T, U>, Type_>
+struct types_erase<L_<T, U>, TypeT>
 {
-    typedef L_<T, typename types_erase<U, Type_>::type_t> type_t;
+    typedef L_<T, typename types_erase<U, TypeT>::type_t> type_t;
 };
 
 /*
     Remove duplicate types, make a List more compact
 */
 
-template <class List_>
+template <class ListT>
 struct types_compact;
 
 template <>
@@ -248,7 +248,7 @@ public:
     Replace a Type to another Type
 */
 
-template <class List_, typename T1, typename T2>
+template <class ListT, typename T1, typename T2>
 struct types_replace;
 
 template <typename T1, typename T2>
@@ -275,7 +275,7 @@ struct types_replace<L_<T, U>, T1 , T2>
     Reverse the List
 */
 
-template <class List_>
+template <class ListT>
 struct types_reverse;
 
 template <>
@@ -298,7 +298,7 @@ struct types_reverse<L_<T, U> >
     Get the most derived type of a List
 */
 
-template <class List_, typename T>
+template <class ListT, typename T>
 struct types_sub;
 
 template <class T>
@@ -307,12 +307,12 @@ struct types_sub<null_t, T>
     typedef T type_t;
 };
 
-template <typename T, typename U, typename Type_, 
+template <typename T, typename U, typename TypeT,
 template <typename, typename> class L_>
-struct types_sub<L_<T, U>, Type_>
+struct types_sub<L_<T, U>, TypeT>
 {
 private:
-    typedef typename types_sub<U, Type_>::type_t tmp;
+    typedef typename types_sub<U, TypeT>::type_t tmp;
 public:
     typedef typename select_if
             <is_supersub<tmp, T>::value, T, tmp
@@ -323,7 +323,7 @@ public:
     Arranges the types in a typelist so that the most derived types appear first
 */
 
-template <class List_>
+template <class ListT>
 struct types_sort;
 
 template <>
@@ -379,11 +379,11 @@ struct types_join<L_<T, U>, null_t>
     typedef L_<T, U> type_t;
 };
 
-template <typename T, typename U, typename Type_, 
+template <typename T, typename U, typename TypeT,
 template <typename, typename> class L_>
-struct types_join<L_<T, U>, Type_>
+struct types_join<L_<T, U>, TypeT>
 {
-    typedef typename types_add<L_<T, U>, Type_>::type_t type_t;
+    typedef typename types_add<L_<T, U>, TypeT>::type_t type_t;
 };
 
 template <typename T, typename U, 
@@ -393,11 +393,11 @@ struct types_join<null_t, L_<T, U> >
     typedef typename types_add<null_t, L_<T, U> >::type_t type_t;
 };
 
-template <typename T, typename U, typename Type_, 
+template <typename T, typename U, typename TypeT,
 template <typename, typename> class L_>
-struct types_join<Type_, L_<T, U> >
+struct types_join<TypeT, L_<T, U> >
 {
-    typedef L_<Type_, L_<T, U> > type_t;
+    typedef L_<TypeT, L_<T, U> > type_t;
 };
 
 template <typename T1, typename U1, typename T2, typename U2, 
@@ -439,9 +439,9 @@ struct types<>
     {};
 
 #define NX_SPECIAL_TYPES_1(name, typename1, spl_class, ...) \
-    template <NX_PP_PARAM(T, __VA_ARGS__), typename1 Type_> \
-    struct name<spl_class<NX_PP_TYPE_1(NX_PP_COUNT(__VA_ARGS__), T)>, Type_> \
-         : name<typename spl_class<NX_PP_TYPE_1(NX_PP_COUNT(__VA_ARGS__), T)>::base_t, Type_> \
+    template <NX_PP_PARAM(T, __VA_ARGS__), typename1 TypeT> \
+    struct name<spl_class<NX_PP_TYPE_1(NX_PP_COUNT(__VA_ARGS__), T)>, TypeT> \
+         : name<typename spl_class<NX_PP_TYPE_1(NX_PP_COUNT(__VA_ARGS__), T)>::base_t, TypeT> \
     {};
 
 #define NX_SPECIAL_TYPES_2(name, typename1, typename2, spl_class, ...) \
@@ -451,9 +451,9 @@ struct types<>
     {};
 
 #define NX_SPECIAL_TYPES_R(name, typename1, spl_class, ...) \
-    template <typename1 Type_, NX_PP_PARAM(T, __VA_ARGS__)> \
-    struct name<Type_, spl_class<NX_PP_TYPE_1(NX_PP_COUNT(__VA_ARGS__), T)> > \
-         : name<Type_, typename spl_class<NX_PP_TYPE_1(NX_PP_COUNT(__VA_ARGS__), T)>::base_t> \
+    template <typename1 TypeT, NX_PP_PARAM(T, __VA_ARGS__)> \
+    struct name<TypeT, spl_class<NX_PP_TYPE_1(NX_PP_COUNT(__VA_ARGS__), T)> > \
+         : name<TypeT, typename spl_class<NX_PP_TYPE_1(NX_PP_COUNT(__VA_ARGS__), T)>::base_t> \
     {};
 
 #define NX_SPECIAL_TYPES_D(name, spl_class, ...) \

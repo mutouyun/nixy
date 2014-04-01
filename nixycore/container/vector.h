@@ -20,11 +20,11 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-template <typename Type_, class Alloc_ = NX_DEFAULT_ALLOC>
-class vector : public std::vector<Type_, typename Alloc_::template std_allocator<Type_>::type_t>
+template <typename T, class AllocT = NX_DEFAULT_ALLOC>
+class vector : public std::vector<T, typename AllocT::template std_allocator<T>::type_t>
 {
 public:
-    typedef std::vector<Type_, typename Alloc_::template std_allocator<Type_>::type_t> base_t;
+    typedef std::vector<T, typename AllocT::template std_allocator<T>::type_t> base_t;
 
 public:
     vector(void)

@@ -74,7 +74,8 @@ namespace private_is_pointer
 }
 
 template <typename T> struct is_pointer
-    : private_is_pointer::detail<typename nx::rm_cv<T>::type_t> {};
+    : private_is_pointer::detail<typename nx::rm_cv<T>::type_t>
+{};
 
 namespace private_rm_pointer
 {

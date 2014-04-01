@@ -19,8 +19,8 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-template <typename T, bool IsUnsigned_ = is_unsigned<T>::value
-                    , bool IsSigned_   = is_signed<T>::value>
+template <typename T, bool = is_unsigned<T>::value
+                    , bool = is_signed<T>::value>
 struct limit_of;
 
 template <typename T>

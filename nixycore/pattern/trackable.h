@@ -18,10 +18,10 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-template <typename T, template <typename> class Single_ = Singleton>
+template <typename T, template <typename> class SingleT = Singleton>
 class trackable
 {
-    typedef Single_<T*> single_t;
+    typedef SingleT<T*> single_t;
 
 public:
     T * prev_, * next_;

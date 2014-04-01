@@ -15,7 +15,6 @@
 
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
-#include "nixycore/utility/utility.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -29,15 +28,15 @@ namespace use
 
     template
     <
-        class Alloc_, size_t IterCount_,
-        template <typename, size_t> class Model_
+        class AllocT, size_t IterCountN,
+        template <typename, size_t> class ModelT
     >
     struct pool_expand_keep // Never return memory back to system
     {
-        nx_assert_static(IterCount_);
+        nx_assert_static(IterCountN);
 
     private:
-        nx::iterator<Model_<size_t, IterCount_> > count_ite_;
+        nx::iterator<ModelT<size_t, IterCountN> > count_ite_;
 
     protected:
         size_t count(void) const
@@ -48,19 +47,19 @@ namespace use
         pvoid expand(size_t block_size)
         {
             nx_assert(block_size);
-            return Alloc_::alloc( block_size * (*(++count_ite_)) );
+            return AllocT::alloc( block_size * (*(++count_ite_)) );
         }
     };
 
     template
     <
-        class Alloc_, size_t IterCount_,
-        template <typename, size_t> class Model_
+        class AllocT, size_t IterCountN,
+        template <typename, size_t> class ModelT
     >
-    struct pool_expand_return : pool_expand_keep<Alloc_, IterCount_, Model_>
+    struct pool_expand_return : pool_expand_keep<AllocT, IterCountN, ModelT>
     {
     private:
-        typedef pool_expand_keep<Alloc_, IterCount_, Model_> base_t;
+        typedef pool_expand_keep<AllocT, IterCountN, ModelT> base_t;
 
         struct blocks_t
         {
@@ -79,14 +78,14 @@ namespace use
             {
                 blocks_t* blocks = blocks_head_;
                 blocks_head_ = blocks_head_->next_;
-                Alloc_::free(blocks->data_);
-                Alloc_::free(blocks);
+                AllocT::free(blocks->data_);
+                AllocT::free(blocks);
             }
         }
 
         pvoid expand(size_t block_size)
         {
-            blocks_t* blocks = (blocks_t*)Alloc_::alloc(sizeof(blocks_t));
+            blocks_t* blocks = (blocks_t*)AllocT::alloc(sizeof(blocks_t));
             blocks->data_ = base_t::expand(block_size);
             blocks->next_ = blocks_head_;
             blocks_head_ = blocks;
@@ -104,7 +103,7 @@ namespace use
 #endif
 
 #ifndef NX_FIXEDPOOL_ITERCOUNT
-#define NX_FIXEDPOOL_ITERCOUNT  2
+#define NX_FIXEDPOOL_ITERCOUNT  (2)
 #endif
 
 /*
@@ -113,24 +112,24 @@ namespace use
 
 template
 <
-    class Alloc_ = use::alloc_std,
+    class AllocT = use::alloc_std,
 
     template
     <
         class, size_t,
         template <typename, size_t> class
     >
-    class Expand_ = use::pool_expand_return,    /* Memory growth model uses the pool_expand_return policy */
+    class ExpandT = use::pool_expand_return,    /* Memory growth model uses the pool_expand_return policy */
 
     template <typename, size_t>
-    class Model_ = NX_FIXEDPOOL_MODEL,          /* Iterative algorithm using NX_FIXEDPOOL_MODEL */
+    class ModelT = NX_FIXEDPOOL_MODEL,          /* Iterative algorithm using NX_FIXEDPOOL_MODEL */
 
-    size_t IterCount_ = NX_FIXEDPOOL_ITERCOUNT  /* Iteration count */
+    size_t IterCountN = NX_FIXEDPOOL_ITERCOUNT  /* Iteration count */
 >
-class fixed_pool : Expand_<Alloc_, IterCount_, Model_>, noncopyable
+class fixed_pool : ExpandT<AllocT, IterCountN, ModelT>, noncopyable
 {
 public:
-    typedef Expand_<Alloc_, IterCount_, Model_> base_t;
+    typedef ExpandT<AllocT, IterCountN, ModelT> base_t;
 
 private:
     size_t block_size_;

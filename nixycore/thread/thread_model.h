@@ -18,11 +18,11 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-template <class Model_>
-struct thread_model : Model_
+template <class ModelT>
+struct thread_model : ModelT
 {
     template <typename T>
-    struct atomic { typedef nx::atomic<T, typename Model_::interlocked_t> type_t; };
+    struct atomic { typedef nx::atomic<T, typename ModelT::interlocked_t> type_t; };
 };
 
 /*

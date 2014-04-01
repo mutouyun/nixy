@@ -31,11 +31,11 @@ namespace use
 #define NX_DEFAULT_CLOCK nx::use::clock_std
 #endif
 
-template <typename Model_ = NX_DEFAULT_CLOCK>
-class stopwatch : public Model_
+template <typename ModelT = NX_DEFAULT_CLOCK>
+class stopwatch : public ModelT
 {
 public:
-    typedef typename Model_::clock_t clock_t;
+    typedef typename ModelT::clock_t clock_t;
 
 protected:
     clock_t start_time_;
@@ -44,7 +44,7 @@ protected:
 
 public:
     stopwatch(bool start_watch = false)
-        : Model_()
+        : ModelT()
         , start_time_(0)
         , pause_elap_(0)
         , is_stopped_(true)
@@ -55,12 +55,12 @@ public:
 public:
     bool check(void)
     {
-        return (start_time_ <= Model_::clock());
+        return (start_time_ <= ModelT::clock());
     }
 
     double value(void)
     {
-        return Model_::second(elapsed());
+        return ModelT::second(elapsed());
     }
 
     clock_t elapsed(void)
@@ -71,7 +71,7 @@ public:
             return pause_elap_;
         else
         {
-            clock_t now = Model_::clock();
+            clock_t now = ModelT::clock();
             if (start_time_ > now)
             {
                 stop();
@@ -84,7 +84,7 @@ public:
     void start(void)
     {
         elapsed(); // if (start_time_ > now), stopwatch will restart
-        start_time_ = Model_::clock();
+        start_time_ = ModelT::clock();
         start_time_ -= pause_elap_;
         pause_elap_ = 0;
         is_stopped_ = false;

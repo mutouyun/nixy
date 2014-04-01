@@ -27,14 +27,14 @@ inline void swap(T& x, T& y)
     std::swap(x, y);
 }
 
-template <typename Iter_, typename IterR_>
-inline IterR_ copy(Iter_ first, Iter_ last, IterR_ r)
+template <typename IterT, typename IterR>
+inline IterR copy(IterT first, IterT last, IterR r)
 {
     return std::copy(first, last, r);
 }
 
-template <typename Iter_, typename V>
-inline void fill(Iter_ first, Iter_ last, const V& v)
+template <typename IterT, typename V>
+inline void fill(IterT first, IterT last, const V& v)
 {
     std::fill(first, last, v);
 }
@@ -45,32 +45,32 @@ inline T fill_n(T first, S n, const V& v)
     return std::fill_n(first, n, v);
 }
 
-template <typename Iter_>
-inline void sort(Iter_ first, Iter_ last)
+template <typename IterT>
+inline void sort(IterT first, IterT last)
 {
     std::sort(first, last);
 }
 
-template <typename Iter_, typename Comp_>
-inline void sort(Iter_ first, Iter_ last, Comp_ func)
+template <typename IterT, typename CompT>
+inline void sort(IterT first, IterT last, CompT func)
 {
     std::sort(first, last, func);
 }
 
-template <typename Iter1_, typename Iter2_>
-inline bool equal(Iter1_ first1, Iter1_ last1, Iter2_ first2)
+template <typename IterT1, typename IterT2>
+inline bool equal(IterT1 first1, IterT1 last1, IterT2 first2)
 {
     return std::equal(first1, last1, first2);
 }
 
-template <typename Iter1_, typename Iter2_, typename Pred_>
-inline bool equal(Iter1_ first1, Iter1_ last1, Iter2_ first2, Pred_ func)
+template <typename IterT1, typename IterT2, typename PredT>
+inline bool equal(IterT1 first1, IterT1 last1, IterT2 first2, PredT func)
 {
     return std::equal(first1, last1, first2, func);
 }
 
-template <typename Iter_, typename V>
-inline Iter_ find(Iter_ first, Iter_ last, const V& v)
+template <typename IterT, typename V>
+inline IterT find(IterT first, IterT last, const V& v)
 {
     return std::find(first, last, v);
 }
@@ -83,14 +83,14 @@ inline Iter_ find(Iter_ first, Iter_ last, const V& v)
     using std::lexicographical_compare for compare
 */
 
-template <typename Iter1_, typename Iter2_>
-inline bool compare(Iter1_ first1, Iter1_ last1, Iter2_ first2, Iter2_ last2)
+template <typename IterT1, typename IterT2>
+inline bool compare(IterT1 first1, IterT1 last1, IterT2 first2, IterT2 last2)
 {
     return std::lexicographical_compare(first1, last1, first2, last2);
 }
 
-template <typename Iter1_, typename Iter2_, typename Comp_>
-inline bool compare(Iter1_ first1, Iter1_ last1, Iter2_ first2, Iter2_ last2, Comp_ func)
+template <typename IterT1, typename IterT2, typename CompT>
+inline bool compare(IterT1 first1, IterT1 last1, IterT2 first2, IterT2 last2, CompT func)
 {
     return std::lexicographical_compare(first1, last1, first2, last2, func);
 }

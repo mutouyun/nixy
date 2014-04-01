@@ -14,25 +14,30 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-template <typename Model_>
-struct iterator : public Model_, nx_operator(iterator<Model_>, operable)
+template <typename ModelT>
+struct iterator : public ModelT, nx_operator(iterator<ModelT>, unequal, operable)
 {
-    typedef typename Model_::type_t type_t;
+    typedef typename ModelT::type_t type_t;
 
     iterator(int v = 0)
     {
-        Model_::operator()(v);
+        ModelT::operator()(v);
     }
 
     iterator& operator+=(int v)
     {
-        Model_::operator()(v);
+        ModelT::operator()(v);
         return (*this);
+    }
+
+    bool operator==(const iterator& y) const
+    {
+        return ModelT::operator==(y);
     }
 
     type_t value(void) const
     {
-        return Model_::value();
+        return ModelT::value();
     }
 
     type_t operator*(void) const { return value(); }

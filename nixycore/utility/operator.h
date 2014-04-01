@@ -20,23 +20,23 @@ NX_BEG
     Operators
 */
 
-template <typename T, typename Base_ = empty_t>
-struct unequal : Base_
+template <typename T, typename BaseT = empty_t>
+struct unequal : BaseT
 {
     // Need operator==
     friend bool operator!=(const T& x, const T& y) { return (!static_cast<bool>(x == y)); }
 };
 
-template <typename T, typename Base_ = empty_t>
-struct alike : Base_
+template <typename T, typename BaseT = empty_t>
+struct alike : BaseT
 {
     // Need operator<
     friend bool operator!=(const T& x, const T& y) { return (static_cast<bool>(x < y) && static_cast<bool>(y < x)); }
     friend bool operator==(const T& x, const T& y) { return !(x != y); }
 };
 
-template <typename T, typename Base_ = empty_t>
-struct comparable : Base_
+template <typename T, typename BaseT = empty_t>
+struct comparable : BaseT
 {
     // Need operator<
     friend bool operator> (const T& x, const T& y) { return ( static_cast<bool>(y < x)); }
@@ -46,8 +46,8 @@ struct comparable : Base_
 
 namespace private_operable
 {
-    template <typename T, typename V, typename Base_>
-    struct detail : Base_
+    template <typename T, typename V, typename BaseT>
+    struct detail : BaseT
     {
         friend T& operator-=(T& x, const V& v) { return x += (-v); }
 
@@ -57,8 +57,8 @@ namespace private_operable
         friend T& operator- (const V& v, T& x) { return x -= v; }
     };
 
-    template <typename T, typename Base_>
-    struct detail<T, T, Base_> : Base_
+    template <typename T, typename BaseT>
+    struct detail<T, T, BaseT> : BaseT
     {
         friend T operator+ (const T& x, const T& v)
         {
@@ -73,8 +73,8 @@ namespace private_operable
     };
 }
 
-template <typename T, typename V = int, typename Base_ = empty_t>
-struct operable : private_operable::detail<T, V, Base_>
+template <typename T, typename V = int, typename BaseT = empty_t>
+struct operable : private_operable::detail<T, V, BaseT>
 {
     /*
         Must be the end of the nx_operator's parameters, 

@@ -22,16 +22,16 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-template <typename Type_>
+template <typename T>
 class blocking_queue : noncopyable
 {
     mutable mutex lock_;
     condition     task_coming_;
     condition     until_empty_;
-    deque<Type_>  queue_;
+    deque<T>      queue_;
 
 public:
-    typedef Type_ type_t;
+    typedef T type_t;
 
     blocking_queue(void)
         : task_coming_(lock_)

@@ -108,20 +108,20 @@ NX_PP_MULT_MAX(NX_SINGLETON_)
     Get a singleton from a type
 */
 
-template <typename Type_, typename T>
+template <typename TypeT, typename T>
 class SingletonProxy : public Singleton<T> {};
 
-template <typename Type_, typename T>
+template <typename TypeT, typename T>
 inline T& singleton(void)
 {
-    return SingletonProxy<Type_, T>::instance();
+    return SingletonProxy<TypeT, T>::instance();
 }
 
 #define NX_SINGLETON_(n) \
-template <typename Type_, typename T, NX_PP_TYPE_1(n, typename P)> \
+template <typename TypeT, typename T, NX_PP_TYPE_1(n, typename P)> \
 inline T& singleton(NX_PP_TYPE_2(n, P, par)) \
 { \
-    return SingletonProxy<Type_, T>::instance(NX_PP_TYPE_1(n, par)); \
+    return SingletonProxy<TypeT, T>::instance(NX_PP_TYPE_1(n, par)); \
 }
 NX_PP_MULT_MAX(NX_SINGLETON_)
 #undef NX_SINGLETON_

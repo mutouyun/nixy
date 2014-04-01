@@ -20,7 +20,7 @@ NX_BEG
     a adapter allocator for stl
 */
 
-template <typename T, class Alloc_>
+template <typename T, class AllocT>
 struct std_allocator
 {
 public:
@@ -35,7 +35,7 @@ public:
 
     // the other type of std_allocator
     template <typename U>
-    struct rebind { typedef std_allocator<U, Alloc_> other; };
+    struct rebind { typedef std_allocator<U, AllocT> other; };
 
 public:
     pointer address(reference val) const
@@ -48,29 +48,29 @@ public:
 
 public:
     std_allocator() {}
-    std_allocator(const std_allocator<T, Alloc_>&) {}
+    std_allocator(const std_allocator<T, AllocT>&) {}
     template <class U>
-    std_allocator(const std_allocator<U, Alloc_>&) {}
+    std_allocator(const std_allocator<U, AllocT>&) {}
 
-    std_allocator<T, Alloc_>& operator=(const std_allocator<T, Alloc_>&) { return (*this); }
+    std_allocator<T, AllocT>& operator=(const std_allocator<T, AllocT>&) { return (*this); }
     template <class U>
-    std_allocator<T, Alloc_>& operator=(const std_allocator<U, Alloc_>&) { return (*this); }
+    std_allocator<T, AllocT>& operator=(const std_allocator<U, AllocT>&) { return (*this); }
 
     template <class U>
-    bool operator==(const std_allocator<U, Alloc_>&) const { return true; }
+    bool operator==(const std_allocator<U, AllocT>&) const { return true; }
 
 public:
     pointer allocate(size_type count, const pvoid = nx::nulptr)
     {
         if (count > this->max_size()) throw std::bad_alloc();
-        pvoid p = Alloc_::alloc(count * sizeof(T));
+        pvoid p = AllocT::alloc(count * sizeof(T));
         if (!p) throw std::bad_alloc();
         return static_cast<pointer>(p);
     }
 
     void deallocate(pvoid p, size_type /*count*/)
     {
-        Alloc_::free(p);
+        AllocT::free(p);
     }
 
     static void construct(pointer p, const T& val)
@@ -88,12 +88,12 @@ public:
     alloc policy base
 */
 
-template <class Model_>
-struct alloc_model : Model_
+template <class ModelT>
+struct alloc_model : ModelT
 {
     /* the stl allocator type */
     template <typename T>
-    struct std_allocator { typedef nx::std_allocator<T, Model_> type_t; };
+    struct std_allocator { typedef nx::std_allocator<T, ModelT> type_t; };
 };
 
 /*

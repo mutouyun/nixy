@@ -20,15 +20,15 @@ NX_BEG
 
 namespace private_holder
 {
-    template <typename T, class P, class Alloc_, class Model_>
-    class detail : public ref_base<Alloc_, Model_>, public P
+    template <typename T, class P, class AllocT, class ModelT>
+    class detail : public ref_base<AllocT, ModelT>, public P
     {
-        typedef ref_base<Alloc_, Model_> base_t;
+        typedef ref_base<AllocT, ModelT> base_t;
 
     public:
         typedef T      type_t;
         typedef P      policy_t;
-        typedef Model_ model_t;
+        typedef ModelT model_t;
 
     protected:
         type_t res_;
@@ -62,7 +62,7 @@ namespace private_holder
         }
 
         template <typename U>
-        void set(const detail<U, P, Alloc_, Model_>& r)
+        void set(const detail<U, P, AllocT, ModelT>& r)
         {
             if (base_t::set(r))
                 res_ = (type_t)r.get();
@@ -84,12 +84,12 @@ namespace private_holder
     Using reference counting to manage resources
 */
 
-template <typename T, class P, class Alloc_ = NX_DEFAULT_ALLOC, class Model_ = NX_DEFAULT_THREAD_MODEL>
+template <typename T, class P, class AllocT = NX_DEFAULT_ALLOC, class ModelT = NX_DEFAULT_THREAD_MODEL>
 class holder
-    : public ref_counter<private_holder::detail<T, P, Alloc_, Model_> >
-    , public safe_bool<holder<T, P, Alloc_, Model_> >
+    : public ref_counter<private_holder::detail<T, P, AllocT, ModelT> >
+    , public safe_bool<holder<T, P, AllocT, ModelT> >
 {
-    typedef ref_counter<private_holder::detail<T, P, Alloc_, Model_> > base_t;
+    typedef ref_counter<private_holder::detail<T, P, AllocT, ModelT> > base_t;
 
 public:
     holder(void)

@@ -23,26 +23,26 @@ NX_BEG
 #define NX_DEFAULT_RAND nx::use::rand_mt19937
 #endif
 
-template <typename Model_ = NX_DEFAULT_RAND>
-class random : public Model_
+template <typename ModelT = NX_DEFAULT_RAND>
+class random : public ModelT
 {
 protected:
     int lower_, upper_;
 
     double roll(void)
     {
-        return (Model_::rand() + 0.5) / (Model_::MAX + 1.0);
+        return (ModelT::rand() + 0.5) / (ModelT::MAX + 1.0);
     }
 
 public:
-    random(int lower = 0, int upper = Model_::MAX)
+    random(int lower = 0, int upper = ModelT::MAX)
         : lower_(0), upper_(0)
     {
         range(lower, upper);
         srand();
     }
 
-    void range(int lower = 0, int upper = Model_::MAX)
+    void range(int lower = 0, int upper = ModelT::MAX)
     {
         lower_ = lower;
         upper_ = upper;
@@ -50,7 +50,7 @@ public:
 
     void srand(nx::uint seed = 0)
     {
-        Model_::srand(seed ? seed : static_cast<uint>(tickcount()));
+        ModelT::srand(seed ? seed : static_cast<uint>(tickcount()));
     }
 
     template <typename T>

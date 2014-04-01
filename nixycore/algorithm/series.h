@@ -16,15 +16,20 @@ NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
 template <typename T>
-struct SeriesBase
+struct series_base
 {
     typedef T type_t;
 
     type_t val_;
 
-    SeriesBase(void) : val_(0) {}
+    series_base(void) : val_(0) {}
 
     type_t value(void) const { return val_; }
+
+    bool operator==(const series_base& y) const
+    {
+        return val_ == y.val_;
+    }
 };
 
 namespace use // Series Policy
@@ -38,9 +43,9 @@ namespace use // Series Policy
     */
 
     template <typename T, size_t N>
-    struct iter_acc : SeriesBase<T>
+    struct iter_acc : series_base<T>
     {
-        typedef SeriesBase<T> base_t;
+        typedef series_base<T> base_t;
 
         void operator()(int n)
         {
@@ -62,9 +67,9 @@ namespace use // Series Policy
     */
 
     template <typename T, size_t N>
-    struct iter_powerof : SeriesBase<T>
+    struct iter_powerof : series_base<T>
     {
-        typedef SeriesBase<T> base_t;
+        typedef series_base<T> base_t;
 
         void operator()(int n)
         {
@@ -102,9 +107,9 @@ namespace use // Series Policy
     */
 
     template <typename T, size_t N = 1>
-    struct iter_fibonacci : SeriesBase<T>
+    struct iter_fibonacci : series_base<T>
     {
-        typedef SeriesBase<T> base_t;
+        typedef series_base<T> base_t;
 
         typename base_t::type_t prv_;
         iter_fibonacci(void) : prv_(0) {}

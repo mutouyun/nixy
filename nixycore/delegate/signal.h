@@ -33,14 +33,14 @@ private:
     deque<functor_t> queue_;
 
 public:
-    template <typename Fr_>
-    void connect(const Fr_& f)
+    template <typename FrT>
+    void connect(const FrT& f)
     {
         queue_.push_back(f);
     }
 
-    template <typename Fr_, typename Ob_>
-    void connect(Ob_* o, Fr_ f) // object pointer is the first parameter
+    template <typename FrT, typename ObT>
+    void connect(ObT* o, FrT f) // object pointer is the first parameter
     {
         queue_.push_back(nx::move(functor_t(f, o)));
     }
@@ -66,13 +66,13 @@ public: \
 private: \
     deque<functor_t> queue_; \
 public: \
-    template <typename Fr_> \
-    void connect(const Fr_& f) \
+    template <typename FrT> \
+    void connect(const FrT& f) \
     { \
         queue_.push_back(f); \
     } \
-    template <typename Fr_, typename Ob_> \
-    void connect(Ob_* o, Fr_ f) \
+    template <typename FrT, typename ObT> \
+    void connect(ObT* o, FrT f) \
     { \
         queue_.push_back(nx::move(functor_t(f, o))); \
     } \

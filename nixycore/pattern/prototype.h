@@ -35,11 +35,11 @@ T*>::type_t clone(T* ob)
     return nx::alloc<T>(nx::ref(*ob));
 }
 
-template <typename Alloc_, typename T>
+template <typename AllocT, typename T>
 T* clone(T* ob)
 {
     if (!ob) return nx::nulptr;
-    return nx::alloc<Alloc_, T>(nx::ref(*ob));
+    return nx::alloc<AllocT, T>(nx::ref(*ob));
 }
 
 //////////////////////////////////////////////////////////////////////////

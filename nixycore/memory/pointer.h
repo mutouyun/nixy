@@ -32,10 +32,10 @@ namespace use
 
 namespace private_pointer
 {
-    template <typename T, class Ptr_>
-    struct opt : Ptr_
+    template <typename T, class PtrT>
+    struct opt : PtrT
     {
-        typedef Ptr_ base_t;
+        typedef PtrT base_t;
 
         opt() : base_t() {}
         template <typename U>
@@ -43,14 +43,14 @@ namespace private_pointer
         template <typename U, typename F>
         opt(const U& r, F dest_fr) : base_t(r, dest_fr) {}
 
-        T* operator->(void) const { return  Ptr_::get(); }
-        T& operator* (void) const { return *Ptr_::get(); }
+        T* operator->(void) const { return  PtrT::get(); }
+        T& operator* (void) const { return *PtrT::get(); }
     };
 
-    template <class Ptr_>
-    struct opt<void, Ptr_> : Ptr_
+    template <class PtrT>
+    struct opt<void, PtrT> : PtrT
     {
-        typedef Ptr_ base_t;
+        typedef PtrT base_t;
 
         opt() : base_t() {}
         template <typename U>
@@ -64,14 +64,14 @@ namespace private_pointer
     smart pointer
 */
 
-template <typename T, class Alloc_ = NX_DEFAULT_ALLOC, class Model_ = NX_DEFAULT_THREAD_MODEL>
-class pointer : public private_pointer::opt<T, holder<T*, use::dest_memory, Alloc_, Model_> >
+template <typename T, class AllocT = NX_DEFAULT_ALLOC, class ModelT = NX_DEFAULT_THREAD_MODEL>
+class pointer : public private_pointer::opt<T, holder<T*, use::dest_memory, AllocT, ModelT> >
 {
-    typedef private_pointer::opt<T, holder<T*, use::dest_memory, Alloc_, Model_> > opt_t;
+    typedef private_pointer::opt<T, holder<T*, use::dest_memory, AllocT, ModelT> > opt_t;
 
 public:
     typedef typename opt_t::base_t   base_t;
-    typedef Alloc_                   alloc_t;
+    typedef AllocT                   alloc_t;
     typedef typename base_t::model_t model_t;
     typedef T                        type_t;
     typedef typename base_t::type_t  point_t;

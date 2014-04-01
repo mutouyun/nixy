@@ -20,11 +20,11 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-template <typename Type_, class Alloc_ = NX_DEFAULT_ALLOC>
-class deque : public std::deque<Type_, typename Alloc_::template std_allocator<Type_>::type_t>
+template <typename T, class AllocT = NX_DEFAULT_ALLOC>
+class deque : public std::deque<T, typename AllocT::template std_allocator<T>::type_t>
 {
 public:
-    typedef std::deque<Type_, typename Alloc_::template std_allocator<Type_>::type_t> base_t;
+    typedef std::deque<T, typename AllocT::template std_allocator<T>::type_t> base_t;
 
 public:
     deque(void)
@@ -68,8 +68,8 @@ public:
     Special swap algorithm
 */
 
-template <typename T_, class A_>
-inline void swap(deque<T_, A_>& x, deque<T_, A_>& y)
+template <typename T, class A>
+inline void swap(deque<T, A>& x, deque<T, A>& y)
 {
     x.swap(y);
 }

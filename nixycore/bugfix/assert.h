@@ -7,9 +7,9 @@
 
 #pragma once
 
-// nx...
+#include "nixycore/preprocessor/pp_macros.h"
+
 #include "nixycore/general/general.h"
-#include "nixycore/preprocessor/preprocessor.h"
 
 // assert
 #include <assert.h>
@@ -36,7 +36,7 @@ NX_BEG
 
 #ifndef nx_assert_static
 template <bool, int> struct static_assert_failure;
-template <int Line_> struct static_assert_failure<true, Line_> {};
+template <int LineN> struct static_assert_failure<true, LineN> {};
 #define nx_assert_static(...) \
     enum \
     { \

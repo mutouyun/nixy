@@ -28,14 +28,14 @@ NX_BEG
     the data structure for storing objects
 */
 
-template <typename T, class FixedAlloc_>
+template <typename T, class FixedAllocT>
 class object_pool_storage
 {
 public:
     typedef T type_t;
 
 protected:
-    FixedAlloc_ allocator_;
+    FixedAllocT allocator_;
     functor<type_t*(pvoid)> constructor_;
 
     struct alloc_t
@@ -140,13 +140,13 @@ namespace private_object_pool
 template
 <
     typename T,
-    class FixedAlloc_ = fixed_pool<>,
+    class FixedAllocT = fixed_pool<>,
     template <typename, class>
     class Storage_ = object_pool_storage
 >
 class object_pool : noncopyable
 {
-    typedef Storage_<T, FixedAlloc_> storage_t;
+    typedef Storage_<T, FixedAllocT> storage_t;
 
 public:
     typedef typename storage_t::type_t type_t;

@@ -20,11 +20,11 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-template <typename Type_, class Alloc_ = NX_DEFAULT_ALLOC>
-class list : public std::list<Type_, typename Alloc_::template std_allocator<Type_>::type_t>
+template <typename T, class AllocT = NX_DEFAULT_ALLOC>
+class list : public std::list<T, typename AllocT::template std_allocator<T>::type_t>
 {
 public:
-    typedef std::list<Type_, typename Alloc_::template std_allocator<Type_>::type_t> base_t;
+    typedef std::list<T, typename AllocT::template std_allocator<T>::type_t> base_t;
 
 public:
     list(void)
@@ -68,8 +68,8 @@ public:
     Special swap algorithm
 */
 
-template <typename T_, class A_>
-inline void swap(list<T_, A_>& x, list<T_, A_>& y)
+template <typename T, class A>
+inline void swap(list<T, A>& x, list<T, A>& y)
 {
     x.swap(y);
 }

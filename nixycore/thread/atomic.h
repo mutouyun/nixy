@@ -38,71 +38,71 @@ namespace private_atomic
         check if the size of type is supported
     */
 
-    template <int Mask_, int Size_>
+    template <int MaskN, int SizeN>
     struct is_supported
-        : type_if<(Mask_ & Size_) ? true : false>
+        : type_if<(MaskN & SizeN) ? true : false>
     {};
 
     /*
         get the supported size
     */
 
-    template <int Mask_, int Size_, bool = is_supported<Mask_, Size_>::value>
+    template <int MaskN, int SizeN, bool = is_supported<MaskN, SizeN>::value>
     struct get_supported
     {
-        NX_STATIC_VALUE(int, Size_);
+        NX_STATIC_VALUE(int, SizeN);
     };
 
-    template <int Mask_>
-    struct get_supported<Mask_, 0, false>
+    template <int MaskN>
+    struct get_supported<MaskN, 0, false>
     {
         NX_STATIC_VALUE(int, 0);
     };
 
-    template <int Mask_, int Size_>
-    struct get_supported<Mask_, Size_, false>
+    template <int MaskN, int SizeN>
+    struct get_supported<MaskN, SizeN, false>
     {
     private:
-        NX_STATIC_PROPERTY(int, new_size, Size_ <= Mask_ ? Size_ << 1 : 0);
+        NX_STATIC_PROPERTY(int, new_size, SizeN <= MaskN ? SizeN << 1 : 0);
     public:
-        NX_STATIC_VALUE(int, get_supported<Mask_, new_size>::value);
+        NX_STATIC_VALUE(int, get_supported<MaskN, new_size>::value);
     };
 
     /*
         get the supported storage type
     */
 
-    template <typename T, int Mask_, int Sp_ = get_supported<Mask_, sizeof(T)>::value
-                                   , bool = (sizeof(T) == Sp_)>
+    template <typename T, int MaskN, int SpN = get_supported<MaskN, sizeof(T)>::value
+                                   , bool = (sizeof(T) == SpN)>
     struct get_storage;
 
-    template <typename T, int Mask_, int Sp_>
-    struct get_storage<T, Mask_, Sp_, true>
+    template <typename T, int MaskN, int SpN>
+    struct get_storage<T, MaskN, SpN, true>
     {
         typedef T type_t;
     };
     /*
-        (Sp_ == 1) && (sizeof(T) != 1)
+        (SpN == 1) && (sizeof(T) != 1)
         Means we cann't get a comfortable size for this type.
-        At this time, Sp_ must be zero.
-        So when (sizeof(T) != 1), Sp_ will never equal to 1
+        At this time, SpN must be zero.
+        So when (sizeof(T) != 1), SpN will never equal to 1
     */
-    template <typename T, int Mask_>
-    struct get_storage<T, Mask_, 2, false>
+    template <typename T, int MaskN>
+    struct get_storage<T, MaskN, 2, false>
     {
         typedef typename nx::select_if
                 <nx::is_signed<T>::value, nx::sint16, nx::uint16
                 >::type_t type_t;
     };
-    template <typename T, int Mask_>
-    struct get_storage<T, Mask_, 4, false>
+    template <typename T, int MaskN>
+    struct get_storage<T, MaskN, 4, false>
     {
         typedef typename nx::select_if
                 <nx::is_signed<T>::value, nx::sint32, nx::uint32
                 >::type_t type_t;
     };
-    template <typename T, int Mask_>
-    struct get_storage<T, Mask_, 8, false>
+    template <typename T, int MaskN>
+    struct get_storage<T, MaskN, 8, false>
     {
         typedef typename nx::select_if
                 <nx::is_signed<T>::value, nx::sint64, nx::uint64

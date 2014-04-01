@@ -21,14 +21,14 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-template <typename Type_, typename Seq_ = nx::deque<Type_> >
-class stack : public std::stack<Type_, Seq_>
+template <typename T, typename SeqT = nx::deque<T> >
+class stack : public std::stack<T, SeqT>
 {
 public:
-    typedef std::stack<Type_, Seq_> base_t;
+    typedef std::stack<T, SeqT> base_t;
 
 public:
-    explicit stack(const Seq_& s = Seq_())
+    explicit stack(const SeqT& s = SeqT())
         : base_t(s)
     {}
 
@@ -53,8 +53,8 @@ public:
     Special swap algorithm
 */
 
-template <typename T_, typename S_>
-inline void swap(stack<T_, S_>& x, stack<T_, S_>& y)
+template <typename T, typename S>
+inline void swap(stack<T, S>& x, stack<T, S>& y)
 {
     x.swap(y);
 }
@@ -63,14 +63,14 @@ inline void swap(stack<T_, S_>& x, stack<T_, S_>& y)
     Special assign algorithm
 */
 
-template <typename T_, typename S_, typename V>
-inline void insert(stack<T_, S_>& set, typename stack<T_, S_>::iterator /*ite*/, const V& val)
+template <typename T, typename S, typename V>
+inline void insert(stack<T, S>& set, typename stack<T, S>::iterator /*ite*/, const V& val)
 {
     set.push(val);
 }
 
-template <typename T_, typename S_>
-inline void erase(stack<T_, S_>& set, typename stack<T_, S_>::iterator /*ite*/)
+template <typename T, typename S>
+inline void erase(stack<T, S>& set, typename stack<T, S>::iterator /*ite*/)
 {
     set.pop();
 }

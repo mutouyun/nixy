@@ -23,22 +23,22 @@ NX_BEG
 
 template
 <
-    typename Type_, typename Seq_ = nx::vector<Type_>,
-    typename Comp_ = std::less<typename Seq_::value_type>
+    typename T, typename SeqT = nx::vector<T>,
+    typename CompT = std::less<typename SeqT::value_type>
 >
-class priority : public std::priority_queue<Type_, Seq_, Comp_>
+class priority : public std::priority_queue<T, SeqT, CompT>
 {
 public:
-    typedef std::priority_queue<Type_, Seq_, Comp_> base_t;
+    typedef std::priority_queue<T, SeqT, CompT> base_t;
 
 public:
-    explicit priority(const Comp_& c = Comp_(), const Seq_& s = Seq_())
+    explicit priority(const CompT& c = CompT(), const SeqT& s = SeqT())
         : base_t(c, s)
     {}
 
     template <typename Iterator_>
     priority(Iterator_ f, Iterator_ l,
-             const Comp_& c = Comp_(), const Seq_& s = Seq_())
+             const CompT& c = CompT(), const SeqT& s = SeqT())
         : base_t(f, l, c, s)
     {}
 
@@ -63,8 +63,8 @@ public:
     Special swap algorithm
 */
 
-template <typename T_, typename S_, typename C_>
-inline void swap(priority<T_, S_, C_>& x, priority<T_, S_, C_>& y)
+template <typename T, typename S, typename C>
+inline void swap(priority<T, S, C>& x, priority<T, S, C>& y)
 {
     x.swap(y);
 }
@@ -73,14 +73,14 @@ inline void swap(priority<T_, S_, C_>& x, priority<T_, S_, C_>& y)
     Special assign algorithm
 */
 
-template <typename T_, typename S_, typename C_, typename V>
-inline void insert(priority<T_, S_, C_>& set, typename priority<T_, S_, C_>::iterator /*ite*/, const V& val)
+template <typename T, typename S, typename C, typename V>
+inline void insert(priority<T, S, C>& set, typename priority<T, S, C>::iterator /*ite*/, const V& val)
 {
     set.push(val);
 }
 
-template <typename T_, typename S_, typename C_>
-inline void erase(priority<T_, S_, C_>& set, typename priority<T_, S_, C_>::iterator /*ite*/)
+template <typename T, typename S, typename C>
+inline void erase(priority<T, S, C>& set, typename priority<T, S, C>::iterator /*ite*/)
 {
     set.pop();
 }

@@ -120,8 +120,8 @@ public:
         : base_t(n, wc)
     {}
 
-    template <typename Iterator_>
-    string(Iterator_ f, Iterator_ l)
+    template <typename IteratorT>
+    string(IteratorT f, IteratorT l)
         : base_t(f, l)
     {}
 

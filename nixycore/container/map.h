@@ -20,18 +20,18 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-template <typename Key_, typename Type_, typename Comp_ = std::less<Key_>, class Alloc_ = NX_DEFAULT_ALLOC>
-class map : public std::map<Key_, Type_, Comp_, typename Alloc_::template std_allocator<std::pair<const Key_, Type_> >::type_t>
+template <typename KeyT, typename TypeT, typename CompT = std::less<KeyT>, class AllocT = NX_DEFAULT_ALLOC>
+class map : public std::map<KeyT, TypeT, CompT, typename AllocT::template std_allocator<std::pair<const KeyT, TypeT> >::type_t>
 {
 public:
-    typedef std::map<Key_, Type_, Comp_, typename Alloc_::template std_allocator<std::pair<const Key_, Type_> >::type_t> base_t;
+    typedef std::map<KeyT, TypeT, CompT, typename AllocT::template std_allocator<std::pair<const KeyT, TypeT> >::type_t> base_t;
 
 public:
     map(void)
         : base_t()
     {}
 
-    explicit map(const Comp_& c,
+    explicit map(const CompT& c,
                  const typename base_t::allocator_type& a = typename base_t::allocator_type())
         : base_t(c, a)
     {}
@@ -43,7 +43,7 @@ public:
 
     template <typename Iterator_>
     map(Iterator_ f, Iterator_ l,
-        const Comp_& c,
+        const CompT& c,
         const typename base_t::allocator_type& a = typename base_t::allocator_type())
         : base_t(f, l, c, a)
     {}
@@ -69,28 +69,28 @@ public:
     Special container traits
 */
 
-template <typename K_, typename T_, typename C_, class A_>
-struct container_traits<std::map<K_, T_, C_, A_> >
+template <typename K, typename T, typename C, class A>
+struct container_traits<std::map<K, T, C, A> >
 {
-    typedef typename std::map<K_, T_, C_, A_>::value_type val_t;
-    typedef typename std::map<K_, T_, C_, A_>::iterator   ite_t;
-    typedef std::pair<K_, T_>                             pair_t;
+    typedef typename std::map<K, T, C, A>::value_type val_t;
+    typedef typename std::map<K, T, C, A>::iterator   ite_t;
+    typedef std::pair<K, T>                             pair_t;
 };
 
-template <typename K_, typename T_, typename C_, class A_>
-struct container_traits<nx::map<K_, T_, C_, A_> >
+template <typename K, typename T, typename C, class A>
+struct container_traits<nx::map<K, T, C, A> >
 {
-    typedef typename nx::map<K_, T_, C_, A_>::value_type val_t;
-    typedef typename nx::map<K_, T_, C_, A_>::iterator   ite_t;
-    typedef std::pair<K_, T_>                            pair_t;
+    typedef typename nx::map<K, T, C, A>::value_type val_t;
+    typedef typename nx::map<K, T, C, A>::iterator   ite_t;
+    typedef std::pair<K, T>                            pair_t;
 };
 
 /*
     Special swap algorithm
 */
 
-template <typename K_, typename T_, typename C_, class A_>
-inline void swap(map<K_, T_, C_, A_>& x, map<K_, T_, C_, A_>& y)
+template <typename K, typename T, typename C, class A>
+inline void swap(map<K, T, C, A>& x, map<K, T, C, A>& y)
 {
     x.swap(y);
 }

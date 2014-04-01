@@ -37,13 +37,13 @@ public:
 public:
     // fixed-size array of elements of type T
     T elems_[N];
-    
-    // iterator support
-    iterator        begin()                 { return elems_; }
-    const_iterator  begin() const           { return elems_; }
 
-    iterator        end()                   { return elems_ + N; }
-    const_iterator  end() const             { return elems_ + N; }
+    // iterator support
+    iterator        begin(void)             { return elems_; }
+    const_iterator  begin(void) const       { return elems_; }
+
+    iterator        end(void)               { return elems_ + N; }
+    const_iterator  end(void) const         { return elems_ + N; }
 
 public:
     // operator[]

@@ -20,18 +20,18 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-template <typename Key_, typename Comp_ = std::less<Key_>, class Alloc_ = NX_DEFAULT_ALLOC>
-class set : public std::set<Key_, Comp_, typename Alloc_::template std_allocator<Key_>::type_t>
+template <typename KeyT, typename CompT = std::less<KeyT>, class AllocT = NX_DEFAULT_ALLOC>
+class set : public std::set<KeyT, CompT, typename AllocT::template std_allocator<KeyT>::type_t>
 {
 public:
-    typedef std::set<Key_, Comp_, typename Alloc_::template std_allocator<Key_>::type_t> base_t;
+    typedef std::set<KeyT, CompT, typename AllocT::template std_allocator<KeyT>::type_t> base_t;
 
 public:
     set(void)
         : base_t()
     {}
 
-    explicit set(const Comp_& c,
+    explicit set(const CompT& c,
                  const typename base_t::allocator_type& a = typename base_t::allocator_type())
             : base_t(c, a)
     {}
@@ -43,7 +43,7 @@ public:
 
     template <typename Iterator_>
     set(Iterator_ f, Iterator_ l,
-        const Comp_& c,
+        const CompT& c,
         const typename base_t::allocator_type& a = typename base_t::allocator_type())
         : base_t(f, l, c, a)
     {}
@@ -69,8 +69,8 @@ public:
     Special swap algorithm
 */
 
-template <typename K_, typename C_, class A_>
-inline void swap(set<K_, C_, A_>& x, set<K_, C_, A_>& y)
+template <typename K, typename C, class A>
+inline void swap(set<K, C, A>& x, set<K, C, A>& y)
 {
     x.swap(y);
 }

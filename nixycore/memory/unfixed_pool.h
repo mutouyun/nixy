@@ -32,18 +32,18 @@ NX_BEG
 
 template
 <
-    class  Alloc_     = NX_DEFAULT_ALLOC,
-    size_t BlockSize_ = NX_UNFIXEDPOOL_BLOCKSIZE
+    class  AllocT     = NX_DEFAULT_ALLOC,
+    size_t BlockSizeN = NX_UNFIXEDPOOL_BLOCKSIZE
 >
 class unfixed_pool : noncopyable
 {
     struct block_t
     {
         block_t* prev_;
-        nx::byte buff_[BlockSize_];
+        nx::byte buff_[BlockSizeN];
     };
 
-    NX_STATIC_PROPERTY(size_t, HEADER_SIZE, sizeof(block_t) - BlockSize_);
+    NX_STATIC_PROPERTY(size_t, HEADER_SIZE, sizeof(block_t) - BlockSizeN);
 
     nx::byte * head_, * tail_;
 
@@ -75,9 +75,9 @@ public:
     {
         if (remain() < size)
         {
-            if (size >= BlockSize_)
+            if (size >= BlockSizeN)
             {
-                block_t* new_blk = static_cast<block_t*>(Alloc_::alloc(HEADER_SIZE + size));
+                block_t* new_blk = static_cast<block_t*>(AllocT::alloc(HEADER_SIZE + size));
                 nx_assert(new_blk);
                 block_t* cur_blk = blocks_head();
                 if (cur_blk)
@@ -92,13 +92,13 @@ public:
                 }
                 return new_blk->buff_;
             }
-            else // size < BlockSize_
+            else // size < BlockSizeN
             {
-                block_t* new_blk = static_cast<block_t*>(Alloc_::alloc(sizeof(block_t)));
+                block_t* new_blk = static_cast<block_t*>(AllocT::alloc(sizeof(block_t)));
                 nx_assert(new_blk);
                 new_blk->prev_ = blocks_head();
                 head_ = new_blk->buff_;
-                tail_ = head_ + BlockSize_;
+                tail_ = head_ + BlockSizeN;
             }
         }
         return (tail_ -= size);
@@ -110,7 +110,7 @@ public:
         while(cur_blk)
         {
             block_t* tmp_blk = cur_blk->prev_;
-            Alloc_::free(cur_blk);
+            AllocT::free(cur_blk);
             cur_blk = tmp_blk;
         }
         init();

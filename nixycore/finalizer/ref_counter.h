@@ -22,11 +22,11 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-template <class Alloc_ = NX_DEFAULT_ALLOC, class Model_ = NX_DEFAULT_THREAD_MODEL>
-class ref_base : nx_operator(typename NX_SHIELD(ref_base<Alloc_, Model_>), unequal)
+template <class AllocT = NX_DEFAULT_ALLOC, class ModelT = NX_DEFAULT_THREAD_MODEL>
+class ref_base : nx_operator(typename NX_SHIELD(ref_base<AllocT, ModelT>), unequal)
 {
 public:
-    typedef typename Model_::template atomic<ulong>::type_t ref_t;
+    typedef typename ModelT::template atomic<ulong>::type_t ref_t;
 
 protected:
     ref_t* ref_;
@@ -46,9 +46,9 @@ public:
     void init(const nx::functor<void()>& guard)
     {
         dec();
-        ref_   = nx::alloc<Alloc_, ref_t>(1);
+        ref_   = nx::alloc<AllocT, ref_t>(1);
         nx_assert(ref_);
-        guard_ = nx::alloc<Alloc_, scope_guard>(nx::ref(guard));
+        guard_ = nx::alloc<AllocT, scope_guard>(nx::ref(guard));
         nx_assert(guard_);
     }
 
@@ -73,10 +73,10 @@ public:
         if (!ref_ || (*ref_) == 0) return;
         if (--(*ref_)) return;
         // free the ref counter
-        nx::free<Alloc_>(ref_);
+        nx::free<AllocT>(ref_);
         ref_ = nx::nulptr;
         // call and free guard
-        nx::free<Alloc_>(guard_);
+        nx::free<AllocT>(guard_);
         guard_ = nx::nulptr;
     }
 
