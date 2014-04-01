@@ -7,10 +7,13 @@
 
 #pragma once
 
-#include "nixycore/typemanip/typebehavior.h"
 #include "nixycore/typemanip/typeconcept.h"
+#include "nixycore/typemanip/typedetect.h"
 
 #include "nixycore/general/general.h"
+
+// placement new
+#include <new>
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -34,7 +37,7 @@ inline typename enable_if<!has_initialize<T>::value &&
                            is_pod<T>::value
 >::type_t initialize(T& d)
 {
-    std::memset(&d, 0, sizeof(d));
+    memset(&d, 0, sizeof(d));
 }
 
 template <typename T>

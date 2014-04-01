@@ -3,6 +3,8 @@
 #include "nixycore/time/time.h"
 #include "nixycore/thread/thread_ops.h"
 
+#include <iomanip>
+
 //////////////////////////////////////////////////////////////////////////
 
 #ifndef STOPWATCH_CHECKER

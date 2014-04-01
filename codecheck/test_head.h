@@ -5,7 +5,6 @@
 #ifndef CODECHECK_CUSTOM_STROUT
 
 #include <iostream>
-#include <string>
 
 using std::cout;
 using std::endl;
@@ -52,7 +51,7 @@ void testAll(void)
     //testAlgorithm();
     //testUtility();
     //testTime();
-    //testRandom();
+    testRandom();
     //testDelegate();
     //testFinalizer();
     //testThread();

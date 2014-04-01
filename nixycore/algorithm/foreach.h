@@ -11,6 +11,7 @@
 
 #include "nixycore/typemanip/typetools.h"
 #include "nixycore/typemanip/typetraits.h"
+#include "nixycore/typemanip/typeof.h"
 
 #include "nixycore/general/general.h"
 

@@ -8,6 +8,7 @@
 #pragma once
 
 #include "nixycore/typemanip/typedetect.h"
+#include "nixycore/typemanip/typetraits.h"
 
 #include "nixycore/general/general.h"
 
