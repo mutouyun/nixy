@@ -13,20 +13,16 @@
     Standard Librarys
 */
 
-// std::size_t, ...
-#include <cstddef>
-// std::printf, /*std::*/vsnprintf, std::vsprintf, ...
-#include <cstdio>
-// std::rand, std::srand, ...
-#include <cstdlib>
-// std::va_list, va_start, va_end
-#include <cstdarg>
-// std::memcpy, std::memset, ...
-#include <cstring>
-// std::cout, std::cerr, std::clog, ...
-#include <iostream>
-// std::setiosflags, ...
-#include <iomanip>
+// size_t, ptrdiff_t, ...
+#include <stddef.h>
+// printf, vsnprintf, vsprintf, ...
+#include <stdio.h>
+// rand, srand, ...
+#include <stdlib.h>
+// va_list, va_start, va_end
+#include <stdarg.h>
+// memcpy, memset, ...
+#include <string.h>
 
 /*
     Detect platforms
@@ -67,8 +63,8 @@ typedef const void*         cpvoid;
 
 typedef unsigned char       byte;
 
-typedef std::size_t         size_t;
-typedef std::ptrdiff_t      ptrdiff_t;
+typedef ::size_t            size_t;
+typedef ::ptrdiff_t         ptrdiff_t;
 
 typedef char                sint8;
 typedef uchar               uint8;

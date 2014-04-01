@@ -27,12 +27,12 @@ struct rand_std
 
     void srand(nx::uint sd)
     {
-        std::srand(sd);
+        ::srand(sd);
     }
 
     rand_t rand(void)
     {
-        return std::rand();
+        return ::rand();
     }
 };
 

@@ -82,22 +82,22 @@ typename enable_if<!is_sametype<V, bool>::value &&
                     is_numeric<V>::value
 >::type_t parse_in(V& val)
 {
-    std::swscanf(buf_.c_str(), printf_format<V, wchar>::val(), &val);
+    swscanf(buf_.c_str(), printf_format<V, wchar>::val(), &val);
 }
 
 void parse_in(char* val)
 {
-    std::strcpy(val, buf_.to_local().c_str());
+    strcpy(val, buf_.to_local().c_str());
 }
 
 void parse_in(wchar* val)
 {
-    std::wcscpy(val, buf_.c_str());
+    wcscpy(val, buf_.c_str());
 }
 
 void parse_in(pvoid& val)
 {
-    std::swscanf(buf_.c_str(), printf_format<pvoid, wchar>::val(), &val);
+    swscanf(buf_.c_str(), printf_format<pvoid, wchar>::val(), &val);
 }
 
 template <typename V>

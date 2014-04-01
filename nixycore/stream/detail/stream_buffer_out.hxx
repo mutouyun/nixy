@@ -30,7 +30,7 @@ void swprintf_buf(V val, size_t buf_count)
 {
     size_t eof_index = buf_.length();
     buf_.resize(eof_index + buf_count);
-    int n = std::swprintf(const_cast<wchar*>(buf_.data()) + eof_index, 
+    int n = swprintf(const_cast<wchar*>(buf_.data()) + eof_index,
 #if defined(NX_OS_LINUX)
                           buf_count, 
 #endif

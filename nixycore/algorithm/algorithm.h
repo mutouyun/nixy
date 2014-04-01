@@ -23,8 +23,8 @@
 
 // std algorithms
 #include <algorithm>
-// std::fabs...
-#include <cmath>
+// fabs...
+#include <math.h>
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -124,12 +124,12 @@ namespace private_equal
 {
     inline bool is_equal(float x, float y)
     {
-        return (std::fabs(x - y) < 0.000001f);
+        return (fabs(x - y) < 0.000001f);
     }
 
     inline bool is_equal(double x, double y)
     {
-        return (std::fabs(x - y) < (double)0.000001);
+        return (fabs(x - y) < (double)0.000001);
     }
 
     template <typename T, typename U>
@@ -142,7 +142,7 @@ namespace private_equal
     inline typename enable_if<is_union<T>::value, 
     bool>::type_t is_equal(const T& x, const T& y)
     {
-        return (std::memcmp(&x, &y, sizeof(T)) == 0);
+        return (memcmp(&x, &y, sizeof(T)) == 0);
     }
 
     template <typename T, typename U, size_t N1, size_t N2>
@@ -150,7 +150,7 @@ namespace private_equal
                               is_pod<U>::value, 
     bool>::type_t is_equal(const T(& x)[N1], const U(& y)[N2])
     {
-        return ((N1 == N2) ? (std::memcmp(x, y, sizeof(x)) == 0) : false);
+        return ((N1 == N2) ? (memcmp(x, y, sizeof(x)) == 0) : false);
     }
 
     template <typename T, typename U, size_t N1, size_t N2>

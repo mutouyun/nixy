@@ -293,7 +293,7 @@ namespace test_rvalue
             : str_(new char[1024])
         {
             if (big.str_)
-                std::memcpy(str_, big.str_, 1024);
+                memcpy(str_, big.str_, 1024);
             else
                 clear();
             strout << "Copy Constructor " << str_ << endl;
@@ -317,7 +317,7 @@ namespace test_rvalue
         const Big& operator=(const Big& big)
         {
             if (big.str_)
-                std::memcpy(str_, big.str_, 1024);
+                memcpy(str_, big.str_, 1024);
             else
                 clear();
             strout << "Copy Assignment " << str_ << endl;
