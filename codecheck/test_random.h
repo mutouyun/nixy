@@ -33,8 +33,7 @@ void testRandMT19937(void)
             save[save_index++] = x;
         }
 
-        memset(snm, 0, sizeof(snm));
-        itoa(x, snm, 10);
+        sprintf(snm, "%d", x);
         for (unsigned int m = 0; (m < nx_countof(snm)) && snm[m]; ++m)
             fwrite(snm + m, sizeof(char), 1, fp);
         fwrite("\r\n", sizeof(char), 2, fp);
