@@ -25,19 +25,19 @@ NX_BEG
 */
 
 #ifndef NX_MEMPOOL_STACK
-#define NX_MEMPOOL_STACK    nx::use::pool_stack_array
+#define NX_MEMPOOL_STACK    nx::use::pool_stack_skip
 #endif
 
 template
 <
-    typename Alloc_ = nx::use::alloc_std, 
+    typename AllocT = nx::use::alloc_std,
 
     template <class>
-    class Stack_ = NX_MEMPOOL_STACK
+    class StackT = NX_MEMPOOL_STACK
 >
-class mem_pool : pool_center<Stack_<Alloc_> >
+class mem_pool : pool_center<StackT<AllocT> >
 {
-    typedef pool_center<Stack_<Alloc_> > base_t;
+    typedef pool_center<StackT<AllocT> > base_t;
     typedef typename base_t::pool_t pool_t;
 
     struct alloc_t { size_t size_; };
@@ -53,7 +53,7 @@ class mem_pool : pool_center<Stack_<Alloc_> >
     pvoid do_alloc(size_t size)
     {
         pool_t* pool = find_pool(size);
-        alloc_t* alc_p = (alloc_t*)(pool ? pool->alloc() : Alloc_::alloc(sizeof(alloc_t) + size));
+        alloc_t* alc_p = (alloc_t*)(pool ? pool->alloc() : AllocT::alloc(sizeof(alloc_t) + size));
         nx_assert(alc_p);
         alc_p->size_ = size;
         return cast(alc_p);
@@ -66,13 +66,13 @@ class mem_pool : pool_center<Stack_<Alloc_> >
         if (pool)
             pool->free(alc_p);
         else
-            Alloc_::free(alc_p);
+            AllocT::free(alc_p);
     }
 
     alloc_t* mem_move(alloc_t* dst, alloc_t* src, pool_t* src_pool)
     {
         nx_assert(src_pool);
-        std::memcpy(dst + 1, src + 1, src->size_);
+        memcpy(dst + 1, src + 1, src->size_);
         src_pool->free(src);
         return dst;
     }
@@ -96,13 +96,13 @@ class mem_pool : pool_center<Stack_<Alloc_> >
         /* (new_pool == NULL) */
         if (old_pool)
         {
-            alloc_t* new_p = (alloc_t*)Alloc_::alloc(sizeof(alloc_t) + size);
+            alloc_t* new_p = (alloc_t*)AllocT::alloc(sizeof(alloc_t) + size);
             nx_assert(new_p);
             new_p->size_ = size;
             return cast(mem_move(new_p, old_p, old_pool));
         }
         /* (new_pool == old_pool == NULL) */
-        return cast((alloc_t*)Alloc_::realloc(old_p, sizeof(alloc_t) + size));
+        return cast((alloc_t*)AllocT::realloc(old_p, sizeof(alloc_t) + size));
     }
 
 public:

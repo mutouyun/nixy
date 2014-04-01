@@ -37,8 +37,8 @@ namespace test_mempool
     const int TestCont = 1000;
     const int TestLast = 1000;
 #endif
-    const int TestSMin = sizeof(void*);
-    const int TestSMax = TestSMin * 1024;
+    const int TestSMin = 1/*4*/;
+    const int TestSMax = /*16*//*32*/1024;
 
     nx::size_t size[TestLast] = {0};
     nx::size_t indx[TestLast] = {0};
@@ -69,13 +69,7 @@ namespace test_mempool
         for(int n = 0; n < TestLast; ++n) \
         { \
             void*(& p) = test[indx[n]]; \
-            if (p) \
-            { \
-                alc.free(p); \
-                p = 0; \
-            } \
-            else \
-                p = alc.alloc(size[n]); \
+            p = alc.realloc(p, size[n]); \
         } \
     } } while(0)
 
@@ -92,35 +86,79 @@ namespace test_mempool
 
     struct new_alloc
     {
-        void* alloc(size_t size) { return new nx::byte[size]; }
-        void free(void* p)       { delete [] (nx::byte*)p; }
+        void* realloc(void* p, size_t size)
+        {
+            if (p)
+                delete [] (nx::byte*)p;
+            else
+                return new nx::byte[size];
+            return 0;
+        }
     };
 
     struct mempool_alloc
     {
         nx::mem_pool<> pool_;
-        void* alloc(size_t size) { return pool_.alloc(size); }
-        void free(void* p)       { pool_.free(p); }
+        void* realloc(void* p, size_t size)
+        {
+            if (p)
+                pool_.free(p);
+            else
+                return pool_.alloc(size);
+            return 0;
+        }
     };
 
     struct unfixed_alloc
     {
         nx::unfixed_pool<> pool_;
-        void* alloc(size_t size) { return pool_.alloc(size); }
-        void free(void* /*p*/)   {}
+        void* realloc(void* p, size_t size)
+        {
+            if (!p)
+                return pool_.alloc(size);
+            return 0;
+        }
     };
 
     struct mem_alloc
     {
-        void* alloc(size_t size) { return nx::alloc(size); }
-        void free(void* p)       { nx::free(p); }
+        void* realloc(void* p, size_t size)
+        {
+            if (p)
+                nx::free(p);
+            else
+                return nx::alloc(size);
+            return 0;
+        }
+    };
+
+    struct mem_realloc
+    {
+        void* realloc(void* p, size_t size)
+        {
+            return nx::realloc(p, size);
+        }
     };
 
 #ifndef NO_TEST_NEDMALLOC
     struct ned_alloc
     {
-        void* alloc(size_t size) { return nedalloc::nedmalloc(size); }
-        void free(void* p)       { nedalloc::nedfree(p); }
+        void* realloc(void* p, size_t size)
+        {
+            if (p)
+                nedalloc::nedfree(p);
+            else
+                return nedalloc::nedmalloc(size);
+            return 0;
+        }
+    };
+
+    struct ned_realloc
+    {
+        void* realloc(void* p, size_t size)
+        {
+            return nedalloc::nedrealloc(p, size);
+        }
     };
 #endif
 }
@@ -133,11 +171,13 @@ void testMemPool(void)
 
     init();
 
-    start<unfixed_alloc>("Start for nx::unfixed_pool...\t");
-    start<mempool_alloc>("Start for nx::mem_pool...\t");
+    //start<unfixed_alloc>("Start for nx::unfixed_pool...\t");
+    //start<mempool_alloc>("Start for nx::mem_pool...\t");
     start<mem_alloc>    ("Start for nx::alloc/free...\t");
+    //start<mem_realloc>  ("Start for nx::realloc...\t");
 #ifndef NO_TEST_NEDMALLOC
     start<ned_alloc>    ("Start for ned_alloc/free...\t");
+    //start<ned_realloc>  ("Start for ned_realloc...\t");
 #endif
     start<new_alloc>    ("Start for new && delete...\t");
 }
@@ -159,8 +199,10 @@ namespace test_alloc
     }
     THREAD_ALLOC(new_alloc)
     THREAD_ALLOC(mem_alloc)
+    THREAD_ALLOC(mem_realloc)
 #ifndef NO_TEST_NEDMALLOC
     THREAD_ALLOC(ned_alloc)
+    THREAD_ALLOC(ned_realloc)
 #endif
 #undef THREAD_ALLOC
 
@@ -177,8 +219,10 @@ namespace test_alloc
     }
     START_ALLOC(new_alloc)
     START_ALLOC(mem_alloc)
+    START_ALLOC(mem_realloc)
 #ifndef NO_TEST_NEDMALLOC
     START_ALLOC(ned_alloc)
+    START_ALLOC(ned_realloc)
 #endif
 #undef START_ALLOC
 }
@@ -192,11 +236,13 @@ void testAlloc(void)
 
     init(nx_countof(hd));
 
-    start_mem_alloc("Start for nx::alloc/free...\t");
+    start_mem_alloc  ("Start for nx::alloc/free...\t");
+    //start_mem_realloc("Start for nx::realloc...\t");
 #ifndef NO_TEST_NEDMALLOC
-    start_ned_alloc("Start for ned_alloc/free...\t");
+    start_ned_alloc  ("Start for ned_alloc/free...\t");
+    //start_ned_realloc("Start for ned_realloc...\t");
 #endif
-    start_new_alloc("Start for new && delete...\t");
+    start_new_alloc  ("Start for new && delete...\t");
 }
 
 //////////////////////////////////////////////////////////////////////////
