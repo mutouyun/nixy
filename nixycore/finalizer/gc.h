@@ -9,7 +9,7 @@
 
 #include "nixycore/finalizer/scope_guard.h"
 
-#include "nixycore/memory/alloc.h"
+#include "nixycore/memory/default_alloc.h"
 #include "nixycore/pattern/trackable.h"
 #include "nixycore/bugfix/assert.h"
 

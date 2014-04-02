@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "nixycore/memory/alloc.h"
+#include "nixycore/memory/default_alloc.h"
 
 #include "nixycore/bugfix/assert.h"
 #include "nixycore/typemanip/typedefs.h"
@@ -83,7 +83,7 @@ public:
         {
             if (size >= BlockSizeN)
             {
-                block_t* new_blk = static_cast<block_t*>(AllocT::alloc(HEAD_SIZE + size));
+                block_t* new_blk = static_cast<block_t*>(nx::alloc<AllocT>(HEAD_SIZE + size));
                 nx_assert(new_blk);
                 new_blk->size_ = HEAD_SIZE + size;
                 block_t* cur_blk = blocks_head();
@@ -101,7 +101,7 @@ public:
             }
             else // size < BlockSizeN
             {
-                block_t* new_blk = static_cast<block_t*>(AllocT::alloc(sizeof(block_t)));
+                block_t* new_blk = nx::alloc<AllocT, block_t>();
                 nx_assert(new_blk);
                 new_blk->size_ = sizeof(block_t);
                 new_blk->prev_ = blocks_head();
@@ -118,7 +118,7 @@ public:
         while(cur_blk)
         {
             block_t* tmp_blk = static_cast<block_t*>(cur_blk->prev_);
-            AllocT::free(cur_blk, cur_blk->size_);
+            nx::free<AllocT>(cur_blk, cur_blk->size_);
             cur_blk = tmp_blk;
         }
         init();

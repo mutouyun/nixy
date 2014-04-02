@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "nixycore/memory/alloc.h"
+#include "nixycore/memory/default_alloc.h"
 
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"

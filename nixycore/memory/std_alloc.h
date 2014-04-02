@@ -8,6 +8,7 @@
 #pragma once
 
 #include "nixycore/memory/construct.h"
+#include "nixycore/memory/alloc.h"
 
 #include "nixycore/general/general.h"
 #include "nixycore/utility/utility.h"
@@ -63,14 +64,14 @@ public:
     pointer allocate(size_type count, const pvoid = 0)
     {
         if (count > this->max_size()) throw std::bad_alloc();
-        pvoid p = AllocT::alloc(count * sizeof(T));
+        pvoid p = nx::alloc<AllocT>(count * sizeof(T));
         if (!p) throw std::bad_alloc();
         return static_cast<pointer>(p);
     }
 
     void deallocate(pvoid p, size_type count)
     {
-        AllocT::free(p, count * sizeof(T));
+        nx::free<AllocT>(p, count * sizeof(T));
     }
 
     static void construct(pointer p, const T& val)

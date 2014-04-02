@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "nixycore/memory/alloc.h"
+#include "nixycore/memory/default_alloc.h"
 #include "nixycore/memory/mem_guard.h"
 
 #include "nixycore/thread/thread_model.h"

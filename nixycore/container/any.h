@@ -11,7 +11,7 @@
 #pragma once
 
 #include "nixycore/bugfix/assert.h"
-#include "nixycore/memory/alloc.h"
+#include "nixycore/memory/default_alloc.h"
 #include "nixycore/pattern/prototype.h"
 
 #include "nixycore/general/general.h"

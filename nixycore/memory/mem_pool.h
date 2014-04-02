@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "nixycore/memory/alloc.h"
 #include "nixycore/memory/std_alloc.h"
 #include "nixycore/memory/fixed_pool.h"
 #include "nixycore/memory/pool_center.h"
@@ -55,7 +56,7 @@ class mem_pool : pool_center<AllocT, StackT>
     pvoid do_alloc(size_t size)
     {
         pool_t* pool = find_pool(size);
-        alloc_t* alc_p = (alloc_t*)(pool ? pool->alloc() : AllocT::alloc(HEAD_SIZE + size));
+        alloc_t* alc_p = (alloc_t*)(pool ? pool->alloc() : nx::alloc<AllocT>(HEAD_SIZE + size));
         nx_assert(alc_p);
         return void_cast(alc_p);
     }
@@ -67,7 +68,7 @@ class mem_pool : pool_center<AllocT, StackT>
         if (pool)
             pool->free(alc_p);
         else
-            AllocT::free(alc_p, HEAD_SIZE + size);
+            nx::free<AllocT>(alc_p, HEAD_SIZE + size);
     }
 
     alloc_t* mem_move(alloc_t* dst, alloc_t* src, size_t src_size, pool_t* src_pool)
@@ -96,12 +97,12 @@ class mem_pool : pool_center<AllocT, StackT>
         /* (new_pool == NULL) */
         if (old_pool)
         {
-            alloc_t* new_p = (alloc_t*)AllocT::alloc(HEAD_SIZE + new_size);
+            alloc_t* new_p = (alloc_t*)nx::alloc<AllocT>(HEAD_SIZE + new_size);
             nx_assert(new_p);
             return void_cast(mem_move(new_p, old_p, old_size, old_pool));
         }
         /* (new_pool == old_pool == NULL) */
-        return void_cast((alloc_t*)AllocT::realloc(old_p, HEAD_SIZE + old_size, HEAD_SIZE + new_size));
+        return void_cast((alloc_t*)nx::realloc<AllocT>(old_p, HEAD_SIZE + old_size, HEAD_SIZE + new_size));
     }
 
 public:

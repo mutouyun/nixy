@@ -93,12 +93,13 @@ else
         'nixycore/finalizer/gc.h' \
         'nixycore/finalizer/finalizer.h' \
         'nixycore/memory/construct.h' \
+        'nixycore/memory/alloc.h' \
         'nixycore/memory/std_alloc.h' \
         'nixycore/memory/fixed_pool.h' \
         'nixycore/memory/pool_center.h' \
         'nixycore/memory/mem_pool.h' \
         'nixycore/memory/mem_alloc.h' \
-        'nixycore/memory/alloc.h' \
+        'nixycore/memory/default_alloc.h' \
         'nixycore/memory/unfixed_pool.h' \
         'nixycore/memory/object_pool.h' \
         'nixycore/memory/pointer.h' \

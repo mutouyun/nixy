@@ -170,7 +170,7 @@ public:
     template <NX_PP_TYPE_1(n, typename P)> \
     object_pool(NX_PP_TYPE_2(n, P, par), size_t min_sz = 0, size_t max_sz = (size_t)~0) \
         : storage_(bind(&private_object_pool::construct<type_t, NX_PP_TYPE_1(n, P)>, \
-                                                          _1, NX_PP_TYPE_1(n, par))) \
+                                                            _1, NX_PP_TYPE_1(n, par))) \
         , min_size_(0) \
         , max_size_(0) \
     { \

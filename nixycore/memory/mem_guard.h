@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "nixycore/memory/alloc.h"
+#include "nixycore/memory/default_alloc.h"
 
 #include "nixycore/delegate/functor.h"
 #include "nixycore/finalizer/scope_guard.h"

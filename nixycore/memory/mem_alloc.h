@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "nixycore/memory/alloc.h"
 #include "nixycore/memory/std_alloc.h"
 #include "nixycore/memory/mem_pool.h"
 
@@ -30,9 +31,7 @@ class TLSSingleton
 
     static void destroy(void* p)
     {
-        if (!p) return;
-        nx_destruct(p, T);
-        AllocT::free(p, sizeof(T));
+        nx::free<AllocT>(static_cast<T*>(p));
     }
 
 public:
@@ -40,8 +39,7 @@ public:
     {
         T* p = singleton<tls_t>(destroy);
         if (p) return (*p);
-        singleton<tls_t>() = p =
-            nx_construct(AllocT::alloc(sizeof(T)), T);
+        singleton<tls_t>() = p = nx::alloc<AllocT, T>();
         return (*p);
     }
 };

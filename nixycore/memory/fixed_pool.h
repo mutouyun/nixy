@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "nixycore/memory/alloc.h"
 #include "nixycore/memory/std_alloc.h"
 
 #include "nixycore/bugfix/assert.h"
@@ -58,9 +59,9 @@ namespace use
         pvoid expand(size_t block_size)
         {
             nx_assert(block_size);
-            blocks_t* blocks = (blocks_t*)AllocT::alloc(sizeof(blocks_t));
+            blocks_t* blocks = nx::alloc<AllocT, blocks_t>();
             blocks->size_ = block_size * (*(++count_ite_));
-            blocks->data_ = AllocT::alloc(blocks->size_);
+            blocks->data_ = nx::alloc<AllocT>(blocks->size_);
             blocks->next_ = blocks_head_;
             blocks_head_ = blocks;
             return blocks->data_;
@@ -73,8 +74,8 @@ namespace use
             {
                 blocks_t* blocks = blocks_head_;
                 blocks_head_ = blocks_head_->next_;
-                AllocT::free(blocks->data_, blocks->size_);
-                AllocT::free(blocks, sizeof(blocks_t));
+                nx::free<AllocT>(blocks->data_, blocks->size_);
+                nx::free<AllocT>(blocks);
             }
         }
 

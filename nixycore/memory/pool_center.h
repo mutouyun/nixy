@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "nixycore/memory/alloc.h"
 #include "nixycore/memory/fixed_pool.h"
 
 #include "nixycore/typemanip/typedefs.h"
@@ -82,6 +83,7 @@ public:
     {
         init_array(pools_);
     }
+    /* No return memory back to system */
 
 public:
     node_t* pop_node(size_t n, size_t size)
@@ -101,9 +103,9 @@ public:
             return new_node;
         }
         // alloc a new node_t
-        new_node = static_cast<node_t*>(AllocT::alloc(sizeof(node_t)));
+        new_node = nx::alloc<AllocT, node_t>();
         nx_assert(new_node);
-        new_node->pool_ = nx_construct(AllocT::alloc(sizeof(pool_t)), pool_t, size);
+        new_node->pool_ = nx::alloc<AllocT, pool_t>(size);
         new_node->next_ = 0;
         return new_node;
     }
