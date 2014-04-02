@@ -24,6 +24,30 @@ namespace test_typemanip
         char c;
         void* p;
     };
+
+    class A
+    {
+    public:
+        virtual void interface_x(void) = 0;
+    };
+
+    class B
+    {
+    public:
+        virtual ~B(void) {}
+    };
+
+    class C : public A
+    {
+    public:
+        virtual ~C(void) {}
+    };
+
+    class D : public C
+    {
+    public:
+        virtual void interface_x(void) {}
+    };
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -101,12 +125,36 @@ void testTypeBehavior(void)
 
 //////////////////////////////////////////////////////////////////////////
 
+void testTypeDetect(void)
+{
+    TEST_CASE();
+
+    using namespace test_typemanip;
+
+    strout << nx::is_abstract<int>::value << endl;
+    strout << nx::is_abstract<A>::value << endl;
+    strout << nx::is_abstract<B>::value << endl;
+    strout << nx::is_abstract<C>::value << endl;
+    strout << nx::is_abstract<D>::value << endl;
+
+    strout << endl;
+
+    strout << nx::has_virtual_destructor<int>::value << endl;
+    strout << nx::has_virtual_destructor<A>::value << endl;
+    strout << nx::has_virtual_destructor<B>::value << endl;
+    strout << nx::has_virtual_destructor<C>::value << endl;
+    strout << nx::has_virtual_destructor<D>::value << endl;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
 void testTypeManip(void)
 {
     TEST_FUNCTION();
 
-    testTypeQualifier();
-    testTypeBehavior();
+//    testTypeQualifier();
+//    testTypeBehavior();
+    testTypeDetect();
 
     TEST_CASE();
 

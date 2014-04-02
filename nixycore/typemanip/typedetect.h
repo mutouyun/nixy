@@ -129,6 +129,50 @@ struct is_class
 {};
 
 /*
+    detect abstract class
+*/
+
+namespace private_is_abstract
+{
+    template <typename T>
+    struct detail
+    {
+        template <typename U>
+        static nx::not_t check(U(*)[1]);
+        template <typename U>
+        static nx::yes_t check(...);
+        NX_STATIC_VALUE( bool, nx_rightof(check<T>(0)) );
+    };
+
+    template <>
+    struct detail<nx::null_t>
+        : type_if<false>
+    {};
+
+    template <>
+    struct detail<void>
+        : type_if<false>
+    {};
+}
+
+template <typename T>
+struct is_abstract
+    : private_is_abstract::detail<typename rm_cv
+                                 <T
+    >::type_t
+    >
+{};
+
+/*
+    detect virtual destructor
+*/
+
+template <typename T>
+struct has_virtual_destructor
+    : type_if<__has_virtual_destructor(T)>
+{};
+
+/*
     detect function type/pointer
 */
 
