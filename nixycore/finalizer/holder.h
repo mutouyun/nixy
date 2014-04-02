@@ -56,7 +56,7 @@ namespace private_holder
         }
 
         template <typename F>
-        void set(const type_t& r, const F& dest_fr)
+        void set(const type_t& r, F dest_fr)
         {
             assign_to(r, make_destructor(r, dest_fr));
         }

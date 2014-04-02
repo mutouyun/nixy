@@ -62,7 +62,8 @@ functor<void()> >::type_t make_destructor(T r)
 }
 
 template <typename T, typename F>
-inline functor<void()> make_destructor(T r, F dest_fr)
+inline typename nx::enable_if<!nx::is_numeric<F>::value,
+functor<void()> >::type_t make_destructor(T r, F dest_fr)
 {
     return bind<void>(dest_fr, r);
 }

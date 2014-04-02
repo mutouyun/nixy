@@ -14,7 +14,6 @@
 #include "nixycore/algorithm/series.h"
 
 #include "nixycore/general/general.h"
-#include "nixycore/typemanip/typemanip.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -31,14 +30,26 @@ namespace use
         class AllocT, size_t IterCountN,
         template <typename, size_t> class ModelT
     >
-    struct pool_expand_keep // Never return memory back to system
+    struct pool_expand_keep
     {
         nx_assert_static(IterCountN);
 
     private:
         nx::iterator<ModelT<size_t, IterCountN> > count_ite_;
 
+        struct blocks_t
+        {
+            pvoid     data_;
+            size_t    size_;
+            blocks_t* next_;
+        } * blocks_head_;
+
     protected:
+        pool_expand_keep(void)
+            : blocks_head_(0)
+        {}
+        /* No return memory back to system */
+
         size_t count(void) const
         {
             return (*count_ite_);
@@ -47,7 +58,38 @@ namespace use
         pvoid expand(size_t block_size)
         {
             nx_assert(block_size);
-            return AllocT::alloc( block_size * (*(++count_ite_)) );
+            blocks_t* blocks = (blocks_t*)AllocT::alloc(sizeof(blocks_t));
+            blocks->size_ = block_size * (*(++count_ite_));
+            blocks->data_ = AllocT::alloc(blocks->size_);
+            blocks->next_ = blocks_head_;
+            blocks_head_ = blocks;
+            return blocks->data_;
+        }
+
+    public:
+        void clear(void)
+        {
+            while(blocks_head_)
+            {
+                blocks_t* blocks = blocks_head_;
+                blocks_head_ = blocks_head_->next_;
+                AllocT::free(blocks->data_, blocks->size_);
+                AllocT::free(blocks, sizeof(blocks_t));
+            }
+        }
+
+        bool has_block(pvoid p) const
+        {
+            if (!p) return false;
+            blocks_t* blocks = blocks_head_;
+            while(blocks)
+            {
+                if ((blocks->data_ <= p) &&
+                    (p < ((nx::byte*)(blocks->data_) + blocks->size_)))
+                    return true;
+                blocks = blocks->next_;
+            }
+            return false;
         }
     };
 
@@ -61,36 +103,9 @@ namespace use
     private:
         typedef pool_expand_keep<AllocT, IterCountN, ModelT> base_t;
 
-        struct blocks_t
-        {
-            pvoid     data_;
-            blocks_t* next_;
-        } * blocks_head_;
-
     protected:
-        pool_expand_return(void)
-            : blocks_head_(nx::nulptr)
-        {}
-
-        ~pool_expand_return(void)
-        {
-            while(blocks_head_)
-            {
-                blocks_t* blocks = blocks_head_;
-                blocks_head_ = blocks_head_->next_;
-                AllocT::free(blocks->data_);
-                AllocT::free(blocks);
-            }
-        }
-
-        pvoid expand(size_t block_size)
-        {
-            blocks_t* blocks = (blocks_t*)AllocT::alloc(sizeof(blocks_t));
-            blocks->data_ = base_t::expand(block_size);
-            blocks->next_ = blocks_head_;
-            blocks_head_ = blocks;
-            return blocks->data_;
-        }
+        pool_expand_return(void)  {}
+        ~pool_expand_return(void) { base_t::clear(); }
     };
 }
 
@@ -126,7 +141,7 @@ template
 
     size_t IterCountN = NX_FIXEDPOOL_ITERCOUNT  /* Iteration count */
 >
-class fixed_pool : ExpandT<AllocT, IterCountN, ModelT>, noncopyable
+class fixed_pool : public ExpandT<AllocT, IterCountN, ModelT>, noncopyable
 {
 public:
     typedef ExpandT<AllocT, IterCountN, ModelT> base_t;
@@ -141,20 +156,19 @@ private:
         nx_assert(p);
         for(size_t i = 0; i < base_t::count() - 1; ++i)
             p = (pvoid*)( (*p) = ((byte*)p) + block_size() );
-        (*p) = nx::nulptr;
+        (*p) = 0;
     }
 
 public:
     explicit fixed_pool(size_t size)
         : block_size_(size)
-        , cursor_(nx::nulptr)
+        , cursor_(0)
     {
-        nx_assert(block_size_ > sizeof(pvoid));
+        nx_assert(block_size_ >= sizeof(pvoid));
     }
 
     size_t block_size(void) const { return block_size_; }
 
-public:
     pvoid alloc(void)
     {
         if (!cursor_) expand();
@@ -169,6 +183,9 @@ public:
         *(pvoid*)p = cursor_;
         cursor_ = p;            // Save free block
     }
+
+    using base_t::clear;
+    using base_t::has_block;
 };
 
 //////////////////////////////////////////////////////////////////////////

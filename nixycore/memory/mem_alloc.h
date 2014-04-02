@@ -32,7 +32,7 @@ class TLSSingleton
     {
         if (!p) return;
         nx_destruct(p, T);
-        AllocT::free(p);
+        AllocT::free(p, sizeof(T));
     }
 
 public:
@@ -69,14 +69,14 @@ struct pool_alloc_model
         return private_mem_alloc::create_pool().alloc(size);
     }
 
-    static void free(pvoid p)
+    static void free(pvoid p, size_t size)
     {
-        private_mem_alloc::create_pool().free(p);
+        private_mem_alloc::create_pool().free(p, size);
     }
 
-    static pvoid realloc(pvoid p, size_t size)
+    static pvoid realloc(pvoid p, size_t old_size, size_t new_size)
     {
-        return private_mem_alloc::create_pool().realloc(p, size);
+        return private_mem_alloc::create_pool().realloc(p, old_size, new_size);
     }
 };
 

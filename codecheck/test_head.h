@@ -51,7 +51,7 @@ void testAll(void)
     //testAlgorithm();
     //testUtility();
     //testTime();
-    testRandom();
+    //testRandom();
     //testDelegate();
     //testFinalizer();
     //testThread();

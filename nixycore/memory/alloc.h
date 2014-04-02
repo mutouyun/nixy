@@ -12,6 +12,7 @@
 
 #include "nixycore/general/general.h"
 #include "nixycore/preprocessor/preprocessor.h"
+#include "nixycore/typemanip/typemanip.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -114,39 +115,73 @@ NX_PP_MULT_MAX(NX_ALLOC_)
     destruct free
 */
 
-inline void free(pvoid p)
+inline void free(pvoid p, size_t size)
 {
-    NX_DEFAULT_ALLOC::free(p);
+    NX_DEFAULT_ALLOC::free(p, size);
 }
 
 template <typename AllocT>
-inline void free(pvoid p)
+inline void free(pvoid p, size_t size)
 {
-    AllocT::free(p);
+    AllocT::free(p, size);
 }
 
+NX_CONCEPT(size_of, size_t, size_of)
+
+// has no virtual-destructor or size_of function
+
 template <typename T>
-inline void free(T* p)
+inline typename nx::enable_if<!nx::has_virtual_destructor<T>::value ||
+                              !nx::has_size_of<T>::value
+>::type_t free(T* p)
 {
     if (!p) return;
     nx_destruct(p, T);
-    NX_DEFAULT_ALLOC::free(p);
+    NX_DEFAULT_ALLOC::free(p, sizeof(T));
 }
 
 template <typename AllocT, typename T>
-inline void free(T* p)
+inline typename nx::enable_if<!nx::has_virtual_destructor<T>::value ||
+                              !nx::has_size_of<T>::value
+>::type_t free(T* p)
 {
     if (!p) return;
     nx_destruct(p, T);
-    AllocT::free(p);
+    AllocT::free(p, sizeof(T));
 }
+
+// has virtual-destructor and size_of function
+
+template <typename T>
+inline typename nx::enable_if<nx::has_virtual_destructor<T>::value &&
+                              nx::has_size_of<T>::value
+>::type_t free(T* p)
+{
+    if (!p) return;
+    size_t s = p->size_of();
+    nx_destruct(p, T);
+    NX_DEFAULT_ALLOC::free(p, s);
+}
+
+template <typename AllocT, typename T>
+inline typename nx::enable_if<nx::has_virtual_destructor<T>::value &&
+                              nx::has_size_of<T>::value
+>::type_t free(T* p)
+{
+    if (!p) return;
+    size_t s = p->size_of();
+    nx_destruct(p, T);
+    AllocT::free(p, s);
+}
+
+// array
 
 template <typename T, size_t N>
 inline void free(T(* p)[N])
 {
     if (!p) return;
     nx_destruct_arr(*p, T, N);
-    NX_DEFAULT_ALLOC::free(p);
+    NX_DEFAULT_ALLOC::free(p, sizeof(T[N]));
 }
 
 template <typename AllocT, typename T, size_t N>
@@ -154,36 +189,72 @@ inline void free(T(* p)[N])
 {
     if (!p) return;
     nx_destruct_arr(*p, T, N);
-    AllocT::free(p);
+    AllocT::free(p, sizeof(T[N]));
 }
 
 /*
     realloc
 */
 
-inline pvoid realloc(pvoid p, size_t size)
+inline pvoid realloc(pvoid p, size_t old_size, size_t new_size)
 {
-    return NX_DEFAULT_ALLOC::realloc(p, size);
+    return NX_DEFAULT_ALLOC::realloc(p, old_size, new_size);
 }
 
 template <typename AllocT>
-inline pvoid realloc(pvoid p, size_t size)
+inline pvoid realloc(pvoid p, size_t old_size, size_t new_size)
 {
-    return AllocT::realloc(p, size);
+    return AllocT::realloc(p, old_size, new_size);
 }
 
+// has no virtual-destructor or size_of function
+
 template <typename T>
-inline pvoid realloc(T* p, size_t size)
+inline typename nx::enable_if<!nx::has_virtual_destructor<T>::value ||
+                              !nx::has_size_of<T>::value,
+pvoid>::type_t realloc(T* p, size_t size)
 {
     if (p) nx_destruct(p, T);
-    return NX_DEFAULT_ALLOC::realloc(p, size);
+    return NX_DEFAULT_ALLOC::realloc(p, sizeof(T), size);
 }
 
 template <typename AllocT, typename T>
-inline pvoid realloc(T* p, size_t size)
+inline typename nx::enable_if<!nx::has_virtual_destructor<T>::value ||
+                              !nx::has_size_of<T>::value,
+pvoid>::type_t realloc(T* p, size_t size)
 {
     if (p) nx_destruct(p, T);
-    return AllocT::realloc(p, size);
+    return AllocT::realloc(p, sizeof(T), size);
+}
+
+// has virtual-destructor and size_of function
+
+template <typename T>
+inline typename nx::enable_if<nx::has_virtual_destructor<T>::value &&
+                              nx::has_size_of<T>::value,
+pvoid>::type_t realloc(T* p, size_t size)
+{
+    size_t s = 0;
+    if (p)
+    {
+        s = p->size_of();
+        nx_destruct(p, T);
+    }
+    return NX_DEFAULT_ALLOC::realloc(p, s, size);
+}
+
+template <typename AllocT, typename T>
+inline typename nx::enable_if<nx::has_virtual_destructor<T>::value &&
+                              nx::has_size_of<T>::value,
+pvoid>::type_t realloc(T* p, size_t size)
+{
+    size_t s = 0;
+    if (p)
+    {
+        s = p->size_of();
+        nx_destruct(p, T);
+    }
+    return AllocT::realloc(p, s, size);
 }
 
 //////////////////////////////////////////////////////////////////////////

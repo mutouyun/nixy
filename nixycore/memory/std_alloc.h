@@ -60,7 +60,7 @@ public:
     bool operator==(const std_allocator<U, AllocT>&) const { return true; }
 
 public:
-    pointer allocate(size_type count, const pvoid = nx::nulptr)
+    pointer allocate(size_type count, const pvoid = 0)
     {
         if (count > this->max_size()) throw std::bad_alloc();
         pvoid p = AllocT::alloc(count * sizeof(T));
@@ -68,9 +68,9 @@ public:
         return static_cast<pointer>(p);
     }
 
-    void deallocate(pvoid p, size_type /*count*/)
+    void deallocate(pvoid p, size_type count)
     {
-        AllocT::free(p);
+        AllocT::free(p, count * sizeof(T));
     }
 
     static void construct(pointer p, const T& val)
@@ -102,9 +102,12 @@ struct alloc_model : ModelT
 
 struct std_alloc_model
 {
-    static pvoid alloc(size_t size)            { return (size ? ::malloc(size) : nx::nulptr); }
-    static void free(pvoid p)                  { if (p) ::free(p); }
-    static pvoid realloc(pvoid p, size_t size) { return ((p || size) ? ::realloc(p, size) : nx::nulptr); }
+    static pvoid alloc(size_t size)
+    { return (size ? ::malloc(size) : 0); }
+    static void free(pvoid p, size_t /*size*/)
+    { if (p) ::free(p); }
+    static pvoid realloc(pvoid p, size_t old_size, size_t new_size)
+    { return (((p && old_size) || new_size) ? ::realloc(p, new_size) : 0); }
 };
 
 namespace use

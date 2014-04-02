@@ -72,14 +72,14 @@ namespace private_bind
 
         result_t operator()(void)
         {
-            f_();
+            nx::unref(f_)();
         }
 
 #   define NX_BIND_FR_(n) \
         template <NX_PP_TYPE_1(n, typename P)> \
         result_t operator()(NX_PP_TYPE_2(n, P, p)) \
         { \
-            f_(NX_PP_TYPE_1(n, p)); \
+            nx::unref(f_)(NX_PP_TYPE_1(n, p)); \
         }
         NX_PP_MULT_MAX(NX_BIND_FR_)
 #   undef NX_BIND_FR_
@@ -97,14 +97,14 @@ namespace private_bind
 
         result_t operator()(void)
         {
-            return f_();
+            return nx::unref(f_)();
         }
 
 #   define NX_BIND_FR_(n) \
         template <NX_PP_TYPE_1(n, typename P)> \
         result_t operator()(NX_PP_TYPE_2(n, P, p)) \
         { \
-            return f_(NX_PP_TYPE_1(n, p)); \
+            return nx::unref(f_)(NX_PP_TYPE_1(n, p)); \
         }
         NX_PP_MULT_MAX(NX_BIND_FR_)
 #   undef NX_BIND_FR_

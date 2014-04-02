@@ -109,7 +109,7 @@ public:
     }
 
     template <typename T, typename F>
-    ref_counter(const T& r, const F& f)
+    ref_counter(const T& r, F f)
     {
         P::set(r, f);
     }

@@ -92,13 +92,14 @@ namespace private_skip_array
                 type_t* p = static_cast<type_t*>(e[i]);
                 if (!p) continue;
                 deep_elems::clear(*p);
-                AllocT::free(p);
+                AllocT::free(p, sizeof(type_t));
             }
         }
 
         static size_t check(const type_t& e, size_t i)
         {
-            size_t n, r = 0, x, j;
+            size_t n, x, j; // No need to initialize
+            size_t r = 0;
             do
             {
                 n = index(i + r);
@@ -107,10 +108,7 @@ namespace private_skip_array
                 for(; (n < SkipN) && !(p = e[n]); ++n)
                     r += DEEP_SIZE;
                 j = jump(r + i, n);
-                if (p)
-                    x = deep_elems::check(*static_cast<const type_t*>(p), j);
-                else
-                    x = 0;
+                x = p ? deep_elems::check(*static_cast<const type_t*>(p), j) : 0;
                 r += x;
             } while((j + x) >= DEEP_SIZE);
             return r;
@@ -277,12 +275,16 @@ public:
         return iter;
     }
 
-    // operator[]
+    /*
+        operator[]
+    */
+
     reference operator[](size_type i)
     {
         nx_assert(i < MAX);
         return reinterpret_cast<reference>(elems_ops::at(elems_, i));
     }
+
     const_reference operator[](size_type i) const
     {
         nx_assert(i < MAX);

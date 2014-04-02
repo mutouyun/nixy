@@ -245,6 +245,7 @@ private:
     public:
         virtual pvoid handler(void) const = 0;
         virtual PlaceHolder* clone(void) = 0;
+        virtual size_t size_of(void) = 0;
     } * any_guard_;
 
     template <typename T>
@@ -258,7 +259,8 @@ private:
 
     public:
         pvoid handler(void) const { return (pvoid)nx::addressof(held_); }
-        PlaceHolder* clone(void) { return nx::alloc<Holder>(nx::ref(held_)); }
+        PlaceHolder* clone(void)  { return nx::alloc<Holder>(nx::ref(held_)); }
+        size_t size_of(void)      { return sizeof(Holder); }
     };
 
 protected:
@@ -307,7 +309,9 @@ public:
     }
 
     ~functor_base(void)
-    { nx::free(any_guard_); }
+    {
+        nx::free(any_guard_);
+    }
 
 public:
     bool checkSafeBool(void) const

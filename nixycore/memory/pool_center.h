@@ -9,13 +9,12 @@
 
 #include "nixycore/memory/fixed_pool.h"
 
+#include "nixycore/typemanip/typedefs.h"
 #include "nixycore/bugfix/assert.h"
 #include "nixycore/thread/thread_model.h"
 #include "nixycore/pattern/singleton.h"
-#include "nixycore/algorithm/foreach.h"
 
 #include "nixycore/general/general.h"
-#include "nixycore/typemanip/typemanip.h"
 
 #include "detail/skip_array.h"
 
@@ -57,7 +56,11 @@ struct pool_stack_base
     pool stack policy model
 */
 
-template <class AllocT, template <class> class PolicyT>
+template
+<
+    class AllocT,
+    template <class> class PolicyT
+>
 class pool_stack_model : public PolicyT<AllocT>
 {
     typedef PolicyT<AllocT> base_t;
@@ -80,6 +83,7 @@ public:
         init_array(pools_);
     }
 
+public:
     node_t* pop_node(size_t n, size_t size)
     {
         nx_assert(n < base_t::MAX_SIZE);
@@ -87,20 +91,20 @@ public:
         node_t* new_node;
         {
             lock_guard NX_UNUSED guard(lc_);
-            node_t*(& node) = pools_[n];
+            node_t*(& node) = pools_[n]; // [n] may change pools_
             new_node = node;
             if (node) node = node->next_;
         }
         if (new_node)
         {
-            new_node->next_ = nx::nulptr;
+            new_node->next_ = 0;
             return new_node;
         }
         // alloc a new node_t
         new_node = static_cast<node_t*>(AllocT::alloc(sizeof(node_t)));
         nx_assert(new_node);
         new_node->pool_ = nx_construct(AllocT::alloc(sizeof(pool_t)), pool_t, size);
-        new_node->next_ = nx::nulptr;
+        new_node->next_ = 0;
         return new_node;
     }
 
@@ -116,57 +120,73 @@ public:
         node = new_node;
     }
 
-    pool_t* acquire_pool(array_t& pools, size_t size, size_t head_size)
+    void push_all(const array_t& pools)
     {
-        size_t n = base_t::calculate_index(size, &size);
-        if (n == base_t::ERROR_INDEX) return nx::nulptr;
-        node_t*(&node) = pools[n];
-        if (node) return node->pool_;
-        nx_verify(node = pop_node(n, head_size + size));
-        return node->pool_;
+        base_t::for_each(pools, this, &pool_stack_model::push_node_p);
     }
 
-    void release_all(const array_t& pools)
+    pool_t* locate_pool(const array_t& pools, pvoid p) const
     {
-        base_t::release_all(pools, this, &pool_stack_model::push_node);
+        if (!p) return 0;
+        return static_cast<pool_t*>(base_t::for_each(pools, p, &pool_stack_model::has_block_p));
+    }
+
+private:
+    static pvoid push_node_p(size_t n, node_t* new_node, pool_stack_model* this_p)
+    {
+        nx_assert(this_p);
+        this_p->push_node(n, new_node);
+        return 0;
+    }
+
+    static pvoid has_block_p(size_t /*n*/, node_t* node, pvoid p)
+    {
+        if (!node) return 0;
+        pool_t* pool = node->pool_;
+        nx_assert(pool);
+        return pool->has_block(p) ? pool : 0;
     }
 };
 
 //////////////////////////////////////////////////////////////////////////
 
 /*
-    define pool stack policy
+    Define pool stack policy
 */
 
-#ifndef NX_POOLSTACK_LEVELNUM
-#define NX_POOLSTACK_LEVELNUM   (32)
+#ifndef NX_POOLSTACK_LEVELSIZ
+#define NX_POOLSTACK_LEVELSIZ   (32)                // The size of every level
 #endif
 
 #ifndef NX_POOLSTACK_LEVELINC
-#define NX_POOLSTACK_LEVELINC   sizeof(nx::pvoid)
+#define NX_POOLSTACK_LEVELINC   sizeof(nx::pvoid)   // The increment of every level
 #endif
 
-namespace private_pool_stack
+#ifndef NX_POOLSTACK_LEVELNUM
+#define NX_POOLSTACK_LEVELNUM   (2)                 // The number of levels
+#endif
+
+namespace use
 {
     /*
         Using skip_array for policy storage
     */
 
     template <class AllocT>
-    struct model_skip : pool_stack_base<AllocT>
+    struct pool_stack_skip : pool_stack_base<AllocT>
     {
         typedef pool_stack_base<AllocT> base_t;
 
-        NX_STATIC_PROPERTY(size_t, SMALL_NUM, NX_POOLSTACK_LEVELNUM);
+        NX_STATIC_PROPERTY(size_t, SMALL_SIZ, NX_POOLSTACK_LEVELSIZ);
         NX_STATIC_PROPERTY(size_t, SMALL_INC, NX_POOLSTACK_LEVELINC);
 
         typedef typename base_t::node_t node_t;
-        typedef skip_array<node_t*, SMALL_NUM, 2, AllocT> array_t;
+        typedef skip_array<node_t*, SMALL_SIZ, NX_POOLSTACK_LEVELNUM, AllocT> array_t;
 
         NX_STATIC_PROPERTY(size_t, MAX_SIZE, array_t::MAX);
         NX_STATIC_PROPERTY(size_t, ERROR_INDEX, -1);
 
-        static size_t calculate_index(size_t size, size_t* size_ptr = nx::nulptr)
+        static size_t calculate_index(size_t size, size_t* size_ptr = 0)
         {
             size_t n;
             if (size <= MAX_SIZE * SMALL_INC)
@@ -185,11 +205,15 @@ namespace private_pool_stack
         }
 
         template <class C, typename F>
-        static void release_all(const array_t& pools, C* wp, F push_node)
+        static pvoid for_each(const array_t& pools, C* wp, F do_something)
         {
             nx_auto(ite, pools.begin());
             for (; ite != pools.end(); ++ite)
-                (wp->*push_node)(ite.index(), *ite);
+            {
+                pvoid p = do_something(ite.index(), *ite, wp);
+                if (p) return p;
+            }
+            return 0;
         }
     };
 
@@ -198,38 +222,38 @@ namespace private_pool_stack
     */
 
     template <class AllocT>
-    struct model_array : pool_stack_base<AllocT>
+    struct pool_stack_array : pool_stack_base<AllocT>
     {
         typedef pool_stack_base<AllocT> base_t;
 
-        NX_STATIC_PROPERTY(size_t, SMALL_NUM, NX_POOLSTACK_LEVELNUM);
+        NX_STATIC_PROPERTY(size_t, SMALL_SIZ, NX_POOLSTACK_LEVELSIZ);
         NX_STATIC_PROPERTY(size_t, SMALL_INC, NX_POOLSTACK_LEVELINC);
-        NX_STATIC_PROPERTY(size_t, SMALL_SIZ, SMALL_NUM * SMALL_INC);
+        NX_STATIC_PROPERTY(size_t, SMALL_MAX, SMALL_SIZ * SMALL_INC);
 
-        NX_STATIC_PROPERTY(size_t, LARGE_NUM, NX_POOLSTACK_LEVELNUM);
-        NX_STATIC_PROPERTY(size_t, LARGE_INC, SMALL_SIZ >> 2);
-        NX_STATIC_PROPERTY(size_t, LARGE_SIZ, LARGE_NUM * LARGE_INC);
+        NX_STATIC_PROPERTY(size_t, LARGE_SIZ, NX_POOLSTACK_LEVELSIZ);
+        NX_STATIC_PROPERTY(size_t, LARGE_INC, SMALL_INC << 1);
+        NX_STATIC_PROPERTY(size_t, LARGE_MAX, LARGE_SIZ * LARGE_INC);
 
-        NX_STATIC_PROPERTY(size_t, MAX_SIZE, SMALL_NUM + LARGE_NUM - 1);
+        NX_STATIC_PROPERTY(size_t, MAX_SIZE, SMALL_SIZ + LARGE_SIZ - 1);
         NX_STATIC_PROPERTY(size_t, ERROR_INDEX, -1);
 
         typedef typename base_t::node_t node_t;
         typedef node_t* (array_t[MAX_SIZE]);
 
-        static size_t calculate_index(size_t size, size_t* size_ptr = nx::nulptr)
+        static size_t calculate_index(size_t size, size_t* size_ptr = 0)
         {
             size_t n;
-            if (size <= SMALL_SIZ)
+            if (size <= SMALL_MAX)
             {
                 n = ((size - 1) / SMALL_INC);
                 if (size_ptr) (*size_ptr) = (n + 1) * SMALL_INC;
             }
             else
-            if (size <= LARGE_SIZ)
+            if (size <= LARGE_MAX)
             {
-                size -= SMALL_SIZ;
-                n = ((size - 1) / LARGE_INC) + SMALL_NUM;
-                if (size_ptr) (*size_ptr) = (n - SMALL_NUM + 1) * LARGE_INC + SMALL_SIZ;
+                size -= SMALL_MAX;
+                n = ((size - 1) / LARGE_INC) + SMALL_SIZ;
+                if (size_ptr) (*size_ptr) = (n - SMALL_SIZ + 1) * LARGE_INC + SMALL_MAX;
             }
             else
                 return ERROR_INDEX;
@@ -242,25 +266,16 @@ namespace private_pool_stack
         }
 
         template <class C, typename F>
-        static void release_all(const array_t& pools, C* wp, F push_node)
+        static pvoid for_each(const array_t& pools, C* wp, F do_something)
         {
             for (size_t n = 0; n < MAX_SIZE; ++n)
-                (wp->*push_node)(n, pools[n]);
+            {
+                pvoid p = do_something(n, pools[n], wp);
+                if (p) return p;
+            }
+            return 0;
         }
     };
-}
-
-namespace use
-{
-    template <class AllocT>
-    struct pool_stack_skip
-         : pool_stack_model<AllocT, private_pool_stack::model_skip>
-    {};
-
-    template <class AllocT>
-    struct pool_stack_array
-         : pool_stack_model<AllocT, private_pool_stack::model_array>
-    {};
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -269,11 +284,15 @@ namespace use
     Get a fixed pool from here
 */
 
-template <class StackT>
+template
+<
+    typename AllocT,
+    template <class> class StackT
+>
 class pool_center : noncopyable
 {
 public:
-    typedef StackT stack_t;
+    typedef pool_stack_model<AllocT, StackT> stack_t;
 
     typedef typename stack_t::node_t  node_t;
     typedef typename stack_t::pool_t  pool_t;
@@ -281,23 +300,38 @@ public:
 
 private:
     stack_t& stack_;
-    array_t pools_;
+    array_t  pools_;
+    pool_t*  prev_pool_;
 
 protected:
     pool_center(void)
         : stack_(singleton<stack_t>())
+        , prev_pool_(0)
     {
         stack_.init_array(pools_);
     }
 
     ~pool_center(void)
     {
-        stack_.release_all(pools_);
+        stack_.push_all(pools_);
     }
 
-    pool_t* acquire_pool(size_t size, size_t head_size)
+    pool_t* acquire_pool(size_t size, size_t head_size = 0)
     {
-        return stack_.acquire_pool(pools_, size, head_size);
+        size_t n = stack_t::calculate_index(size, &size);
+        if (n == stack_t::ERROR_INDEX) return 0;
+        size += head_size;
+        if (prev_pool_ && prev_pool_->block_size() == size) return prev_pool_;
+        node_t*(&node) = pools_[n];
+        if (node) return prev_pool_ = node->pool_;
+        nx_verify(node = stack_.pop_node(n, size));
+        return prev_pool_ = node->pool_;
+    }
+
+    pool_t* locate_pool(pvoid p)
+    {
+        if (prev_pool_ && prev_pool_->has_block(p)) return prev_pool_;
+        return prev_pool_ = stack_.locate_pool(pools_, p);
     }
 };
 
