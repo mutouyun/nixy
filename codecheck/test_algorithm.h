@@ -175,6 +175,12 @@ void testAlgorithm(void)
         strout << x << " " << y << endl;
     }
     {
+        int x[3] = {1, 1, 1}, y[3] = {2, 2, 2};
+        nx::swap(x, y);
+        for(int i = 0; i < 3; ++i)
+            strout << x[i] << " " << y[i] << endl;
+    }
+    {
         A x(1), y(2);
         nx::swap(x, y);
         strout << x.a_ << " " << y.a_ << endl;

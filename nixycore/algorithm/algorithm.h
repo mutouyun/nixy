@@ -30,18 +30,44 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-#include "detail/std_algorithm.hxx"
+using std::swap;
+using std::copy;
+using std::fill;
+using std::fill_n;
+using std::sort;
+using std::equal;
+using std::find;
 
 /*
-    Swap two variables
+    using std::lexicographical_compare for compare
 */
 
+template <typename IterT1, typename IterT2>
+inline bool compare(IterT1 first1, IterT1 last1, IterT2 first2, IterT2 last2)
+{
+    return std::lexicographical_compare(first1, last1, first2, last2);
+}
+
+template <typename IterT1, typename IterT2, typename CompT>
+inline bool compare(IterT1 first1, IterT1 last1, IterT2 first2, IterT2 last2, CompT func)
+{
+    return std::lexicographical_compare(first1, last1, first2, last2, func);
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+/*
+    Swap two array
+*/
+
+#if defined(NX_CC_MSVC) && (NX_CC_MSVC <= 1500)
 template <typename T, size_t N>
 inline void swap(T(&x)[N], T(&y)[N])
 {
     nx_foreach(i, N)
         nx::swap(x[i], y[i]);
 }
+#endif
 
 /*
     Copy container/variable
