@@ -23,9 +23,6 @@
 #include "nixycore/memory/memory.h"
 
 //////////////////////////////////////////////////////////////////////////
-#include "nixycore/general/disable_warnings.h"
-
-//////////////////////////////////////////////////////////////////////////
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
@@ -37,6 +34,10 @@ namespace private_thread_pool
         bool is_exit_;
         mutex wait_;
 
+#   if defined(NX_CC_MSVC)
+#       pragma warning(push)
+#       pragma warning(disable: 4355)   // 'this' : used in base member initializer list
+#   endif
         template <typename F, typename C>
         wrapper(F f, C c)
             : is_exit_(false)
@@ -44,6 +45,9 @@ namespace private_thread_pool
             wait_.lock();
             thread::start(f, c, this);
         }
+#   if defined(NX_CC_MSVC)
+#       pragma warning(pop)
+#   endif
 
         void start(void) { wait_.unlock(); }
         void wait(void)  { wait_.lock(); }
@@ -234,11 +238,18 @@ private:
     }
 
 public:
+#if defined(NX_CC_MSVC)
+#   pragma warning(push)
+#   pragma warning(disable: 4355)   // 'this' : used in base member initializer list
+#endif
     thread_pool(size_t min_sz = 0, size_t max_sz = 0)
         : base_t(&thread_pool::onProcess, this)
     {
         limit(min_sz, max_sz);
     }
+#if defined(NX_CC_MSVC)
+#   pragma warning(pop)
+#endif
 
     ~thread_pool(void)
     {
@@ -298,7 +309,4 @@ private:
 
 //////////////////////////////////////////////////////////////////////////
 NX_END
-//////////////////////////////////////////////////////////////////////////
-
-#include "nixycore/general/disable_warnings.h"
 //////////////////////////////////////////////////////////////////////////

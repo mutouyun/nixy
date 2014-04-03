@@ -13,9 +13,6 @@
 #include "nixycore/typemanip/typemanip.h"
 
 //////////////////////////////////////////////////////////////////////////
-#include "nixycore/general/disable_warnings.h"
-
-//////////////////////////////////////////////////////////////////////////
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
@@ -98,10 +95,14 @@ NX_END
 //////////////////////////////////////////////////////////////////////////
 
 #if defined(NX_CC_MSVC)
+#   pragma warning(push)
+#   pragma warning(disable: 4800)   // forcing value to bool 'true' or 'false' (performance warning)
+#   pragma warning(disable: 4311)   // pointer truncation from 'type1' to 'type2'
+#   pragma warning(disable: 4312)   // conversion from 'type1' to 'type2' of greater size
 #   include "detail/interlocked_msvc.hxx"
+#   pragma warning(pop)
 #elif defined(NX_CC_GNUC)
 #   include "detail/interlocked_gnuc.hxx"
 #endif
 
-#include "nixycore/general/disable_warnings.h"
 //////////////////////////////////////////////////////////////////////////

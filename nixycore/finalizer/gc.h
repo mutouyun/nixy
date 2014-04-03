@@ -479,7 +479,6 @@ namespace private_gc
 }
 
 //////////////////////////////////////////////////////////////////////////
-#include "nixycore/general/disable_warnings.h"
 
 /*
     Execute gc when the enclosing scope exits
@@ -491,9 +490,16 @@ class gc_scope : private_gc::connecter
     pvoid parent_res_;
 
 public:
+#if defined(NX_CC_MSVC)
+#   pragma warning(push)
+#   pragma warning(disable: 4355)   // 'this' : used in base member initializer list
+#endif
     gc_scope(void)
         : gc_(this), parent_res_(nx::nulptr)
     {}
+#if defined(NX_CC_MSVC)
+#   pragma warning(pop)
+#endif
 
     gc_scope(pvoid parent_res)
         : gc_(track()->next_), parent_res_(parent_res)
@@ -521,7 +527,6 @@ public:
     }
 };
 
-#include "nixycore/general/disable_warnings.h"
 //////////////////////////////////////////////////////////////////////////
 
 /*

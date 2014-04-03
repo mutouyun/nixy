@@ -23,6 +23,15 @@ NX_BEG
 
 namespace private_alloc
 {
+#if defined(NX_CC_MSVC)
+#   pragma warning(push)
+    /*
+        behavior change: an object of POD type constructed 
+        with an initializer of the form () will be default-initialized
+    */
+#   pragma warning(disable: 4345)
+#endif
+
     template <typename AllocT, typename T>
     struct detail
     {
@@ -73,6 +82,10 @@ namespace private_alloc
             return AllocT::alloc(size);
         }
     };
+
+#if defined(NX_CC_MSVC)
+#   pragma warning(pop)
+#endif
 }
 
 template <typename AllocT>
@@ -106,13 +119,17 @@ inline void free(pvoid p, size_t size)
     AllocT::free(p, size);
 }
 
-NX_CONCEPT(size_of, size_t, size_of)
+// make a concept to check size_of function
+
+NX_CONCEPT(size_of_normal, size_t, size_of, )
+NX_CONCEPT(size_of_const , size_t, size_of, const)
 
 // has no virtual-destructor or size_of function
 
 template <typename AllocT, typename T>
 inline typename nx::enable_if<!nx::has_virtual_destructor<T>::value ||
-                              !nx::has_size_of<T>::value
+                             (!nx::has_size_of_normal<T>::value &&
+                              !nx::has_size_of_const<T>::value)
 >::type_t free(T* p)
 {
     if (!p) return;
@@ -124,7 +141,8 @@ inline typename nx::enable_if<!nx::has_virtual_destructor<T>::value ||
 
 template <typename AllocT, typename T>
 inline typename nx::enable_if<nx::has_virtual_destructor<T>::value &&
-                              nx::has_size_of<T>::value
+                             (nx::has_size_of_normal<T>::value ||
+                              nx::has_size_of_const<T>::value)
 >::type_t free(T* p)
 {
     if (!p) return;
@@ -157,7 +175,8 @@ inline pvoid realloc(pvoid p, size_t old_size, size_t new_size)
 
 template <typename AllocT, typename T>
 inline typename nx::enable_if<!nx::has_virtual_destructor<T>::value ||
-                              !nx::has_size_of<T>::value,
+                             (!nx::has_size_of_normal<T>::value &&
+                              !nx::has_size_of_const<T>::value),
 pvoid>::type_t realloc(T* p, size_t size)
 {
     if (p) nx_destruct(p, T);
@@ -168,7 +187,8 @@ pvoid>::type_t realloc(T* p, size_t size)
 
 template <typename AllocT, typename T>
 inline typename nx::enable_if<nx::has_virtual_destructor<T>::value &&
-                              nx::has_size_of<T>::value,
+                             (nx::has_size_of_normal<T>::value ||
+                              nx::has_size_of_const<T>::value),
 pvoid>::type_t realloc(T* p, size_t size)
 {
     size_t s = 0;
