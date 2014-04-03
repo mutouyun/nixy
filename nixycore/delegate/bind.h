@@ -8,7 +8,6 @@
 #pragma once
 
 #include "nixycore/delegate/function_traits.h"
-#include "nixycore/delegate/functor.h"
 
 #include "nixycore/general/general.h"
 #include "nixycore/preprocessor/preprocessor.h"
@@ -331,16 +330,6 @@ template <typename F>
 inline private_bind::fr<F> bind(F f)
 {
     return private_bind::fr<F>(f);
-}
-
-/*
-    Bind member function and the object pointer to a functor
-*/
-
-template <typename T, typename C, typename P>
-inline rvalue<functor<typename function_traits<T C::*>::type_t>, true> bind(T C::* f, P p)
-{
-    return functor<typename function_traits<T C::*>::type_t>(f, p);
 }
 
 /*
