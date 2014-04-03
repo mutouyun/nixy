@@ -100,15 +100,15 @@ namespace test_mempool
         strout << sw.value() * 1000 << " ms" << endl;
     }
 
-    struct new_alloc
+    struct system_alloc
     {
         void* alloc(size_t size)
         {
-            return new nx::byte[size];
+            return ::malloc(size);
         }
         void free(void* p, size_t /*size*/)
         {
-            delete [] (nx::byte*)p;
+            ::free(p);
         }
     };
 
@@ -173,13 +173,13 @@ void testMemPool(void)
 
     init();
 
-    start<unfixed_alloc>("Start for nx::unfixed_pool...\t");
-    start<mempool_alloc>("Start for nx::mem_pool...\t");
+//    start<unfixed_alloc>("Start for nx::unfixed_pool...\t");
+//    start<mempool_alloc>("Start for nx::mem_pool...\t");
     start<mem_alloc>    ("Start for nx::alloc/free...\t");
 #ifndef NO_TEST_NEDMALLOC
     start<ned_alloc>    ("Start for ned_alloc/free...\t");
 #endif
-    start<new_alloc>    ("Start for new && delete...\t");
+    start<system_alloc> ("Start for system_alloc...\t");
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -197,7 +197,7 @@ namespace test_alloc
         TEST_MEMPOOL((void), TestCont / nx_countof(hd)); \
         return 0; \
     }
-    THREAD_ALLOC(new_alloc)
+    THREAD_ALLOC(system_alloc)
     THREAD_ALLOC(mem_alloc)
 #ifndef NO_TEST_NEDMALLOC
     THREAD_ALLOC(ned_alloc)
@@ -215,7 +215,7 @@ namespace test_alloc
         nx_foreach(i, nx_countof(hd)) nx::thread_ops::join(hd[i]); \
         strout << sw.value() * 1000 << " ms" << endl; \
     }
-    START_ALLOC(new_alloc)
+    START_ALLOC(system_alloc)
     START_ALLOC(mem_alloc)
 #ifndef NO_TEST_NEDMALLOC
     START_ALLOC(ned_alloc)
@@ -232,11 +232,11 @@ void testAlloc(void)
 
     init(nx_countof(hd));
 
-    start_mem_alloc  ("Start for nx::alloc/free...\t");
+    start_mem_alloc   ("Start for nx::alloc/free...\t");
 #ifndef NO_TEST_NEDMALLOC
-    start_ned_alloc  ("Start for ned_alloc/free...\t");
+    start_ned_alloc   ("Start for ned_alloc/free...\t");
 #endif
-    start_new_alloc  ("Start for new && delete...\t");
+    start_system_alloc("Start for system_alloc...\t");
 }
 
 //////////////////////////////////////////////////////////////////////////

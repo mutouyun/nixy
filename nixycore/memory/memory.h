@@ -9,6 +9,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
+#include "nixycore/memory/mem_leak.h"
 #include "nixycore/memory/construct.h"
 #include "nixycore/memory/alloc.h"
 #include "nixycore/memory/std_alloc.h"

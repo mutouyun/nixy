@@ -28,7 +28,6 @@ else
     var prj = Projects.create("nixycore")
     prj.type = "lib"
     prj.heads = "\
-        'nixycore/general/disable_warnings.h' \
         'nixycore/general/plat_detect.h' \
         'nixycore/general/global_functions.h' \
         'nixycore/general/general.h' \
@@ -92,6 +91,7 @@ else
         'nixycore/finalizer/holder.h' \
         'nixycore/finalizer/gc.h' \
         'nixycore/finalizer/finalizer.h' \
+        'nixycore/memory/mem_leak.h' \
         'nixycore/memory/construct.h' \
         'nixycore/memory/alloc.h' \
         'nixycore/memory/std_alloc.h' \

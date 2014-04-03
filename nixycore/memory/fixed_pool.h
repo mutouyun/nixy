@@ -114,12 +114,16 @@ namespace use
     Default allocation parameters
 */
 
+#ifndef NX_FIXEDPOOL_EXPAND
+#define NX_FIXEDPOOL_EXPAND     nx::use::pool_expand_return // Memory expand model using pool_expand_return
+#endif
+
 #ifndef NX_FIXEDPOOL_MODEL
-#define NX_FIXEDPOOL_MODEL      nx::use::iter_powerof
+#define NX_FIXEDPOOL_MODEL      nx::use::iter_powerof       // Iterative algorithm using iter_powerof
 #endif
 
 #ifndef NX_FIXEDPOOL_ITERCOUNT
-#define NX_FIXEDPOOL_ITERCOUNT  (2)
+#define NX_FIXEDPOOL_ITERCOUNT  (2)                         // Iteration factor
 #endif
 
 /*
@@ -135,12 +139,12 @@ template
         class, size_t,
         template <typename, size_t> class
     >
-    class ExpandT = use::pool_expand_return,    /* Memory growth model uses the pool_expand_return policy */
+    class ExpandT = NX_FIXEDPOOL_EXPAND,
 
     template <typename, size_t>
-    class ModelT = NX_FIXEDPOOL_MODEL,          /* Iterative algorithm using NX_FIXEDPOOL_MODEL */
+    class ModelT = NX_FIXEDPOOL_MODEL,
 
-    size_t IterCountN = NX_FIXEDPOOL_ITERCOUNT  /* Iteration count */
+    size_t IterCountN = NX_FIXEDPOOL_ITERCOUNT
 >
 class fixed_pool : public ExpandT<AllocT, IterCountN, ModelT>, noncopyable
 {

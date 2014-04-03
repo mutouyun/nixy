@@ -44,7 +44,7 @@ struct pool_stack_base
         ~lock_guard() { lc_.unlock(); }
     };
 
-    typedef fixed_pool<AllocT, use::pool_expand_keep> pool_t;
+    typedef fixed_pool<AllocT> pool_t;
 
     struct node_t
     {
@@ -69,6 +69,8 @@ class pool_stack_model : public PolicyT<AllocT>
     using base_t::lc_;
 
 public:
+    using base_t::ALLOC_LIMIT;
+
     typedef typename base_t::pool_t  pool_t;
     typedef typename base_t::node_t  node_t;
     typedef typename base_t::array_t array_t;
@@ -83,7 +85,11 @@ public:
     {
         init_array(pools_);
     }
-    /* No return memory back to system */
+
+    ~pool_stack_model(void)
+    {
+        base_t::for_each(pools_, (pvoid)0, &pool_stack_model::destroy_node_p);
+    }
 
 public:
     node_t* pop_node(size_t n, size_t size)
@@ -148,6 +154,18 @@ private:
         nx_assert(pool);
         return pool->has_block(p) ? pool : 0;
     }
+
+    static pvoid destroy_node_p(size_t /*n*/, node_t* node, pvoid /*p*/)
+    {
+        while(node)
+        {
+            node_t* temp = node;
+            node = node->next_;
+            nx::free<AllocT>(temp->pool_);
+            nx::free<AllocT>(temp);
+        }
+        return 0;
+    }
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -185,7 +203,8 @@ namespace use
         typedef typename base_t::node_t node_t;
         typedef skip_array<node_t*, SMALL_SIZ, NX_POOLSTACK_LEVELNUM, AllocT> array_t;
 
-        NX_STATIC_PROPERTY(size_t, MAX_SIZE, array_t::MAX);
+        NX_STATIC_PROPERTY(size_t, MAX_SIZE   , array_t::MAX);
+        NX_STATIC_PROPERTY(size_t, ALLOC_LIMIT, MAX_SIZE * SMALL_INC);
         NX_STATIC_PROPERTY(size_t, ERROR_INDEX, -1);
 
         static size_t calculate_index(size_t size, size_t* size_ptr = 0)
@@ -207,12 +226,12 @@ namespace use
         }
 
         template <class C, typename F>
-        static pvoid for_each(const array_t& pools, C* wp, F do_something)
+        static pvoid for_each(const array_t& pools, C* wp, F do_sth)
         {
             nx_auto(ite, pools.begin());
             for (; ite != pools.end(); ++ite)
             {
-                pvoid p = do_something(ite.index(), *ite, wp);
+                pvoid p = do_sth(ite.index(), *ite, wp);
                 if (p) return p;
             }
             return 0;
@@ -236,7 +255,8 @@ namespace use
         NX_STATIC_PROPERTY(size_t, LARGE_INC, SMALL_INC << 1);
         NX_STATIC_PROPERTY(size_t, LARGE_MAX, LARGE_SIZ * LARGE_INC);
 
-        NX_STATIC_PROPERTY(size_t, MAX_SIZE, SMALL_SIZ + LARGE_SIZ - 1);
+        NX_STATIC_PROPERTY(size_t, MAX_SIZE   , SMALL_SIZ + LARGE_SIZ - 1);
+        NX_STATIC_PROPERTY(size_t, ALLOC_LIMIT, SMALL_MAX + LARGE_MAX);
         NX_STATIC_PROPERTY(size_t, ERROR_INDEX, -1);
 
         typedef typename base_t::node_t node_t;
@@ -268,11 +288,11 @@ namespace use
         }
 
         template <class C, typename F>
-        static pvoid for_each(const array_t& pools, C* wp, F do_something)
+        static pvoid for_each(const array_t& pools, C* wp, F do_sth)
         {
             for (size_t n = 0; n < MAX_SIZE; ++n)
             {
-                pvoid p = do_something(n, pools[n], wp);
+                pvoid p = do_sth(n, pools[n], wp);
                 if (p) return p;
             }
             return 0;
@@ -299,6 +319,8 @@ public:
     typedef typename stack_t::node_t  node_t;
     typedef typename stack_t::pool_t  pool_t;
     typedef typename stack_t::array_t array_t;
+
+    NX_STATIC_PROPERTY(size_t, ALLOC_LIMIT, stack_t::ALLOC_LIMIT);
 
 private:
     stack_t& stack_;

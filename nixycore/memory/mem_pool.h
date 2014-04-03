@@ -32,7 +32,7 @@ NX_BEG
 
 template
 <
-    typename AllocT = nx::use::alloc_std,
+    typename AllocT = use::alloc_std,
 
     template <class>
     class StackT = NX_MEMPOOL_STACK
@@ -43,8 +43,12 @@ class mem_pool : pool_center<AllocT, StackT>
     typedef typename base_t::pool_t pool_t;
 
     typedef void alloc_t;
-    NX_STATIC_PROPERTY(size_t, HEAD_SIZE, 0);
 
+public:
+    NX_STATIC_PROPERTY(size_t, HEAD_SIZE, 0);
+    using base_t::ALLOC_LIMIT;
+
+private:
     pool_t* find_pool(size_t size)
     {
         return base_t::acquire_pool(size, HEAD_SIZE);
