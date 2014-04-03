@@ -48,6 +48,21 @@
 
 //////////////////////////////////////////////////////////////////////////
 /*
+    C++ features support, must be one of: (NX_FS_XX)
+
+    CXX11   - Support c++ 11 basic features
+*/
+//////////////////////////////////////////////////////////////////////////
+
+#if defined(NX_CC_MSVC)
+#elif defined(NX_CC_GNUC)
+#   if (__cplusplus >= 201103L)
+#       define NX_FS_CXX11
+#   endif
+#endif
+
+//////////////////////////////////////////////////////////////////////////
+/*
     The processor, must be one of: (NX_PC_XX)
 
     X86_32  - x86 32-bit processors
