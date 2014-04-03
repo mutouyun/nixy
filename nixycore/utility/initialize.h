@@ -19,7 +19,7 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-NX_CONCEPT(initialize, void, initialize)
+NX_CONCEPT(initialize, void, initialize,)
 
 template <typename T>
 inline typename enable_if<!has_initialize<T>::value &&

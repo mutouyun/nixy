@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "nixycore/delegate/function_traits.h"
+
 #include "nixycore/memory/default_alloc.h"
 #include "nixycore/pattern/prototype.h"
 
@@ -245,7 +247,7 @@ private:
     public:
         virtual pvoid handler(void) const = 0;
         virtual PlaceHolder* clone(void) = 0;
-        virtual size_t size_of(void) = 0;
+        virtual size_t size_of(void) const = 0;
     } * any_guard_;
 
     template <typename T>
@@ -258,9 +260,9 @@ private:
         Holder(const T& v): held_(v) {}
 
     public:
-        pvoid handler(void) const { return (pvoid)nx::addressof(held_); }
-        PlaceHolder* clone(void)  { return nx::alloc<Holder>(nx::ref(held_)); }
-        size_t size_of(void)      { return sizeof(Holder); }
+        pvoid handler(void) const  { return (pvoid)nx::addressof(held_); }
+        PlaceHolder* clone(void)   { return nx::alloc<Holder>(nx::ref(held_)); }
+        size_t size_of(void) const { return sizeof(Holder); }
     };
 
 protected:
@@ -479,6 +481,16 @@ template <typename F>
 inline void swap(functor<F>& x, functor<F>& y)
 {
     x.swap(y);
+}
+
+/*
+    Bind member function and the object pointer to a functor
+*/
+
+template <typename T, typename C, typename P>
+inline rvalue<functor<typename function_traits<T C::*>::type_t>, true> bind(T C::* f, P p)
+{
+    return functor<typename function_traits<T C::*>::type_t>(f, p);
 }
 
 //////////////////////////////////////////////////////////////////////////

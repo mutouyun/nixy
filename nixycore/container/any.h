@@ -36,7 +36,7 @@ protected:
     public:
         virtual const std::type_info& type(void) const = 0;
         virtual PlaceHolder* clone(void) = 0;
-        virtual size_t size_of(void) = 0;
+        virtual size_t size_of(void) const = 0;
     };
 
     template <typename T>
@@ -51,7 +51,7 @@ protected:
     public:
         const std::type_info & type(void) const { return typeid(T); }
         PlaceHolder* clone(void)                { return nx::alloc<Holder>(nx::ref(held_)); }
-        size_t size_of(void)                    { return sizeof(Holder); }
+        size_t size_of(void) const              { return sizeof(Holder); }
     };
 
 protected:

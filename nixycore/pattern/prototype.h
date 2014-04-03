@@ -17,7 +17,7 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-NX_CONCEPT(clone, U*, clone)
+NX_CONCEPT(clone, U*, clone,)
 
 template <typename T>
 inline typename enable_if<has_clone<T>::value, 
