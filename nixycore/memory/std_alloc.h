@@ -59,6 +59,8 @@ public:
 
     template <class U>
     bool operator==(const std_allocator<U, AllocT>&) const { return true; }
+    template <class U>
+    bool operator!=(const std_allocator<U, AllocT>&) const { return false; }
 
 public:
     pointer allocate(size_type count, const pvoid = 0)

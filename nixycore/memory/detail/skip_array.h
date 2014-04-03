@@ -103,7 +103,7 @@ namespace private_skip_array
             do
             {
                 n = index(i + r);
-                nx_assert(n < SkipN);
+                if (n >= SkipN) break;
                 pvoid p = 0;
                 for(; (n < SkipN) && !(p = e[n]); ++n)
                     r += DEEP_SIZE;
@@ -133,7 +133,6 @@ namespace private_skip_array
 
         static size_t check(const type_t& e, size_t i)
         {
-            nx_assert(i < SkipN);
             size_t r = 0;
             for(size_t n = i; (n < SkipN) && !e[n]; ++n)
                 r += 1;
