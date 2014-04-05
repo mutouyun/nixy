@@ -19,10 +19,14 @@ struct iterator : public ModelT, nx_operator(iterator<ModelT>, unequal, operable
 {
     typedef typename ModelT::type_t type_t;
 
-    iterator(int v = 0)
-    {
-        ModelT::operator()(v);
-    }
+    iterator(void)
+        : ModelT(0)
+    {}
+
+    template <typename T>
+    iterator(T v)
+        : ModelT(v)
+    {}
 
     iterator& operator+=(int v)
     {

@@ -59,19 +59,19 @@ namespace private_skip_array
         typedef pvoid type_t[SkipN];
         typedef elems<SkipN, LevelN - 1, AllocT> deep_elems;
 
-        static size_t index(size_t i)
+        inline static size_t index(size_t i)
         {
             return i / DEEP_SIZE;
         }
 
-        static size_t jump(size_t i, size_t n)
+        inline static size_t jump(size_t i, size_t n)
         {
             size_t jumped = n * DEEP_SIZE;
             nx_assert(i >= jumped);
             return (i - jumped);
         }
 
-        static pvoid& at(type_t& e, size_t i)
+        inline static pvoid& at(type_t& e, size_t i)
         {
             size_t n = index(i);
             nx_assert(n < SkipN);
@@ -85,7 +85,7 @@ namespace private_skip_array
             return deep_elems::at(*static_cast<type_t*>(p), jump(i, n));
         }
 
-        static void clear(type_t& e)
+        inline static void clear(type_t& e)
         {
             for(size_t i = 0; i < SkipN; ++i)
             {
@@ -96,7 +96,7 @@ namespace private_skip_array
             }
         }
 
-        static size_t check(const type_t& e, size_t i)
+        inline static size_t check(const type_t& e, size_t i)
         {
             size_t n, x, j; // No need to initialize
             size_t r = 0;
@@ -120,18 +120,18 @@ namespace private_skip_array
     {
         typedef pvoid type_t[SkipN];
 
-        static pvoid& at(type_t& e, size_t i)
+        inline static pvoid& at(type_t& e, size_t i)
         {
             nx_assert(i < SkipN);
             return e[i];
         }
 
-        static void clear(type_t& /*e*/)
+        inline static void clear(type_t& /*e*/)
         {
             // Do nothing
         }
 
-        static size_t check(const type_t& e, size_t i)
+        inline static size_t check(const type_t& e, size_t i)
         {
             size_t r = 0;
             for(size_t n = i; (n < SkipN) && !e[n]; ++n)
@@ -153,9 +153,9 @@ namespace private_skip_array
         typename elems_ops::type_t* elems_ptr_;
         size_t index_;
 
-        iter_policy(void)
+        iter_policy(size_t i)
             : elems_ptr_(nx::nulptr)
-            , index_(0)
+            , index_(i)
         {}
 
         size_t index(void) const
@@ -260,17 +260,15 @@ public:
 
     iterator end(void)
     {
-        iterator iter;
+        iterator iter(MAX);
         iter.elems_ptr_ = &elems_;
-        iter.index_     = MAX;
         return iter;
     }
 
     const_iterator end(void) const
     {
-        const_iterator iter;
+        const_iterator iter(MAX);
         iter.elems_ptr_ = &elems_;
-        iter.index_     = MAX;
         return iter;
     }
 

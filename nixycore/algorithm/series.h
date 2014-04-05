@@ -22,7 +22,7 @@ struct series_base
 
     type_t val_;
 
-    series_base(void) : val_(0) {}
+    series_base(type_t val) : val_(val) {}
 
     type_t value(void) const { return val_; }
 
@@ -34,6 +34,25 @@ struct series_base
 
 namespace use // Series Policy
 {
+    template <typename T, size_t /*N*/>
+    struct iter_const : series_base<T>
+    {
+        typedef series_base<T> base_t;
+        typedef typename base_t::type_t type_t;
+
+        iter_const(type_t val)
+            : base_t(val)
+        {
+            if (base_t::val_ == 0)
+                base_t::val_ = 1;
+        }
+
+        void operator()(int /*n*/)
+        {
+            // Do nothing
+        }
+    };
+
     /*
         Accumulation (N * (n - 1))
 
@@ -46,6 +65,11 @@ namespace use // Series Policy
     struct iter_acc : series_base<T>
     {
         typedef series_base<T> base_t;
+        typedef typename base_t::type_t type_t;
+
+        iter_acc(type_t val)
+            : base_t(val)
+        {}
 
         void operator()(int n)
         {
@@ -70,6 +94,11 @@ namespace use // Series Policy
     struct iter_powerof : series_base<T>
     {
         typedef series_base<T> base_t;
+        typedef typename base_t::type_t type_t;
+
+        iter_powerof(type_t val)
+            : base_t(val)
+        {}
 
         void operator()(int n)
         {
@@ -110,9 +139,14 @@ namespace use // Series Policy
     struct iter_fibonacci : series_base<T>
     {
         typedef series_base<T> base_t;
+        typedef typename base_t::type_t type_t;
 
-        typename base_t::type_t prv_;
-        iter_fibonacci(void) : prv_(0) {}
+        type_t prv_;
+
+        iter_fibonacci(type_t val)
+            : base_t(val)
+            , prv_(0)
+        {}
 
         void operator()(int n)
         {

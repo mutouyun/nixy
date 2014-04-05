@@ -46,8 +46,9 @@ namespace use
         } * blocks_head_;
 
     protected:
-        pool_expand_keep(void)
-            : blocks_head_(0)
+        pool_expand_keep(size_t init_count)
+            : count_ite_(init_count)
+            , blocks_head_(0)
         {}
         /* No return memory back to system */
 
@@ -60,8 +61,10 @@ namespace use
         {
             nx_assert(block_size);
             blocks_t* blocks = nx::alloc<AllocT, blocks_t>();
+            nx_assert(blocks);
             blocks->size_ = block_size * (*(++count_ite_));
             blocks->data_ = nx::alloc<AllocT>(blocks->size_);
+            nx_assert(blocks->data_);
             blocks->next_ = blocks_head_;
             blocks_head_ = blocks;
             return blocks->data_;
@@ -105,8 +108,11 @@ namespace use
         typedef pool_expand_keep<AllocT, IterCountN, ModelT> base_t;
 
     protected:
-        pool_expand_return(void)  {}
-        ~pool_expand_return(void) { base_t::clear(); }
+        pool_expand_return(size_t init_count)
+            : base_t(init_count)
+        {}
+        ~pool_expand_return(void)
+        { base_t::clear(); }
     };
 }
 
@@ -165,8 +171,9 @@ private:
     }
 
 public:
-    explicit fixed_pool(size_t size)
-        : block_size_(size)
+    explicit fixed_pool(size_t block_size, size_t init_count = 0)
+        : base_t(init_count)
+        , block_size_(block_size)
         , cursor_(0)
     {
         nx_assert(block_size_ >= sizeof(pvoid));
@@ -177,6 +184,7 @@ public:
     pvoid alloc(void)
     {
         if (!cursor_) expand();
+        nx_assert(cursor_);
         pvoid p = cursor_;
         cursor_ = *(pvoid*)p;   // Get next block
         return p;

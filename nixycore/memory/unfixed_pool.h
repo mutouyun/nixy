@@ -23,7 +23,7 @@ NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
 #ifndef NX_UNFIXEDPOOL_BLOCKSIZE
-#define NX_UNFIXEDPOOL_BLOCKSIZE    (1024 * sizeof(nx::pvoid))
+#define NX_UNFIXEDPOOL_BLOCKSIZE    (sizeof(nx::pvoid) * 1024)
 #endif
 
 /*

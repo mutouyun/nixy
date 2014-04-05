@@ -28,17 +28,17 @@
 namespace test_mempool
 {
 #ifdef NX_OS_WINCE
-    const int TestCont = 100;
-    const int TestLast = 100;
+    const size_t TestCont = 100;
+    const size_t TestLast = 100;
 #elif NDEBUG
-    const int TestCont = 10000;
-    const int TestLast = 1000;
+    const size_t TestCont = 100000;
+    const size_t TestLast = 1000;
 #else
-    const int TestCont = 1000;
-    const int TestLast = 1000;
+    const size_t TestCont = 1000;
+    const size_t TestLast = 1000;
 #endif
-    const int TestSMin = /*1*/4;
-    const int TestSMax = /*4*//*16*//*32*/256/*1024*/;
+    const size_t TestSMin = 1;
+    const size_t TestSMax = /*4*//*16*//*32*/256/*1024*//*65536*//*1024 * 1024*/;
 
     nx::size_t size[TestLast] = {0};
     nx::size_t indx[TestLast] = {0};
@@ -59,22 +59,22 @@ namespace test_mempool
         strout << str << endl;
 
         nx::random<> rdm(TestSMin, TestSMax);
-        for(int i = 0; i < TestLast; ++i)
+        for(size_t i = 0; i < TestLast; ++i)
             rdm.roll(size[i]);
 
         rdm.range(0, TestLast);
-        for(int i = 0; i < TestLast; ++i)
+        for(size_t i = 0; i < TestLast; ++i)
             rdm.roll(indx[i]);
     }
 
-#define TEST_MEMPOOL(alloc_name, test_count) do { \
-    for(int i = 0; i < (int)(test_count / 2); ++i) \
+#define TEST_MEMPOOL(alloc_name, test_last, start_n) do { \
+    for(size_t i = 0; i < (TestCont / 2); ++i) \
     { \
         alloc_name alc; \
         for(int x = 0; x < 2; ++x) \
-        for(int n = 0; n < TestLast; ++n) \
+        for(size_t n = 0, i = (start_n * test_last); n < test_last; ++n, ++i) \
         { \
-            test_t& p = test[indx[n]]; \
+            test_t& p = test[indx[i]]; \
             if (p.p_) \
             { \
                 alc.free(p.p_, p.s_); \
@@ -83,8 +83,8 @@ namespace test_mempool
             } \
             else \
             { \
-                p.p_ = alc.alloc(size[n]); \
-                p.s_ = size[n]; \
+                p.p_ = alc.alloc(size[i]); \
+                p.s_ = size[i]; \
             } \
         } \
     } } while(0)
@@ -96,7 +96,7 @@ namespace test_mempool
         strout << out;
 
         sw.start();
-        TEST_MEMPOOL(A, TestCont);
+        TEST_MEMPOOL(A, TestLast, 0);
         strout << sw.value() * 1000 << " ms" << endl;
     }
 
@@ -114,7 +114,7 @@ namespace test_mempool
 
     struct mempool_alloc
     {
-        nx::mem_pool<> pool_;
+        nx::use::alloc_pool::mem_pool_t pool_;
         void* alloc(size_t size)
         {
             return pool_.alloc(size);
@@ -174,27 +174,31 @@ void testMemPool(void)
     init();
 
 //    start<unfixed_alloc>("Start for nx::unfixed_pool...\t");
-//    start<mempool_alloc>("Start for nx::mem_pool...\t");
+    //start<mempool_alloc>("Start for nx::mem_pool...\t");
     start<mem_alloc>    ("Start for nx::alloc/free...\t");
 #ifndef NO_TEST_NEDMALLOC
     start<ned_alloc>    ("Start for ned_alloc/free...\t");
 #endif
-    start<system_alloc> ("Start for system_alloc...\t");
+    start<system_alloc> ("Start for malloc...\t\t");
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-namespace test_alloc
+namespace test_thread_alloc
 {
     nx::thread_ops::handle_t hd[10] = {0};
+    void* alc_ptr_ = 0;
+
+    const size_t TestLast_Thread = test_mempool::TestLast / nx_countof(hd);
 
 #define THREAD_ALLOC(alloc_name) \
-    NX_THREAD_PROC(proc_##alloc_name, alcptr) \
+    NX_THREAD_PROC(proc_##alloc_name, xx) \
     { \
         using namespace test_mempool; \
-        alloc_name& alc = *(alloc_name*)alcptr; \
+        alloc_name& alc = *(alloc_name*)alc_ptr_; \
+        size_t start_n = reinterpret_cast<size_t>(xx); \
         test_t test[TestLast]; \
-        TEST_MEMPOOL((void), TestCont / nx_countof(hd)); \
+        TEST_MEMPOOL((void), TestLast_Thread, start_n); \
         return 0; \
     }
     THREAD_ALLOC(system_alloc)
@@ -209,9 +213,10 @@ namespace test_alloc
     { \
         using namespace test_mempool; \
         alloc_name alc; \
+        alc_ptr_ = &alc; \
         strout << out; \
         sw.start(); \
-        nx_foreach(i, nx_countof(hd)) hd[i] = nx::thread_ops::create(proc_##alloc_name, &alc); \
+        nx_foreach(i, nx_countof(hd)) hd[i] = nx::thread_ops::create(proc_##alloc_name, (void*)i); \
         nx_foreach(i, nx_countof(hd)) nx::thread_ops::join(hd[i]); \
         strout << sw.value() * 1000 << " ms" << endl; \
     }
@@ -223,12 +228,12 @@ namespace test_alloc
 #undef START_ALLOC
 }
 
-void testAlloc(void)
+void testThreadAlloc(void)
 {
     TEST_CASE();
 
     using namespace test_mempool;
-    using namespace test_alloc;
+    using namespace test_thread_alloc;
 
     init(nx_countof(hd));
 
@@ -236,7 +241,7 @@ void testAlloc(void)
 #ifndef NO_TEST_NEDMALLOC
     start_ned_alloc   ("Start for ned_alloc/free...\t");
 #endif
-    start_system_alloc("Start for system_alloc...\t");
+    start_system_alloc("Start for malloc...\t\t");
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -341,7 +346,7 @@ void testMemory(void)
     TEST_FUNCTION();
 
     testMemPool();
-    testAlloc();
+    testThreadAlloc();
     //testMemGuard();
     //testPointer();
     //testObjectPool();
