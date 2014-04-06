@@ -138,7 +138,7 @@ struct cache_locator
 };
 
 /*
-    put pool into cache
+    Acquire a pool, and put it into cache
 */
 
 namespace private_cache_placer

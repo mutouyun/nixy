@@ -111,6 +111,11 @@ namespace private_skip_array
             return e[i];
         }
 
+        inline static pvoid& at(type_t& e, size_t /*n*/, size_t i)
+        {
+            return at(e, i);
+        }
+
         inline static void clear(type_t& /*e*/)
         {
             // Do nothing

@@ -142,11 +142,11 @@ template
     typename T,
     class FixedAllocT = fixed_pool<>,
     template <typename, class>
-    class Storage_ = object_pool_storage
+    class StorageT = object_pool_storage
 >
 class object_pool : noncopyable
 {
-    typedef Storage_<T, FixedAllocT> storage_t;
+    typedef StorageT<T, FixedAllocT> storage_t;
 
 public:
     typedef typename storage_t::type_t type_t;
