@@ -24,40 +24,18 @@ NX_BEG
 namespace private_skip_array
 {
     /*
-        X raised by the exponent of Y
-    */
-
-    template <size_t X, size_t Y>
-    struct exp
-    {
-        NX_STATIC_VALUE(size_t, X * exp<X, Y - 1>::value);
-    };
-
-    template <size_t X>
-    struct exp<X, 1>
-    {
-        NX_STATIC_VALUE(size_t, X);
-    };
-
-    template <size_t X>
-    struct exp<X, 0>
-    {
-        NX_STATIC_VALUE(size_t, 1);
-    };
-
-    /*
         elems operations
     */
 
     template <size_t SkipN, size_t LevelN, class AllocT>
     struct elems
     {
-        nx_assert_static(LevelN);
+        nx_assert_static(SkipN);
 
-        NX_STATIC_PROPERTY(size_t, DEEP_SIZE, exp<SkipN, LevelN - 1>::value);
+        NX_STATIC_PROPERTY(size_t, DEEP_SIZE, LevelN);
 
-        typedef pvoid type_t[SkipN];
-        typedef elems<SkipN, LevelN - 1, AllocT> deep_elems;
+        typedef pvoid type_t[LevelN];
+        typedef elems<0, LevelN, AllocT> deep_elems;
 
         inline static size_t index(size_t i)
         {
@@ -71,9 +49,8 @@ namespace private_skip_array
             return (i - jumped);
         }
 
-        inline static pvoid& at(type_t& e, size_t i)
+        inline static pvoid& at(type_t& e, size_t n, size_t i)
         {
-            size_t n = index(i);
             nx_assert(n < SkipN);
             pvoid& p = e[n];
             if (!p)
@@ -82,7 +59,13 @@ namespace private_skip_array
                 nx_assert(p);
                 memset(p, 0, sizeof(type_t));
             }
-            return deep_elems::at(*static_cast<type_t*>(p), jump(i, n));
+            return deep_elems::at(*static_cast<type_t*>(p), i);
+        }
+
+        inline static pvoid& at(type_t& e, size_t i)
+        {
+            size_t n = index(i);
+            return at(e, n, jump(i, n));
         }
 
         inline static void clear(type_t& e)
@@ -115,14 +98,16 @@ namespace private_skip_array
         }
     };
 
-    template <size_t SkipN, class AllocT>
-    struct elems<SkipN, 1, AllocT>
+    template <size_t LevelN, class AllocT>
+    struct elems<0, LevelN, AllocT>
     {
-        typedef pvoid type_t[SkipN];
+        nx_assert_static(LevelN);
+
+        typedef pvoid type_t[LevelN];
 
         inline static pvoid& at(type_t& e, size_t i)
         {
-            nx_assert(i < SkipN);
+            nx_assert(i < LevelN);
             return e[i];
         }
 
@@ -134,7 +119,7 @@ namespace private_skip_array
         inline static size_t check(const type_t& e, size_t i)
         {
             size_t r = 0;
-            for(size_t n = i; (n < SkipN) && !e[n]; ++n)
+            for(size_t n = i; (n < LevelN) && !e[n]; ++n)
                 r += 1;
             return r;
         }
@@ -210,7 +195,7 @@ class skip_array<T, SkipN, LevelN, AllocT, true>
     mutable typename elems_ops::type_t elems_;
 
 public:
-    NX_STATIC_PROPERTY(size_t, MAX, private_skip_array::exp<SkipN, LevelN>::value);
+    NX_STATIC_PROPERTY(size_t, MAX, SkipN * LevelN);
 
     typedef T                   value_type;
     typedef value_type&         reference;
@@ -288,15 +273,27 @@ public:
         return reinterpret_cast<const_reference>(elems_ops::at(elems_, i));
     }
 
-    // at()
-    reference       at(size_type i)         { return operator[](i); }
-    const_reference at(size_type i) const   { return operator[](i); }
+    /*
+        at()
+    */
+
+    reference at(size_type n, size_type i)
+    {
+        nx_assert(i < MAX);
+        return reinterpret_cast<reference>(elems_ops::at(elems_, n, i));
+    }
+
+    const_reference at(size_type n, size_type i) const
+    {
+        nx_assert(i < MAX);
+        return reinterpret_cast<const_reference>(elems_ops::at(elems_, n, i));
+    }
 
     // front() and back()
-    reference front()                       { return operator[](0); }
-    const_reference front() const           { return operator[](0); }
-    reference back()                        { return operator[](MAX - 1); }
-    const_reference back() const            { return operator[](MAX - 1); }
+    reference front()                       { return at(0, 0); }
+    const_reference front() const           { return at(0, 0); }
+    reference back()                        { return at(SkipN, LevelN - 1); }
+    const_reference back() const            { return at(SkipN, LevelN - 1); }
 
     // size is constant
     static size_type size()                 { return MAX; }

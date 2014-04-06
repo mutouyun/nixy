@@ -7,20 +7,51 @@
 
 #if (NX_CC_MSVC == 1400) || defined(NX_OS_WINCE)
 #define NO_TEST_NEDMALLOC
+#else
+//#define NO_TEST_NEDMALLOC
 #endif
+
+#define NO_TEST_JEMALLOC
+#define NO_TEST_TCMALLOC
 
 #ifndef NO_TEST_NEDMALLOC
 #ifdef NX_CC_GNUC
-#pragma GCC diagnostic ignored "-Wunused-value"
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic ignored "-Wunused-function"
-#pragma GCC diagnostic ignored "-Wunused-variable"
-#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#   pragma GCC diagnostic ignored "-Wunused-value"
+#   pragma GCC diagnostic ignored "-Wunused-parameter"
+#   pragma GCC diagnostic ignored "-Wunused-function"
+#   pragma GCC diagnostic ignored "-Wunused-variable"
+#   pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #   ifdef NX_CC_CLANG
 #   pragma GCC diagnostic ignored "-Wself-assign"
 #   endif
 #endif
-#include "nedmalloc/nedmalloc.c"
+#   include "nedmalloc/nedmalloc.c"
+#endif
+
+#ifndef NO_TEST_JEMALLOC
+#ifdef NX_CC_MSVC
+#   pragma comment(lib, "jemalloc.lib")
+#endif
+#   if defined(NX_OS_WIN)
+    extern "C" __declspec(dllimport) void* je_malloc(size_t size);
+    extern "C" __declspec(dllimport) void  je_free(void *ptr);
+#   else
+    extern "C" void* je_malloc(size_t size);
+    extern "C" void  je_free(void *ptr);
+#   endif
+#endif
+
+#ifndef NO_TEST_TCMALLOC
+#ifdef NX_CC_MSVC
+#   pragma comment(lib, "libtcmalloc_minimal.lib")
+#endif
+#   if defined(NX_OS_WIN)
+    extern "C" __declspec(dllimport) void* tc_malloc(size_t size);
+    extern "C" __declspec(dllimport) void  tc_free(void* ptr);
+#   else
+    extern "C" void* tc_malloc(size_t size);
+    extern "C" void  tc_free(void* ptr);
+#   endif
 #endif
 
 //////////////////////////////////////////////////////////////////////////
@@ -37,8 +68,8 @@ namespace test_mempool
     const size_t TestCont = 1000;
     const size_t TestLast = 1000;
 #endif
-    const size_t TestSMin = 1;
-    const size_t TestSMax = /*4*//*16*//*32*/256/*1024*//*65536*//*1024 * 1024*/;
+    const size_t TestSMin = 1/*256*/;
+    const size_t TestSMax = /*4*//*16*//*32*/256/*1024*//*4096*//*65536*//*1024 * 1024*/;
 
     nx::size_t size[TestLast] = {0};
     nx::size_t indx[TestLast] = {0};
@@ -100,18 +131,6 @@ namespace test_mempool
         strout << sw.value() * 1000 << " ms" << endl;
     }
 
-    struct system_alloc
-    {
-        void* alloc(size_t size)
-        {
-            return ::malloc(size);
-        }
-        void free(void* p, size_t /*size*/)
-        {
-            ::free(p);
-        }
-    };
-
     struct mempool_alloc
     {
         nx::use::alloc_pool::mem_pool_t pool_;
@@ -163,6 +182,46 @@ namespace test_mempool
         }
     };
 #endif
+
+#ifndef NO_TEST_JEMALLOC
+    struct je_alloc
+    {
+        void* alloc(size_t size)
+        {
+            return je_malloc(size);
+        }
+        void free(void* p, size_t /*size*/)
+        {
+            je_free(p);
+        }
+    };
+#endif
+
+#ifndef NO_TEST_TCMALLOC
+    struct tc_alloc
+    {
+        void* alloc(size_t size)
+        {
+            return tc_malloc(size);
+        }
+        void free(void* p, size_t /*size*/)
+        {
+            tc_free(p);
+        }
+    };
+#endif
+
+    struct system_alloc
+    {
+        void* alloc(size_t size)
+        {
+            return ::malloc(size);
+        }
+        void free(void* p, size_t /*size*/)
+        {
+            ::free(p);
+        }
+    };
 }
 
 void testMemPool(void)
@@ -173,13 +232,19 @@ void testMemPool(void)
 
     init();
 
-//    start<unfixed_alloc>("Start for nx::unfixed_pool...\t");
+    //start<unfixed_alloc>("Start for nx::unfixed_pool...\t");
     //start<mempool_alloc>("Start for nx::mem_pool...\t");
-    start<mem_alloc>    ("Start for nx::alloc/free...\t");
+    start<mem_alloc>   ("Start for nx::alloc/free...\t");
 #ifndef NO_TEST_NEDMALLOC
-    start<ned_alloc>    ("Start for ned_alloc/free...\t");
+    start<ned_alloc>   ("Start for ned_alloc/free...\t");
 #endif
-    start<system_alloc> ("Start for malloc...\t\t");
+#ifndef NO_TEST_JEMALLOC
+    start<je_alloc>    ("Start for jemalloc...\t\t");
+#endif
+#ifndef NO_TEST_TCMALLOC
+    start<tc_alloc>    ("Start for tcmalloc...\t\t");
+#endif
+    start<system_alloc>("Start for malloc...\t\t");
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -191,7 +256,7 @@ namespace test_thread_alloc
 
     const size_t TestLast_Thread = test_mempool::TestLast / nx_countof(hd);
 
-#define THREAD_ALLOC(alloc_name) \
+#define THREAD_ALLOC_TEST(alloc_name) \
     NX_THREAD_PROC(proc_##alloc_name, xx) \
     { \
         using namespace test_mempool; \
@@ -200,15 +265,7 @@ namespace test_thread_alloc
         test_t test[TestLast]; \
         TEST_MEMPOOL((void), TestLast_Thread, start_n); \
         return 0; \
-    }
-    THREAD_ALLOC(system_alloc)
-    THREAD_ALLOC(mem_alloc)
-#ifndef NO_TEST_NEDMALLOC
-    THREAD_ALLOC(ned_alloc)
-#endif
-#undef THREAD_ALLOC
-
-#define START_ALLOC(alloc_name) \
+    } \
     void start_##alloc_name(const char* out) \
     { \
         using namespace test_mempool; \
@@ -220,12 +277,18 @@ namespace test_thread_alloc
         nx_foreach(i, nx_countof(hd)) nx::thread_ops::join(hd[i]); \
         strout << sw.value() * 1000 << " ms" << endl; \
     }
-    START_ALLOC(system_alloc)
-    START_ALLOC(mem_alloc)
+    THREAD_ALLOC_TEST(mem_alloc)
 #ifndef NO_TEST_NEDMALLOC
-    START_ALLOC(ned_alloc)
+    THREAD_ALLOC_TEST(ned_alloc)
 #endif
-#undef START_ALLOC
+#ifndef NO_TEST_JEMALLOC
+    THREAD_ALLOC_TEST(je_alloc)
+#endif
+#ifndef NO_TEST_TCMALLOC
+    THREAD_ALLOC_TEST(tc_alloc)
+#endif
+    THREAD_ALLOC_TEST(system_alloc)
+#undef THREAD_ALLOC_TEST
 }
 
 void testThreadAlloc(void)
@@ -240,6 +303,12 @@ void testThreadAlloc(void)
     start_mem_alloc   ("Start for nx::alloc/free...\t");
 #ifndef NO_TEST_NEDMALLOC
     start_ned_alloc   ("Start for ned_alloc/free...\t");
+#endif
+#ifndef NO_TEST_JEMALLOC
+    start_je_alloc    ("Start for jemalloc...\t\t");
+#endif
+#ifndef NO_TEST_TCMALLOC
+    start_tc_alloc    ("Start for tcmalloc...\t\t");
 #endif
     start_system_alloc("Start for malloc...\t\t");
 }
