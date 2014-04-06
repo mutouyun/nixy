@@ -243,8 +243,9 @@ void testMemPool(void)
 #endif
 #ifndef NO_TEST_TCMALLOC
     start<tc_alloc>    ("Start for tcmalloc...\t\t");
-#endif
+#else
     start<system_alloc>("Start for malloc...\t\t");
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -309,8 +310,9 @@ void testThreadAlloc(void)
 #endif
 #ifndef NO_TEST_TCMALLOC
     start_tc_alloc    ("Start for tcmalloc...\t\t");
-#endif
+#else
     start_system_alloc("Start for malloc...\t\t");
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////

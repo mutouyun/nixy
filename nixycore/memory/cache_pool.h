@@ -143,23 +143,38 @@ struct cache_locator
 
 namespace private_cache_placer
 {
-    template <class LockT>
-    class lock_guard
+    template <class AllocT>
+    struct base
     {
-        LockT& lc_;
+        template <class LockT>
+        class lock_guard
+        {
+            LockT& lc_;
 
-    public:
-        explicit lock_guard(LockT& lc)
-            : lc_(lc) { lc_.lock(); }
-        ~lock_guard() { lc_.unlock(); }
+        public:
+            explicit lock_guard(LockT& lc)
+                : lc_(lc) {
+                lc_.lock();
+            }
+            ~lock_guard() { lc_.unlock(); }
+        };
+
+        template <class CacheT>
+        void release(CacheT& cache)
+        {
+            nx_auto(ite, cache.begin());
+            for(; ite != cache.end(); ++ite)
+                nx::free<AllocT>(*ite);
+        }
     };
 }
 
 template <class AllocT, class ModelT>
-struct cache_placer
+struct cache_placer : private_cache_placer::base<AllocT>
 {
+    typedef private_cache_placer::base<AllocT> base_t;
     typedef typename ModelT::lock_t lock_t;
-    typedef private_cache_placer::lock_guard<lock_t> lock_guard;
+    typedef typename base_t::template lock_guard<lock_t> lock_guard;
 
 private:
     lock_t lc_cache_;
@@ -189,10 +204,11 @@ public:
 };
 
 template <class AllocT>
-struct cache_placer<AllocT, use::thread_single>
+struct cache_placer<AllocT, use::thread_single> : private_cache_placer::base<AllocT>
 {
+    typedef private_cache_placer::base<AllocT> base_t;
     typedef typename use::thread_single::lock_t lock_t;
-    typedef private_cache_placer::lock_guard<lock_t> lock_guard;
+    typedef typename base_t::template lock_guard<lock_t> lock_guard;
 
     template <typename R, class CacheT>
     R* acquire(CacheT& cache, size_t n, size_t i, size_t size, size_t init_size)
@@ -274,37 +290,13 @@ public:
 
     typedef skip_array<pool_t*, ClassNumN, LevelNumN, alloc_t> cache_t;
 
-    template <class C, typename F>
-    pvoid for_each(C* wp, F do_sth)
-    {
-        nx_auto(ite, cache_.begin());
-        for (; ite != cache_.end(); ++ite)
-        {
-            pvoid p = do_sth(ite.index(), *ite, wp);
-            if (p) return p;
-        }
-        return 0;
-    }
-
 private:
     cache_t cache_;
-
-    static pvoid destroy_p(size_t /*n*/, pool_t* pool_ptr, pvoid /*p*/)
-    {
-        nx::free<alloc_t>(pool_ptr);
-        return 0;
-    }
-
-    static pvoid has_block_p(size_t /*n*/, pool_t* pool_ptr, pvoid p)
-    {
-        if (!pool_ptr) return 0;
-        return pool_ptr->has_block(p) ? pool_ptr : 0;
-    }
 
 public:
     ~cache_pool(void)
     {
-        for_each((pvoid)0, &cache_pool::destroy_p);
+        placer_t::release(cache_);
     }
 
     pool_t* find_pool(size_t size)
