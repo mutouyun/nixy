@@ -54,8 +54,8 @@ public:
     explicit object_pool_storage(const F& f)
         : allocator_(sizeof(alloc_t))
         , constructor_(f)
-        , free_head_(nx::nulptr)
-        , free_tail_(nx::nulptr)
+        , free_head_(NULL)
+        , free_tail_(NULL)
         , size_(0)
     {}
 

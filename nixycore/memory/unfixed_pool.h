@@ -65,7 +65,8 @@ class unfixed_pool : noncopyable
 
 public:
     unfixed_pool(void)
-        : head_(0), tail_(0)
+        : head_(NULL)
+        , tail_(NULL)
     { init(); }
 
     ~unfixed_pool(void)
@@ -94,7 +95,7 @@ public:
                 }
                 else
                 {
-                    new_blk->prev_ = 0;
+                    new_blk->prev_ = NULL;
                     tail_ = head_ = new_blk->buff_;
                 }
                 return new_blk->buff_;

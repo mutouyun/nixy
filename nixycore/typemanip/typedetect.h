@@ -141,7 +141,7 @@ namespace private_is_abstract
         static nx::not_t check(U(*)[1]);
         template <typename U>
         static nx::yes_t check(...);
-        NX_STATIC_VALUE( bool, nx_rightof(check<T>(0)) );
+        NX_STATIC_VALUE( bool, nx_judge(check<T>(0)) );
     };
 
     template <>
@@ -185,7 +185,7 @@ namespace private_is_function
         static nx::yes_t check(U*);
         template <typename U>
         static nx::not_t check(...);
-        NX_STATIC_VALUE( bool, (!is_class<T>::value) && nx_rightof(check<T>(*(T*)0)) );
+        NX_STATIC_VALUE( bool, (!is_class<T>::value) && nx_judge(check<T>(*(T*)0)) );
     };
 
     template <>

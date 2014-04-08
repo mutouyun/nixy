@@ -10,8 +10,9 @@
 #include "nixycore/memory/construct.h"
 #include "nixycore/memory/alloc.h"
 
+#include "nixycore/utility/limit_of.h"
+
 #include "nixycore/general/general.h"
-#include "nixycore/utility/utility.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -59,11 +60,12 @@ public:
 
     template <class U>
     bool operator==(const std_allocator<U, AllocT>&) const { return true; }
+    /* vs2010 need this, or may get the error C2593 in vector(609) */
     template <class U>
     bool operator!=(const std_allocator<U, AllocT>&) const { return false; }
 
 public:
-    pointer allocate(size_type count, const pvoid = 0)
+    pointer allocate(size_type count, const pvoid = NULL)
     {
         if (count > this->max_size()) throw std::bad_alloc();
         pvoid p = nx::alloc<AllocT>(count * sizeof(T));
@@ -106,11 +108,11 @@ struct alloc_model : ModelT
 struct std_alloc_model
 {
     static pvoid alloc(size_t size)
-    { return (size ? ::malloc(size) : 0); }
+    { return (size ? ::malloc(size) : NULL); }
     static void free(pvoid p, size_t /*size*/)
     { if (p) ::free(p); }
     static pvoid realloc(pvoid p, size_t old_size, size_t new_size)
-    { return (((p && old_size) || new_size) ? ::realloc(p, new_size) : 0); }
+    { return (((p && old_size) || new_size) ? ::realloc(p, new_size) : NULL); }
 };
 
 namespace use

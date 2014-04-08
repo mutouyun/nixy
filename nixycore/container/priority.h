@@ -36,8 +36,8 @@ public:
         : base_t(c, s)
     {}
 
-    template <typename Iterator_>
-    priority(Iterator_ f, Iterator_ l,
+    template <typename IteratorT>
+    priority(IteratorT f, IteratorT l,
              const CompT& c = CompT(), const SeqT& s = SeqT())
         : base_t(f, l, c, s)
     {}

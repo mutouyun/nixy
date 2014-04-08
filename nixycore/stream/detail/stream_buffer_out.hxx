@@ -32,9 +32,9 @@ void swprintf_buf(V val, size_t buf_count)
     buf_.resize(eof_index + buf_count);
     int n = swprintf(const_cast<wchar*>(buf_.data()) + eof_index,
 #if defined(NX_OS_LINUX)
-                          buf_count, 
+                     buf_count,
 #endif
-                          printf_format<V, wchar>::val(), val);
+                     printf_format<V, wchar>::val(), val);
     if (n < 0) return;
     buf_.resize(eof_index + n);
 }

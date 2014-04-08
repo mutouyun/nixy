@@ -41,8 +41,8 @@ public:
         : base_t(n, v, a)
     {}
 
-    template <typename Iterator_>
-    list(Iterator_ f, Iterator_ l,
+    template <typename IteratorT>
+    list(IteratorT f, IteratorT l,
          const typename base_t::allocator_type& a = typename base_t::allocator_type())
         : base_t(f, l, a)
     {}

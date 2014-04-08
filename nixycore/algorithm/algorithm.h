@@ -136,8 +136,8 @@ inline void sort(T& dst)
     nx::sort(nx::begin(dst), nx::end(dst));
 }
 
-template <typename T, typename Comp_>
-inline void sort(T& dst, Comp_ func)
+template <typename T, typename CompT>
+inline void sort(T& dst, CompT func)
 {
     nx::sort(nx::begin(dst), nx::end(dst), func);
 }
@@ -226,8 +226,8 @@ inline bool compare(T& x, U& y)
     return nx::compare(nx::begin(x), nx::end(x), nx::begin(y), nx::end(y));
 }
 
-template <typename T, typename U, typename Comp_>
-inline bool compare(T& x, U& y, Comp_ func)
+template <typename T, typename U, typename CompT>
+inline bool compare(T& x, U& y, CompT func)
 {
     return nx::compare(nx::begin(x), nx::end(x), nx::begin(y), nx::end(y), func);
 }

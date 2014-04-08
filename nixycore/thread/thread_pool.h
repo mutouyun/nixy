@@ -35,7 +35,7 @@ namespace private_thread_pool
         mutex wait_;
 
 #   if defined(NX_CC_MSVC)
-#       pragma warning(push)
+#       pragma warning(push)            // vs2005 need this
 #       pragma warning(disable: 4355)   // 'this' : used in base member initializer list
 #   endif
         template <typename F, typename C>
@@ -239,7 +239,7 @@ private:
 
 public:
 #if defined(NX_CC_MSVC)
-#   pragma warning(push)
+#   pragma warning(push)            // vs2005 need this
 #   pragma warning(disable: 4355)   // 'this' : used in base member initializer list
 #endif
     thread_pool(size_t min_sz = 0, size_t max_sz = 0)

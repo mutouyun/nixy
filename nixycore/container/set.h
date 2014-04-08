@@ -36,13 +36,13 @@ public:
             : base_t(c, a)
     {}
 
-    template <typename Iterator_>
-    set(Iterator_ f, Iterator_ l)
+    template <typename IteratorT>
+    set(IteratorT f, IteratorT l)
         : base_t(f, l)
     {}
 
-    template <typename Iterator_>
-    set(Iterator_ f, Iterator_ l,
+    template <typename IteratorT>
+    set(IteratorT f, IteratorT l,
         const CompT& c,
         const typename base_t::allocator_type& a = typename base_t::allocator_type())
         : base_t(f, l, c, a)

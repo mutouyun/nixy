@@ -147,7 +147,7 @@ public:
     }
 
     /*
-        if not define the copy constructor, gcc will get a compile error
+        gcc need this, or will get a compile error
         when using like this: task<T> xx = async(F)
     */
     task(const task&) { nx_assert(false); } // = deleted

@@ -491,7 +491,7 @@ class gc_scope : private_gc::connecter
 
 public:
 #if defined(NX_CC_MSVC)
-#   pragma warning(push)
+#   pragma warning(push)            // vs2005 need this
 #   pragma warning(disable: 4355)   // 'this' : used in base member initializer list
 #endif
     gc_scope(void)

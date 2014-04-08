@@ -113,17 +113,17 @@ namespace private_atomic
         atomic storage detail
     */
 
-    template <typename T, typename Model_>
+    template <typename T, typename ModelT>
     struct storage
     {
-        typedef typename get_storage<T, Model_::supported_mask>::type_t type_t;
+        typedef typename get_storage<T, ModelT::supported_mask>::type_t type_t;
         typedef typename rm_unsigned<T>::type_t value_t;
     };
 }
 
-template <typename T, typename Model_>
+template <typename T, typename ModelT>
 struct atomic_storage
-    : private_atomic::storage<typename nx::rm_cv<T>::type_t, Model_>
+    : private_atomic::storage<typename nx::rm_cv<T>::type_t, ModelT>
 {};
 
 /*
@@ -136,10 +136,10 @@ namespace private_atomic
         atomic type base
     */
 
-    template <typename T, typename Model_>
+    template <typename T, typename ModelT>
     struct base
     {
-        typedef Model_ model_t;
+        typedef ModelT model_t;
         typedef typename atomic_storage<T, model_t>::type_t type_t;
         typedef typename atomic_storage<T, model_t>::value_t value_t;
 
@@ -163,14 +163,14 @@ namespace private_atomic
         atomic type detail
     */
 
-    template <typename T, typename Model_, bool = nx::is_integral<T>::value
+    template <typename T, typename ModelT, bool = nx::is_integral<T>::value
                                          , bool = nx::is_pointer <T>::value>
     struct detail;
 
-    template <typename Model_>
-    struct detail<bool, Model_, true, false> : base<bool, Model_>
+    template <typename ModelT>
+    struct detail<bool, ModelT, true, false> : base<bool, ModelT>
     {
-        typedef base<bool, Model_> base_t;
+        typedef base<bool, ModelT> base_t;
         typedef typename base_t::value_t value_t;
 
         detail(void)        { base_t::operator=(0); }
@@ -179,10 +179,10 @@ namespace private_atomic
         using base_t::operator=;
     };
 
-    template <typename T, typename Model_>
-    struct detail<T, Model_, true, false> : base<T, Model_>
+    template <typename T, typename ModelT>
+    struct detail<T, ModelT, true, false> : base<T, ModelT>
     {
-        typedef base<T, Model_> base_t;
+        typedef base<T, ModelT> base_t;
         typedef typename base_t::value_t value_t;
         typedef typename base_t::model_t model_t;
 
@@ -206,10 +206,10 @@ namespace private_atomic
         T operator-=(value_t val) volatile { return model_t::fetch_add(base_t::v_,-val) - val; }
     };
 
-    template <typename T, typename Model_>
-    struct detail<T, Model_, false, true> : detail<T, Model_, true, false>
+    template <typename T, typename ModelT>
+    struct detail<T, ModelT, false, true> : detail<T, ModelT, true, false>
     {
-        typedef typename detail<T, Model_, true, false>::base_t base_t;
+        typedef typename detail<T, ModelT, true, false>::base_t base_t;
         typedef typename base_t::value_t value_t;
 
         detail(void)        { base_t::operator=(0); }
@@ -233,12 +233,12 @@ namespace private_atomic
 #   endif
 #endif
 
-template <typename T, typename Model_ = NX_DEFAULT_INTERLOCKED>
+template <typename T, typename ModelT = NX_DEFAULT_INTERLOCKED>
 class atomic
-    : public private_atomic::detail<T, Model_>, nx::noncopyable
+    : public private_atomic::detail<T, ModelT>, nx::noncopyable
 {
 public:
-    typedef private_atomic::detail<T, Model_> base_t;
+    typedef private_atomic::detail<T, ModelT> base_t;
     typedef typename base_t::value_t value_t;
 
     atomic(void)        : base_t() {}

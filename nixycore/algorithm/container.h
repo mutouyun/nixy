@@ -64,15 +64,15 @@ namespace private_container_traits
     >
     struct detail;
 
-    template <typename T, bool IsContainerB, bool IsPodB>
-    struct detail<T, true, IsContainerB, IsPodB>
+    template <typename T, bool IsContainer, bool IsPod>
+    struct detail<T, true, IsContainer, IsPod>
     {
         typedef typename rm_array<T>::type_t  val_t;
         typedef typename rm_array<T>::type_t* ite_t;
     };
 
-    template <typename T, bool IsPodB>
-    struct detail<T, false, true, IsPodB>
+    template <typename T, bool IsPod>
+    struct detail<T, false, true, IsPod>
     {
         typedef typename T::value_type val_t;
         typedef typename T::iterator   ite_t;
@@ -92,8 +92,8 @@ namespace private_container_traits
         typedef T* ite_t;
     };
 
-    template <bool IsArray_, bool IsContainerB, bool IsPodB>
-    struct detail<null_t, IsArray_, IsContainerB, IsPodB>
+    template <bool IsArray, bool IsContainer, bool IsPod>
+    struct detail<null_t, IsArray, IsContainer, IsPod>
     {};
 }
 

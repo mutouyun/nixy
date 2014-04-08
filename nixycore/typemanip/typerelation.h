@@ -45,7 +45,7 @@ private:
     static not_t check(...);
 
 public:
-    NX_STATIC_VALUE( bool, nx_rightof( check(T()) ) );
+    NX_STATIC_VALUE( bool, nx_judge( check(T()) ) );
 };
 
 template <typename T>

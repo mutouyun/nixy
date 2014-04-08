@@ -29,7 +29,7 @@ NX_BEG
         static nx::yes_t check(typename U::InnerType*); \
         template <class U> \
         static nx::not_t check(...); \
-        NX_STATIC_VALUE( bool, nx_rightof(check<T>(nx::nulptr)) ); \
+        NX_STATIC_VALUE( bool, nx_judge(check<T>(0)) ); \
     };
 
 /*
@@ -46,7 +46,7 @@ NX_BEG
         static nx::yes_t check(FuncTest<U, &U::InnerFunc>*); \
         template <class U> \
         static nx::not_t check(...); \
-        NX_STATIC_VALUE( bool, nx_rightof(check<T>(nx::nulptr)) ); \
+        NX_STATIC_VALUE( bool, nx_judge(check<T>(0)) ); \
     };
 
 /*
