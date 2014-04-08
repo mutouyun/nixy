@@ -19,6 +19,11 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
+#ifdef NX_SP_RANGEFOR
+#define nx_foreach(var, col, ...) \
+    for(auto var : col) \
+    for(bool once__ = true; once__; once__ = false,##__VA_ARGS__)
+#else
 namespace private_foreach
 {
     template <typename T> struct storage     { typedef const T & type_t; };
@@ -76,11 +81,13 @@ namespace private_foreach
 }
 
 #define nx_foreach(var, col, ...) \
-    for (nx_auto(hp__, nx::private_foreach::contain(col)); hp__.is_inside(); hp__.next(),##__VA_ARGS__) \
-    for (nx_auto(var , nx::private_foreach::deref(hp__)) ; hp__.go_next();)
+    for(nx_auto(hp__, nx::private_foreach::contain(col)); hp__.is_inside(); hp__.next(),##__VA_ARGS__) \
+    for(nx_auto(var , nx::private_foreach::deref(hp__)) ; hp__.go_next();)
+
+#endif/*NX_SP_CXX11_BASIC*/
 
 #define nx_forever(...) \
-    for (__VA_ARGS__;;)
+    for(__VA_ARGS__;;)
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

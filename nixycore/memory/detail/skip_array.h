@@ -167,7 +167,7 @@ namespace private_skip_array
             if (n == 0) return;
             nx_assert(elems_ptr_);
             int x = (n > 0) ? 1 : -1;
-            nx_foreach(NX_UNUSED i, n)
+            for(int i = 0, a = (n * x); i < a; ++i)
             {
                 index_ += x;
                 relocate(n > 0);

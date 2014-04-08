@@ -24,7 +24,7 @@ NX_BEG
 
 class scope_guard : noncopyable
 {
-    nx::functor<void()> destructor_;
+    mutable nx::functor<void()> destructor_;
 
 public:
     explicit scope_guard(const nx::functor<void()>& destructor)
@@ -32,9 +32,23 @@ public:
     {}
 
     ~scope_guard(void)
-    { if (destructor_) destructor_(); }
+    {
+        if (destructor_) try
+        {
+            destructor_();
+        }
+        /*
+            In the realm of exceptions,
+            it is fundamental that you can do nothing
+            if your "undo/recover" action fails.
+        */
+        catch(...)
+        {
+            // Do nothing
+        }
+    }
 
-    void dismiss()
+    void dismiss() const nx_noexcept
     { destructor_ = nx::nulptr; }
 
     const nx::functor<void()>& get(void) const

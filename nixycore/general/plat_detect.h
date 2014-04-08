@@ -22,7 +22,7 @@
     (__GNUC_PATCHLEVEL__ >= (patch)) ) ) ) )
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1400)     /* >= 8.0 */
-#   define NX_CC_MSVC   _MSC_VER
+#   define NX_CC_MSVC _MSC_VER
 #elif defined(__GNUC__)
 #   define NX_CC_GNUC
 #   if defined(__clang__)
@@ -48,16 +48,31 @@
 
 //////////////////////////////////////////////////////////////////////////
 /*
-    C++ features support, must be one of: (NX_FS_XX)
+    C++ features support, must be one of: (NX_SP_XX)
 
-    CXX11   - Support c++ 11 basic features
+    CXX11_BASIC - Support c++ 11 basic features
+    NOEXCEPT    - noexcept
+    USING       - Alias templates
+    RANGEFOR    - Range-based for-loop
 */
 //////////////////////////////////////////////////////////////////////////
 
 #if defined(NX_CC_MSVC)
+#   if (NX_CC_MSVC >= 1600)
+#   define NX_SP_CXX11_BASIC
+#   endif
+#   if (NX_CC_MSVC >= 1700)
+#   define NX_SP_RANGEFOR
+#   endif
+#   if (NX_CC_MSVC >= 1800)
+#   define NX_SP_USING
+#   endif
 #elif defined(NX_CC_GNUC)
 #   if (__cplusplus >= 201103L)
-#       define NX_FS_CXX11
+#   define NX_SP_CXX11_BASIC
+#   define NX_SP_NOEXCEPT
+#   define NX_SP_USING
+#   define NX_SP_RANGEFOR
 #   endif
 #endif
 

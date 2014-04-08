@@ -7,8 +7,13 @@
 
 #pragma once
 
+#include "nixycore/preprocessor/pp_macros.h"
+
 #include "nixycore/general/general.h"
-#include "nixycore/preprocessor/preprocessor.h"
+
+#ifdef NX_SP_CXX11_BASIC
+#include <cstddef> // std::nullptr_t
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -24,6 +29,9 @@ struct null_t;
     nulptr_t && nulptr
 */
 
+#ifdef NX_SP_CXX11_BASIC
+typedef std::nullptr_t nulptr_t;
+#else/*NX_SP_CXX11_BASIC*/
 class nulptr_t
 {
 public:
@@ -38,6 +46,8 @@ public:
 private:
     void operator&() const;
 };
+#endif/*NX_SP_CXX11_BASIC*/
+
 static const nulptr_t nulptr = nulptr_t();
 
 /*
@@ -70,8 +80,8 @@ typedef ValueDef<bool, false>   false_t;
 typedef char not_t;
 typedef struct { not_t dummy_[2]; } yes_t;
 
-#ifndef nx_rightof
-#define nx_rightof(...) NX_PP_VA(nx::ValueDef<bool, sizeof(__VA_ARGS__) == sizeof(nx::yes_t)>::value)
+#ifndef nx_judge
+#define nx_judge(...) NX_PP_VA(nx::ValueDef<bool, sizeof(__VA_ARGS__) == sizeof(nx::yes_t)>::value)
 #endif
 
 //////////////////////////////////////////////////////////////////////////

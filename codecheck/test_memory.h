@@ -25,7 +25,7 @@
 #   pragma GCC diagnostic ignored "-Wself-assign"
 #   endif
 #endif
-#   include "nedmalloc/nedmalloc.c"
+#include "nedmalloc/nedmalloc.c"
 #endif
 
 #ifndef NO_TEST_JEMALLOC
@@ -58,15 +58,22 @@
 
 namespace test_mempool
 {
-#ifdef NX_OS_WINCE
-    const size_t TestCont = 100;
-    const size_t TestLast = 100;
-#elif NDEBUG
+#if NDEBUG
+#   ifndef NX_OS_WINCE
     const size_t TestCont = 100000;
     const size_t TestLast = 1000;
+#   else
+    const size_t TestCont = 10000;
+    const size_t TestLast = 100;
+#   endif
 #else
+#   ifndef NX_OS_WINCE
     const size_t TestCont = 1000;
     const size_t TestLast = 1000;
+#   else
+    const size_t TestCont = 100;
+    const size_t TestLast = 100;
+#   endif
 #endif
     const size_t TestSMin = 1/*256*/;
     const size_t TestSMax = /*4*//*16*//*32*/256/*1024*//*4096*//*65536*//*1024 * 1024*/;
@@ -274,8 +281,8 @@ namespace test_thread_alloc
         alc_ptr_ = &alc; \
         strout << out; \
         sw.start(); \
-        nx_foreach(i, nx_countof(hd)) hd[i] = nx::thread_ops::create(proc_##alloc_name, (void*)i); \
-        nx_foreach(i, nx_countof(hd)) nx::thread_ops::join(hd[i]); \
+        for(size_t i = 0; i < nx_countof(hd); ++i) hd[i] = nx::thread_ops::create(proc_##alloc_name, (void*)i); \
+        for(size_t i = 0; i < nx_countof(hd); ++i) nx::thread_ops::join(hd[i]); \
         strout << sw.value() * 1000 << " ms" << endl; \
     }
     THREAD_ALLOC_TEST(mem_alloc)

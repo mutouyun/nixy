@@ -11,7 +11,7 @@
 #define STOPWATCH_CHECKER(op) \
     strout << "stopwatch ->: " << #op << endl; \
     sw.op(); \
-    nx_foreach(NX_UNUSED i, 5) \
+    for(int i = 0; i < 5; ++i) \
     { \
         nx::thread_ops::sleep(100); \
         strout << "stopwatch ->: " << sw.value() << endl; \

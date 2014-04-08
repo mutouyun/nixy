@@ -35,13 +35,13 @@ namespace test_threadops
     NX_THREAD_PROC(proc)
     {
         rdm.srand(nx::thread_ops::current_id());
-        nx_foreach(NX_UNUSED n, 10)
+        for(int n = 0; n < 10; ++n)
         {
             unsigned st = 0;
             {
                 nx_lock_sole(nx::spin_lock);
                 strout << nx::thread_ops::current_id() << "\t";
-                nx_foreach(i, 10) strout << i << " ";
+                for(int i = 0; i < 10; ++i) strout << i << " ";
                 strout << (st = rdm.roll<unsigned>()) << endl;
             }
             nx::thread_ops::sleep(st);
@@ -57,8 +57,8 @@ void testThreadOps(void)
     using namespace test_threadops;
 
     nx::thread_ops::handle_t hd[10] = {0};
-    nx_foreach(i, nx_countof(hd)) hd[i] = nx::thread_ops::create(proc);
-    nx_foreach(i, nx_countof(hd)) nx::thread_ops::join(hd[i]);
+    for(size_t i = 0; i < nx_countof(hd); ++i) hd[i] = nx::thread_ops::create(proc);
+    for(size_t i = 0; i < nx_countof(hd); ++i) nx::thread_ops::join(hd[i]);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -151,16 +151,16 @@ void testCondition(void)
 
     // start the logger threads
     nx::thread_ops::handle_t lg[2] = {0};
-    nx_foreach(i, nx_countof(lg)) lg[i] = nx::thread_ops::create(loggerfunc, (nx::pvoid)(i + 1));
+    for(size_t i = 0; i < nx_countof(lg); ++i) lg[i] = nx::thread_ops::create(loggerfunc, (nx::pvoid)(i + 1));
 
     // start the working threads
     nx::thread_ops::handle_t hd[9] = {0};
-    nx_foreach(i, nx_countof(hd)) hd[i] = nx::thread_ops::create(workerfunc, (nx::pvoid)(i + 1));
-    nx_foreach(i, nx_countof(hd)) nx::thread_ops::join(hd[i]);
+    for(size_t i = 0; i < nx_countof(hd); ++i) hd[i] = nx::thread_ops::create(workerfunc, (nx::pvoid)(i + 1));
+    for(size_t i = 0; i < nx_countof(hd); ++i) nx::thread_ops::join(hd[i]);
 
     // notify the loggers to finish and wait for it
     is_done = true;
-    nx_foreach(i, nx_countof(lg)) nx::thread_ops::join(lg[i]);
+    for(size_t i = 0; i < nx_countof(lg); ++i) nx::thread_ops::join(lg[i]);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -250,18 +250,18 @@ void testSemaphore(void)
 
     // start the producer threads
     nx::thread_ops::handle_t pd[2] = {0};
-    nx_foreach(i, nx_countof(pd)) pd[i] = nx::thread_ops::create(producer, (nx::pvoid)(i + 1));
+    for(size_t i = 0; i < nx_countof(pd); ++i) pd[i] = nx::thread_ops::create(producer, (nx::pvoid)(i + 1));
 
     nx::thread_ops::sleep(10000);
 
     // start the consumer threads
     nx::thread_ops::handle_t cs[10] = {0};
-    nx_foreach(i, nx_countof(cs)) cs[i] = nx::thread_ops::create(consumer, (nx::pvoid)(i + 1));
+    for(size_t i = 0; i < nx_countof(cs); ++i) cs[i] = nx::thread_ops::create(consumer, (nx::pvoid)(i + 1));
 
     // notify the producers and consumers to finish and wait for it
     //is_done = true;
-    nx_foreach(i, nx_countof(cs)) nx::thread_ops::join(cs[i]);
-    nx_foreach(i, nx_countof(pd)) nx::thread_ops::join(pd[i]);
+    for(size_t i = 0; i < nx_countof(cs); ++i) nx::thread_ops::join(cs[i]);
+    for(size_t i = 0; i < nx_countof(pd); ++i) nx::thread_ops::join(pd[i]);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -301,7 +301,7 @@ void testWaiter(void)
 
     // start the test threads
     nx::thread_ops::handle_t pd[10] = {0};
-    nx_foreach(i, nx_countof(pd)) pd[i] = nx::thread_ops::create(test_proc, (nx::pvoid)(i + 1));
+    for(size_t i = 0; i < nx_countof(pd); ++i) pd[i] = nx::thread_ops::create(test_proc, (nx::pvoid)(i + 1));
 
     // test for notify
     nx::thread_ops::sleep(1000);
@@ -318,7 +318,7 @@ void testWaiter(void)
     nx::thread_ops::sleep(1000);
     consumer_waiter.broadcast();
 
-    nx_foreach(i, nx_countof(pd)) nx::thread_ops::join(pd[i]);
+    for(size_t i = 0; i < nx_countof(pd); ++i) nx::thread_ops::join(pd[i]);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -355,8 +355,8 @@ void testTlsPtr(void)
 
     // start the working threads
     nx::thread_ops::handle_t hd[9] = {0};
-    nx_foreach(i, nx_countof(hd)) hd[i] = nx::thread_ops::create(proc);
-    nx_foreach(i, nx_countof(hd)) nx::thread_ops::join(hd[i]);
+    for(size_t i = 0; i < nx_countof(hd); ++i) hd[i] = nx::thread_ops::create(proc);
+    for(size_t i = 0; i < nx_countof(hd); ++i) nx::thread_ops::join(hd[i]);
 
     strout << "[main " << (*intptr) << "]\tis running..." << endl;
 }

@@ -110,14 +110,14 @@ namespace use // Series Policy
                     base_t::val_ = 1;
                     --n;
                 }
-                nx_foreach(NX_UNUSED i, n)
+                for(int i = 0; i < n; ++i)
                 {
                     base_t::val_ *= N;
                 }
             }
             else
             {
-                nx_foreach(NX_UNUSED i, n)
+                for(int i = 0; i > n; --i)
                 {
                     // when val == 1, val / N == 0
                     base_t::val_ /= N;
@@ -151,7 +151,7 @@ namespace use // Series Policy
         void operator()(int n)
         {
             if (n == 0) return;
-            if (n > 0) nx_foreach(NX_UNUSED i, n)
+            if (n > 0) for(int i = 0; i < n; ++i)
             {
                 if (base_t::val_ == 0)
                 {
@@ -165,7 +165,7 @@ namespace use // Series Policy
                     prv_ = tmp;
                 }
             }
-            else nx_foreach(NX_UNUSED i, n)
+            else for(int i = 0; i > n; --i)
             {
                 T tmp = prv_;
                 prv_ = (base_t::val_ -= prv_);

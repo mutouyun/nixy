@@ -281,11 +281,11 @@ public:
     }
 
     template <typename FuncT>
-    functor_base(const FuncT& f)
+    functor_base(FuncT f)
         : invoker_(nx::nulptr), any_guard_(nx::nulptr)
     {
         nx::initialize(handler_);
-        bind(f);
+        bind(nx::unref(f));
     }
 
     template <typename FuncT, typename ObjT>
@@ -404,7 +404,11 @@ public:
     functor(nx::nulptr_t) : base_t() {}
     functor(nx::none_t)   : base_t() {}
     template <typename FuncT>
-    functor(const FuncT& f, typename nx::enable_if<!is_sametype<FuncT, int>::value, int>::type_t = 0)
+    functor(FuncT /*f*/, typename nx::enable_if<is_sametype<FuncT, int>::value, int>::type_t = 0)
+        : base_t()
+    {}
+    template <typename FuncT>
+    functor(FuncT f, typename nx::enable_if<!is_sametype<FuncT, int>::value, int>::type_t = 0)
         : base_t(f)
     {}
     template <typename FuncT, typename ObjT>
@@ -448,7 +452,11 @@ public: \
     functor(nx::nulptr_t) : base_t() {} \
     functor(nx::none_t)   : base_t() {} \
     template <typename FuncT> \
-    functor(const FuncT& f, typename nx::enable_if<!is_sametype<FuncT, int>::value, int>::type_t = 0) \
+    functor(FuncT /*f*/, typename nx::enable_if<is_sametype<FuncT, int>::value, int>::type_t = 0) \
+        : base_t() \
+    {} \
+    template <typename FuncT> \
+    functor(FuncT f, typename nx::enable_if<!is_sametype<FuncT, int>::value, int>::type_t = 0) \
         : base_t(f) \
     {} \
     template <typename FuncT, typename ObjT> \

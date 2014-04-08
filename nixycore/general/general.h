@@ -17,7 +17,7 @@
 #include <stddef.h>
 // printf, vsnprintf, vsprintf, ...
 #include <stdio.h>
-// rand, srand, ...
+// abort, rand, srand, ...
 #include <stdlib.h>
 // va_list, va_start, va_end
 #include <stdarg.h>
@@ -79,8 +79,7 @@ typedef ullong              uint64;
 NX_END
 //////////////////////////////////////////////////////////////////////////
 
-// global functions
-
+#include "nixycore/general/global_features.h"
 #include "nixycore/general/global_functions.h"
 
 //////////////////////////////////////////////////////////////////////////

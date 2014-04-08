@@ -8,12 +8,6 @@
 
 namespace test_assign
 {
-    double getNumContainer(void)
-    {
-        strout << __FUNCTION__ << endl;
-        return 10.0;
-    }
-
     std::list<double>/*&*/ getLstContainer(void)
     {
         strout << __FUNCTION__ << endl;
@@ -66,18 +60,9 @@ void testAssign(void)
     nx_auto(n, 2);
     nx_assign(n, 3, 2, 1);
     nx_assign(n) >> a >> b >> c >> d;
-    nx_foreach(i, n)
-    {
-        strout << i << " ";
-    }
     strout << endl;
     strout << a << " " << b << " " << c << " " << d << endl;
 
-    strout << endl;
-    nx_foreach(i, getNumContainer())
-    {
-        strout << i << " ";
-    }
     strout << endl;
     nx_foreach(i, getLstContainer())
     {
@@ -119,7 +104,7 @@ void testSeries(void)
     int n = 20;
     strout << "Fibonacci(0 - " << n << ") ->:" << endl;
     nx::iterator<nx::use::iter_fibonacci<nx::llong> > iter;
-    nx_foreach(i, n, ++iter)
+    for(int i = 0; i < n; ++i, ++iter)
     {
         strout << i << ":\t" << *iter << endl;
     }
