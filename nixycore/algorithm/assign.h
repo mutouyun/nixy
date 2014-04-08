@@ -102,7 +102,7 @@ namespace private_assign
 
         const detail& operator()(T& set)
         {
-            base_t::operator()(set);
+            policy_type<T>::type_t::operator()(set);
             return (*this);
         }
 
@@ -112,6 +112,8 @@ namespace private_assign
             (*this) << typename container_traits<T>::pair_t(k, v);
             return (*this);
         }
+
+        using base_t::operator();
     };
 }
 

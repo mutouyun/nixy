@@ -22,7 +22,7 @@ NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
 template <class T>
-class stream_buffer : noncopyable
+class stream_buffer
 {
     T*     ref_;
     string fmt_, buf_;
@@ -72,6 +72,21 @@ public:
 
     ~stream_buffer(void)
     {
+        flush();
+    }
+
+public:
+    template <typename S>
+    void set_format(T* tp, const S& fs)
+    {
+        nx_assert(tp);
+        ref_ = tp;
+        fmt_ = fs;
+        buf_.clear();
+    }
+
+    void flush(void)
+    {
         if (!ref_) return;
         if (mode_ == mode_Out)
         {
@@ -89,34 +104,33 @@ public:
             if (!is_finished()) return;
             (*ref_) = nx::move(buf_);
         }
-    }
-
-public:
-    template <typename S>
-    void set_format(T* tp, const S& fs)
-    {
-        nx_assert(tp);
-        ref_ = tp;
-        fmt_ = fs;
-        buf_.clear();
+        ref_ = nx::nulptr;
     }
 
     template <typename V>
     void operator<<(const V& val)
     {
         if (mode_ == mode_In) return;
-        if (mode_ == mode_Non) mode_ = mode_Out;
-        do_assign_out();
+        if (mode_ == mode_Non)
+        {
+            mode_ = mode_Out;
+            do_assign_out();
+        }
         parse_out(val);
+        do_assign_out();
     }
 
     template <typename V>
     void operator>>(V& val)
     {
         if (mode_ == mode_Out) return;
-        if (mode_ == mode_Non) mode_ = mode_In;
-        do_assign_in();
+        if (mode_ == mode_Non)
+        {
+            mode_ = mode_In;
+            do_assign_in();
+        }
         parse_in(val);
+        do_assign_in();
     }
 };
 

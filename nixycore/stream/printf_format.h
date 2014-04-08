@@ -38,7 +38,14 @@ NX_PP_VA(template <> struct printf_format<char   , R> { static const R* val(void
          template <> struct printf_format<ldouble, R> { static const R* val(void) { return __VA_ARGS__##"%Lg" ; } }; \
          template <> struct printf_format<pchar  , R> { static const R* val(void) { return __VA_ARGS__##"%s"  ; } }; \
          template <> struct printf_format<pwchar , R> { static const R* val(void) { return __VA_ARGS__##"%ls" ; } }; \
-         template <> struct printf_format<pvoid  , R> { static const R* val(void) { return __VA_ARGS__##"%p"  ; } };)
+         template <> struct printf_format<pvoid  , R> { static const R* val(void) { return __VA_ARGS__##"%p"  ; } }; \
+         template <> struct printf_format<uchar* , R> : printf_format<pchar, R> {}; \
+         template <size_t N> \
+         struct printf_format<char[N] , R> : printf_format<pchar , R> {}; \
+         template <size_t N> \
+         struct printf_format<uchar[N], R> : printf_format<pchar , R> {}; \
+         template <size_t N> \
+         struct printf_format<wchar[N], R> : printf_format<pwchar, R> {}; )
 
 NX_PRINTF_FORMAT_(char)
 NX_PRINTF_FORMAT_(wchar, L)

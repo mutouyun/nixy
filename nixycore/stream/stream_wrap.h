@@ -18,36 +18,62 @@ class stream_wrap : public P
 {
 public:
     typedef P policy_t;
+    typedef stream_wrap<P> warp_t;
+    typedef const warp_t& (*option_t)(const warp_t&);
 
 public:
+    /*
+        operator<<
+    */
+
     template <typename T>
-    friend const stream_wrap<P>& operator<<(const stream_wrap<P>& s, const T& data)
+    friend const warp_t& operator<<(const warp_t& s, const T& data)
     {
-        const_cast<stream_wrap<P>&>(s).policy_t::operator<<(data);
+        const_cast<warp_t&>(s).policy_t::operator<<(data);
         return s;
     }
 
     template <typename T>
-    friend const stream_wrap<P>& operator>>(const stream_wrap<P>& s, T& data)
+    friend const warp_t& operator>>(const warp_t& s, T& data)
     {
-        const_cast<stream_wrap<P>&>(s).policy_t::operator>>(data);
+        const_cast<warp_t&>(s).policy_t::operator>>(data);
         return s;
     }
 
+    friend const warp_t& operator<<(const warp_t& s, option_t opt)
+    {
+        return opt(s);
+    }
+
+    /*
+        operator,
+    */
+
     template <typename T>
-    friend const stream_wrap<P>& operator, (const stream_wrap<P>& s, const T& data)
+    friend const warp_t& operator,(const warp_t& s, const T& data)
     {
         return s << data;
     }
 
-    friend const stream_wrap<P>& operator<<(const stream_wrap<P>& s, stream_wrap<P>& (*opt)(stream_wrap<P>&))
+    friend const warp_t& operator,(const warp_t& s, option_t opt)
     {
-        return opt(const_cast<stream_wrap<P>&>(s));
+        return s << opt;
     }
 
-    friend const stream_wrap<P>& operator, (const stream_wrap<P>& s, stream_wrap<P>& (*opt)(stream_wrap<P>&))
+    /*
+        operator()
+    */
+
+    template <typename T>
+    const warp_t& operator()(const T& data) const
     {
-        return opt(const_cast<stream_wrap<P>&>(s));
+        return (*this) << data;
+    }
+
+    template <typename T>
+    const warp_t& operator()(option_t opt) const
+    {
+        return (*this) << opt;
     }
 };
 
