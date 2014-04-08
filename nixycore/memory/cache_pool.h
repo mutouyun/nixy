@@ -191,7 +191,7 @@ public:
             lock_guard NX_UNUSED guard(lc_cache_);
             pool_ptr = &(cache.at(n, i)); // at() may change the cache
         }
-        nx_assert(pool_ptr);
+        nx_assert(pool_ptr)(n)(i);
         R*(& ret) = (*(pool_ptr.get()));
         if (*pool_ptr) return ret;
         // alloc a new pool, and put it into cache
@@ -303,7 +303,7 @@ public:
     {
         // check, and get pool index and block size
         pair_t xx = locator_t::calculate_index(size, &size);
-        if (xx.first == ClassNumN) return 0;
+        if (xx.first == ClassNumN) return NULL;
         // get a matched pool from cache_
         return placer_t::template acquire<pool_t>
             (cache_, xx.first, xx.second, size, InitSizeN / size);

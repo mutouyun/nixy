@@ -94,7 +94,7 @@ private:
         if (old_pool)
         {
             pvoid new_p = nx::alloc<alloc_t>(new_size);
-            nx_assert(new_p);
+            nx_assert(new_p)(new_size);
             return mem_move(new_p, old_p, old_size, old_pool);
         }
         /* (new_pool == old_pool == NULL) */
@@ -104,7 +104,7 @@ private:
 public:
     pvoid alloc(size_t size)
     {
-        if (size == 0) return 0;
+        if (size == 0) return NULL;
         return do_alloc(size);
     }
 
@@ -120,7 +120,7 @@ public:
             if (new_size == 0)
             {
                 free(p, old_size);
-                return 0;
+                return NULL;
             }
             return do_realloc(p, old_size, new_size);
         }

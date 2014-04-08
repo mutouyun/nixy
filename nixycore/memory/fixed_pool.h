@@ -48,7 +48,7 @@ namespace use
     protected:
         pool_expand_keep(size_t init_count)
             : count_ite_(init_count)
-            , blocks_head_(0)
+            , blocks_head_(NULL)
         {}
         /* No return memory back to system */
 
@@ -59,12 +59,12 @@ namespace use
 
         pvoid expand(size_t block_size)
         {
-            nx_assert(block_size);
+            nx_assert(block_size)(block_size);
             blocks_t* blocks = nx::alloc<AllocT, blocks_t>();
             nx_assert(blocks);
             blocks->size_ = block_size * (*(++count_ite_));
             blocks->data_ = nx::alloc<AllocT>(blocks->size_);
-            nx_assert(blocks->data_);
+            nx_assert(blocks->data_)(blocks->data_)(block_size)(count());
             blocks->next_ = blocks_head_;
             blocks_head_ = blocks;
             return blocks->data_;
@@ -167,7 +167,7 @@ private:
         nx_assert(p);
         for(size_t i = 0; i < base_t::count() - 1; ++i)
             p = (pvoid*)( (*p) = ((byte*)p) + block_size() );
-        (*p) = 0;
+        (*p) = NULL;
     }
 
 public:
@@ -176,7 +176,7 @@ public:
         , block_size_(block_size)
         , cursor_(0)
     {
-        nx_assert(block_size_ >= sizeof(pvoid));
+        nx_assert(block_size_ >= sizeof(pvoid))(block_size_);
     }
 
     size_t block_size(void) const { return block_size_; }

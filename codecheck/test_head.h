@@ -30,6 +30,7 @@ using std::endl;
 //////////////////////////////////////////////////////////////////////////
 
 #include "test_preprocessor.h"
+#include "test_bugfix.h"
 #include "test_typemanip.h"
 #include "test_algorithm.h"
 #include "test_utility.h"
@@ -47,6 +48,7 @@ using std::endl;
 void testAll(void)
 {
     //testPreprocessor();
+    testBugFix();
     //testTypeManip();
     //testAlgorithm();
     //testUtility();
@@ -55,7 +57,7 @@ void testAll(void)
     //testDelegate();
     //testFinalizer();
     //testThread();
-    testMemory();
+//    testMemory();
     //testString();
     //testStream();
 

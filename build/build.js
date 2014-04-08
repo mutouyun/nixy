@@ -29,6 +29,7 @@ else
     prj.type = "lib"
     prj.heads = "\
         'nixycore/general/plat_detect.h' \
+        'nixycore/general/global_features.h' \
         'nixycore/general/global_functions.h' \
         'nixycore/general/general.h' \
         'nixycore/preprocessor/pp_macros.h' \
@@ -38,6 +39,11 @@ else
         'nixycore/preprocessor/pp_nest.h' \
         'nixycore/preprocessor/pp_mult.h' \
         'nixycore/preprocessor/preprocessor.h' \
+        'nixycore/bugfix/output.h' \
+        'nixycore/bugfix/assert_detail.h' \
+        'nixycore/bugfix/assert.h' \
+        'nixycore/bugfix/trace.h' \
+        'nixycore/bugfix/bugfix.h' \
         'nixycore/typemanip/typedefs.h' \
         'nixycore/typemanip/typetools.h' \
         'nixycore/typemanip/typerelation.h' \
@@ -85,7 +91,6 @@ else
         'nixycore/delegate/bind.h' \
         'nixycore/delegate/delegate.h' \
         'nixycore/delegate/signal.h' \
-        'nixycore/bugfix/assert.h' \
         'nixycore/finalizer/scope_guard.h' \
         'nixycore/finalizer/ref_counter.h' \
         'nixycore/finalizer/holder.h' \
@@ -141,6 +146,7 @@ else
         'nixycore/stream/stream_wrap.h' \
         'nixycore/stream/stream_buffer.h' \
         'nixycore/stream/stream_detail.h' \
+        'nixycore/stream/stream_ops.h' \
         'nixycore/stream/stream.h'"
 }
 /* project test */
@@ -154,6 +160,7 @@ else
     prj.heads = "\
         'codecheck/test_head.h' \
         'codecheck/test_preprocessor.h' \
+        'codecheck/test_bugfix.h' \
         'codecheck/test_typemanip.h' \
         'codecheck/test_algorithm.h' \
         'codecheck/test_utility.h' \
