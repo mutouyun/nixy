@@ -45,7 +45,7 @@ namespace transform
     */
 
     template <typename T, typename U>
-    typename enable_if<utf_check<T, 4>::value && utf_check<U, 1>::value,
+    static inline typename enable_if<utf_check<T, 4>::value && utf_check<U, 1>::value,
     size_t>::type_t utf(T src, U* des)
     {
         if (src == 0) return 0;
@@ -85,7 +85,7 @@ namespace transform
     */
 
     template <typename T, typename U>
-    typename enable_if<utf_check<T, 1>::value && utf_check<U, 4>::value,
+    static inline typename enable_if<utf_check<T, 1>::value && utf_check<U, 4>::value,
     size_t>::type_t utf(const T* src, U& des)
     {
         if (!src || (*src) == 0) return 0;
@@ -146,7 +146,7 @@ namespace transform
     */
 
     template <typename T, typename U>
-    typename enable_if<utf_check<T, 4>::value && utf_check<U, 2>::value,
+    static inline typename enable_if<utf_check<T, 4>::value && utf_check<U, 2>::value,
     size_t>::type_t utf(T src, U* des)
     {
         if (src == 0) return 0;
@@ -174,7 +174,7 @@ namespace transform
     */
 
     template <typename T, typename U>
-    typename enable_if<utf_check<T, 2>::value && utf_check<U, 4>::value,
+    static inline typename enable_if<utf_check<T, 2>::value && utf_check<U, 4>::value,
     size_t>::type_t utf(const T* src, U& des)
     {
         if (!src || (*src) == 0) return 0;
@@ -205,7 +205,7 @@ namespace transform
     */
 
     template <typename T, typename U>
-    typename enable_if<utf_check<T, 2>::value && utf_check<U, 1>::value,
+    static inline typename enable_if<utf_check<T, 2>::value && utf_check<U, 1>::value,
     size_t>::type_t utf(T src, U* des)
     {
         // make utf-16 to utf-32
@@ -220,7 +220,7 @@ namespace transform
     */
 
     template <typename T, typename U>
-    typename enable_if<utf_check<T, 1>::value && utf_check<U, 2>::value,
+    static inline typename enable_if<utf_check<T, 1>::value && utf_check<U, 2>::value,
     size_t>::type_t utf(const T* src, U& des)
     {
         // make utf-8 to utf-32
@@ -237,7 +237,8 @@ namespace transform
     */
 
     template <typename T, typename U>
-    typename enable_if<utf_check<T, 4>::value && (utf_check<U, 1>::value || utf_check<U, 2>::value),
+    static inline typename enable_if<utf_check<T, 4>::value &&
+                                    (utf_check<U, 1>::value || utf_check<U, 2>::value),
     size_t>::type_t utf(const T* src, U* des)   // UTF-32 to UTF-X(8/16)
     {
         if (!src || (*src) == 0) return 0;
@@ -255,7 +256,8 @@ namespace transform
     }
 
     template <typename T, typename U>
-    typename enable_if<(utf_check<T, 1>::value || utf_check<T, 2>::value) && utf_check<U, 4>::value,
+    static inline typename enable_if<(utf_check<T, 1>::value || utf_check<T, 2>::value) &&
+                                      utf_check<U, 4>::value,
     size_t>::type_t utf(const T* src, U* des)   // UTF-X(8/16) to UTF-32
     {
         if (!src || (*src) == 0) return 0;
@@ -279,8 +281,8 @@ namespace transform
     }
 
     template <typename T, typename U>
-    typename enable_if<(utf_check<T, 1>::value && utf_check<U, 2>::value) ||
-                       (utf_check<T, 2>::value && utf_check<U, 1>::value),
+    static inline typename enable_if<(utf_check<T, 1>::value && utf_check<U, 2>::value) ||
+                                     (utf_check<T, 2>::value && utf_check<U, 1>::value),
     size_t>::type_t utf(const T* src, U* des)    // UTF-X(8/16) to UTF-Y(16/8)
     {
         if (!src || (*src) == 0) return 0;
@@ -307,7 +309,7 @@ namespace transform
     /// The transform between local character set and UTF-X
     //////////////////////////////////////////////////////////////////////////
 
-    size_t local_to_utf(const char* src, wchar_t* des = 0, size_t len = 0)
+    static inline size_t local_to_utf(const char* src, wchar_t* des = 0, size_t len = 0)
     {
     #if defined(NX_CC_MSVC)
         int n = 0;
@@ -330,7 +332,7 @@ namespace transform
     #endif
     }
 
-    size_t utf_to_local(const wchar_t* src, char* des = 0, size_t len = 0)
+    static inline size_t utf_to_local(const wchar_t* src, char* des = 0, size_t len = 0)
     {
     #if defined(NX_CC_MSVC) || defined(NX_OS_WIN)
         int n = 0;

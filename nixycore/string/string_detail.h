@@ -242,7 +242,7 @@ public:
 
     string& from_local(const char* str, size_type len)
     {
-        if (!str || len == 0) (*this);
+        if (!str || len == 0) return (*this);
         char& c = const_cast<char*>(str)[len];
         char t = c; // backup
         c = 0;
