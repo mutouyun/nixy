@@ -130,22 +130,18 @@ namespace private_assert
     static assert
 */
 
-#ifndef nx_assert_static
-
 #ifdef NX_SP_CXX11_BASIC
-#define nx_assert_static(...) static_assert(__VA_ARGS__, "")
+#define nx_assert_static(...) static_assert(__VA_ARGS__, #__VA_ARGS__)
 #else
 template <bool, int> struct static_assert_failure;
 template <int LineN> struct static_assert_failure<true, LineN> {};
 #define nx_assert_static(...) \
     enum \
     { \
-        NX_PP_JOIN(StaticAssertFailureTest_, __LINE__) = \
+        NX_PP_JOIN(static_assert_failure_test_, __LINE__) = \
             sizeof(nx::static_assert_failure<!!(__VA_ARGS__), __LINE__>) \
     }
 #endif/*NX_SP_CXX11_BASIC*/
-
-#endif/*nx_assert_static*/
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

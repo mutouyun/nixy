@@ -4,7 +4,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-void testAssert(void)
+void testAssert(void) nx_noexcept
 {
     TEST_CASE();
 
@@ -14,16 +14,20 @@ void testAssert(void)
 
     try
     {
-        nx_assert(b = false)(i)(j)(what).msg("~blabla~").except(b);
+        nx_assert(b = false)(i)(j)(what).msg("blabla").except(b);
         strout << b << endl;
     }
-    catch(nx::assert_context)
+    catch(const nx::assert_context&)
     {
         strout << "catched assert_context!" << endl;
     }
     catch(bool b)
     {
         strout << "catched bool: " << b << endl;
+    }
+    catch(...)
+    {
+        strout << "What?!" << endl;
     }
 }
 
@@ -34,7 +38,7 @@ void testTrace(void)
     TEST_CASE();
 
     nx_trace("I %x Sego")("love") << nx::endl;
-    nx_trace()("love") << 123 << nx::endl;
+    nx_trace()("Sego ") << 233 << nx::endl<2>;
 }
 
 //////////////////////////////////////////////////////////////////////////

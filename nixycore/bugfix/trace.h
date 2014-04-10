@@ -64,20 +64,20 @@ namespace private_trace
     };
 }
 
-#ifndef NX_TRACE_ENABLED
+#ifndef NX_ENABLE_TRACE
 #ifndef NDEBUG
-#   define NX_TRACE_ENABLED
+#   define NX_ENABLE_TRACE
 #endif
-#endif/*NX_TRACE_ENABLED*/
+#endif/*NX_ENABLE_TRACE*/
 
-#ifdef NX_TRACE_ENABLED
+#ifdef NX_ENABLE_TRACE
 #   define nx_trace(...) \
         (nx::private_trace::maker(L"%x\n%x, L: %x ->: ")(__VA_ARGS__) \
         << __FILE__ << NX__FUNCTION__ << __LINE__)
-#else/*NX_TRACE_ENABLED*/
+#else/*NX_ENABLE_TRACE*/
 #   define nx_trace(...) \
         if (true) ; else nx::trace()
-#endif/*NX_TRACE_ENABLED*/
+#endif/*NX_ENABLE_TRACE*/
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

@@ -64,13 +64,13 @@ bool output(const char* fmt, ...)
     va_start(args, fmt);
 #ifdef NX_OS_WINCE
     char buf[MAX_PATH];
-    if (_vsnprintf(buf, nx_countof(buf), fmt, args) > 0)
+    if (::_vsnprintf(buf, nx_countof(buf), fmt, args) > 0)
     {
         PolicyT::out(buf);
     }
     else ret = false;
 #else
-    char* buf = static_cast<char*>(::malloc(vsnprintf(NULL, 0, fmt, args) + 1));
+    char* buf = static_cast<char*>(::malloc(::vsnprintf(NULL, 0, fmt, args) + 1));
     if (buf)
     {
         if (vsprintf(buf, fmt, args) > 0)

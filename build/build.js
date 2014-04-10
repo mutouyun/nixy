@@ -29,7 +29,6 @@ else
     prj.type = "lib"
     prj.heads = "\
         'nixycore/general/plat_detect.h' \
-        'nixycore/general/global_features.h' \
         'nixycore/general/global_functions.h' \
         'nixycore/general/general.h' \
         'nixycore/preprocessor/pp_macros.h' \
@@ -39,6 +38,7 @@ else
         'nixycore/preprocessor/pp_nest.h' \
         'nixycore/preprocessor/pp_mult.h' \
         'nixycore/preprocessor/preprocessor.h' \
+        'nixycore/bugfix/noexcept.h' \
         'nixycore/bugfix/output.h' \
         'nixycore/bugfix/assert_detail.h' \
         'nixycore/bugfix/assert.h' \
@@ -96,7 +96,6 @@ else
         'nixycore/finalizer/holder.h' \
         'nixycore/finalizer/gc.h' \
         'nixycore/finalizer/finalizer.h' \
-        'nixycore/memory/mem_leak.h' \
         'nixycore/memory/construct.h' \
         'nixycore/memory/alloc.h' \
         'nixycore/memory/std_alloc.h' \
@@ -106,6 +105,7 @@ else
         'nixycore/memory/center_heap.h' \
         'nixycore/memory/mem_alloc.h' \
         'nixycore/memory/default_alloc.h' \
+        'nixycore/memory/mem_leak.h' \
         'nixycore/memory/unfixed_pool.h' \
         'nixycore/memory/object_pool.h' \
         'nixycore/memory/pointer.h' \
