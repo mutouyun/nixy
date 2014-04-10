@@ -13,12 +13,12 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-template <typename P>
-class stream_wrap : public P
+template <class PolicyT>
+class stream_wrap : public PolicyT
 {
 public:
-    typedef P policy_t;
-    typedef stream_wrap<P> warp_t;
+    typedef PolicyT policy_t;
+    typedef stream_wrap<policy_t> warp_t;
     typedef const warp_t& (*option_t)(const warp_t&);
 
 public:

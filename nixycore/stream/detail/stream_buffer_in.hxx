@@ -63,14 +63,20 @@ void do_assign_in(void)
     }
 }
 
-void parse_in(bool& val)
+template <typename V>
+void swscanf_buf(V& val) const
+{
+    nx::swscanf(buf_, printf_format<V, wchar>::val(), val);
+}
+
+void parse_in(bool& val) const
 {
     val = (buf_ == L"true");
 }
 
 template <typename V>
 typename enable_if<is_character<V>::value
->::type_t parse_in(V& val)
+>::type_t parse_in(V& val) const
 {
     if (buf_.empty()) return;
     val = buf_[0];
@@ -80,30 +86,30 @@ template <typename V>
 typename enable_if<!is_sametype<V, bool>::value && 
                    !is_character<V>::value && 
                     is_numeric<V>::value
->::type_t parse_in(V& val)
+>::type_t parse_in(V& val) const
 {
-    swscanf(buf_.c_str(), printf_format<V, wchar>::val(), &val);
+    swscanf_buf(val);
 }
 
-void parse_in(char* val)
+void parse_in(char* val) const
 {
     strcpy(val, buf_.to_local().c_str());
 }
 
-void parse_in(wchar* val)
+void parse_in(wchar* val) const
 {
     wcscpy(val, buf_.c_str());
 }
 
-void parse_in(pvoid& val)
+void parse_in(pvoid& val) const
 {
-    swscanf(buf_.c_str(), printf_format<pvoid, wchar>::val(), &val);
+    swscanf_buf(val);
 }
 
 template <typename V>
 typename enable_if<!is_character<V>::value && /* vs2005 need this */
                     is_class<V>::value
->::type_t parse_in(V& val)
+>::type_t parse_in(V& val) const
 {
     buf_ >> val;
 }

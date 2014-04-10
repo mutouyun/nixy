@@ -271,14 +271,14 @@ public:
         for stream
     */
 
-    friend void operator<<(string& buf, string& val) // out
+    friend void operator<<(string& buf, const string& val) // out
     {
         buf.append(val);
     }
 
-    friend void operator>>(string& buf, string& val) // in
+    friend void operator>>(const string& buf, string& val) // in
     {
-        buf.swap(val);
+        val = buf;
     }
 
     /*

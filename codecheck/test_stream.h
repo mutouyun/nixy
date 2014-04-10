@@ -30,9 +30,21 @@ void testStreamDetail(void)
 
 //////////////////////////////////////////////////////////////////////////
 
+void testStreamOps(void)
+{
+    TEST_CASE();
+
+    nx::string text;
+    nx::io(&text) << L"pi is about: " << nx::fmt("%.2f", 3.1415) << nx::endl<2>;
+    strout << text.to_local().c_str() << endl;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
 void testStream(void)
 {
     TEST_FUNCTION();
 
     testStreamDetail();
+    testStreamOps();
 }

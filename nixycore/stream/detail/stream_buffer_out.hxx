@@ -26,17 +26,9 @@ void do_assign_out(void)
 }
 
 template <typename V>
-void swprintf_buf(V val, size_t buf_count)
+void swprintf_buf(const V& val)
 {
-    size_t eof_index = buf_.length();
-    buf_.resize(eof_index + buf_count);
-    int n = swprintf(const_cast<wchar*>(buf_.data()) + eof_index,
-#if defined(NX_OS_LINUX)
-                     buf_count,
-#endif
-                     printf_format<V, wchar>::val(), val);
-    if (n < 0) return;
-    buf_.resize(eof_index + n);
+    nx::swprintf(buf_, printf_format<V, wchar>::val(), val);
 }
 
 void parse_out(bool val)
@@ -59,35 +51,11 @@ typename enable_if<is_character<V>::value
 template <typename V>
 typename enable_if<!is_sametype<V, bool>::value && 
                    !is_character<V>::value && 
-                    is_integral<V>::value
+                    is_numeric<V>::value
 >::type_t parse_out(V val)
 {
-    swprintf_buf(val, sizeof(val)* 3);
+    swprintf_buf(val);
 }
-
-#if (NX_CC_MSVC == 1400)
-void parse_out(float val)
-{
-    swprintf_buf(val, sizeof(val)* 6);
-}
-
-void parse_out(double val)
-{
-    swprintf_buf(val, sizeof(val)* 6);
-}
-
-void parse_out(ldouble val)
-{
-    swprintf_buf(val, sizeof(val)* 6);
-}
-#else
-template <typename V>
-typename enable_if<is_float<V>::value
->::type_t parse_out(V val)
-{
-    swprintf_buf(val, sizeof(val)* 6);
-}
-#endif
 
 void parse_out(const char* val)
 {
@@ -101,11 +69,12 @@ void parse_out(const wchar* val)
 
 void parse_out(pvoid val)
 {
-    swprintf_buf(val, sizeof(val)* 2 + 2); // 0xFFFFFFFF
+    swprintf_buf(val);
 }
 
 template <typename V>
-typename enable_if<is_class<V>::value
+typename enable_if<!is_character<V>::value && /* vs2005 need this */
+                    is_class<V>::value
 >::type_t parse_out(const V& val)
 {
     buf_ << val;

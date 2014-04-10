@@ -21,6 +21,47 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
+/*
+    swprintf & swscanf
+*/
+
+template <typename V>
+inline int swprintf(nx::string& buf, const wchar* fmt, const V& val)
+{
+#if defined(NX_OS_WINCE)
+#   define NX_SWPRINTF_ ::_snwprintf
+#else
+#   define NX_SWPRINTF_ ::swprintf
+#endif
+
+#if defined(NX_OS_WIN32) || defined(NX_OS_WIN64)
+    int n = NX_SWPRINTF_(NULL, 0, fmt, val);
+    if (n <= 0) return n;
+    size_t eof_index = buf.length();
+    buf.resize(eof_index + n);
+    n = NX_SWPRINTF_(const_cast<wchar*>(buf.data()) + eof_index,
+                     n + 1, fmt, val);
+    if (n > 0) buf.resize(eof_index + n);
+#else
+    nx::wchar tmp[256] = {0};
+    int n = NX_SWPRINTF_(tmp, nx_countof(tmp), fmt, val);
+    if (n > 0) buf += tmp;
+#endif
+    return n;
+
+#undef NX_SWPRINTF_
+}
+
+template <typename V>
+inline int swscanf(const nx::string& buf, const wchar* fmt, V& val)
+{
+    return ::swscanf(buf.c_str(), fmt, &val);
+}
+
+/*
+    buffer for streaming in or out
+*/
+
 template <class T>
 class stream_buffer
 {
@@ -33,8 +74,7 @@ class stream_buffer
         mode_Non,
         mode_In,
         mode_Out
-    };
-    mode_t mode_;
+    } mode_;
 
 public:
     void swap(stream_buffer& r)
