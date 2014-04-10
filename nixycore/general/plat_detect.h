@@ -52,27 +52,30 @@
 
     CXX11_BASIC - Support c++ 11 basic features
     NOEXCEPT    - noexcept
-    USING       - Alias templates
+    ALIAS       - Type alias, alias template
     RANGEFOR    - Range-based for-loop
+    ARRAY       - Container array
 */
 //////////////////////////////////////////////////////////////////////////
 
 #if defined(NX_CC_MSVC)
 #   if (NX_CC_MSVC >= 1600)
 #   define NX_SP_CXX11_BASIC
+#   define NX_SP_ARRAY
 #   endif
 #   if (NX_CC_MSVC >= 1700)
 #   define NX_SP_RANGEFOR
 #   endif
 #   if (NX_CC_MSVC >= 1800)
-#   define NX_SP_USING
+#   define NX_SP_ALIAS
 #   endif
 #elif defined(NX_CC_GNUC)
 #   if (__cplusplus >= 201103L)
 #   define NX_SP_CXX11_BASIC
 #   define NX_SP_NOEXCEPT
-#   define NX_SP_USING
+#   define NX_SP_ALIAS
 #   define NX_SP_RANGEFOR
+#   define NX_SP_ARRAY
 #   endif
 #endif
 

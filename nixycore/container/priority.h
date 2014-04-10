@@ -46,11 +46,13 @@ public:
         : base_t(rhs)
     {}
 
+#ifdef NX_SP_CXX11_BASIC
     priority(const rvalue<priority, true>& rhs)
         : base_t()
     {
         base_t::swap(unmove(rhs));
     }
+#endif
 
     priority& operator=(priority rhs)
     {

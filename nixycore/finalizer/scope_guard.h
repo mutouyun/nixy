@@ -10,6 +10,8 @@
 #include "nixycore/delegate/functor.h"
 #include "nixycore/delegate/bind.h"
 
+#include "nixycore/bugfix/noexcept.h"
+
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
 #include "nixycore/utility/utility.h"

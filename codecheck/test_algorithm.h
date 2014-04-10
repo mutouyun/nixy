@@ -175,4 +175,13 @@ void testAlgorithm(void)
         nx::swap(x, y);
         strout << x.a_ << " " << y.a_ << endl;
     }
+    {
+        nx::array<int, 5> arr;
+        arr.assign(123);
+        nx_foreach(x, arr)
+        {
+            strout << x << " ";
+        }
+        strout << endl;
+    }
 }

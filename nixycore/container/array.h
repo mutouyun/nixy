@@ -17,9 +17,25 @@
 #include "nixycore/utility/utility.h"
 #include "nixycore/algorithm/algorithm.h"
 
+#ifdef NX_SP_ARRAY
+#include <array> // std::array
+#endif
+
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
+
+#ifdef NX_SP_ARRAY
+
+#ifdef NX_SP_ALIAS
+template <typename T, size_t N>
+using array = std::array<T, N>;
+#else
+template <typename T, size_t N>
+class array : public std::array<T, N> {};
+#endif
+
+#else/*NX_SP_ARRAY*/
 
 template <typename T, size_t N>
 class array : nx_operator(typename NX_SHIELD(array<T, N>), unequal, comparable)
@@ -109,6 +125,8 @@ public:
         return nx::compare(x, y);
     }
 };
+
+#endif/*NX_SP_ARRAY*/
 
 /*
     Special swap algorithm
