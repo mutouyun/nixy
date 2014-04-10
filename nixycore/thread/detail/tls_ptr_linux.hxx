@@ -28,6 +28,11 @@ public:
 
     ~detail(void)
     {
+        if (destructor_)
+        {
+            void* p = get();
+            if (p) destructor_(p);
+        }
         pthread_key_delete(index_);
     }
 

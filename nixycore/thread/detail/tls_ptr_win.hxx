@@ -35,6 +35,11 @@ public:
 
     ~tls_data(void)
     {
+        if (destructor_)
+        {
+            void* p = get();
+            if (p) destructor_(p);
+        }
         // free the tls index
         TlsFree(index_);
     }

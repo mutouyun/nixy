@@ -33,7 +33,8 @@ class tls_ptr
 
 public:
     tls_ptr(void (*destructor)(void*) = nx::nulptr)
-        : base_t(destructor) {}
+        : base_t(destructor)
+    {}
 
     bool checkSafeBool(void) const
     { return !!base_t::get(); }
