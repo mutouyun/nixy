@@ -48,18 +48,18 @@ using std::endl;
 void testAll(void)
 {
     //testPreprocessor();
-    testBugFix();
+//    testBugFix();
     //testTypeManip();
-    //testAlgorithm();
+    testAlgorithm();
     //testUtility();
     //testTime();
     //testRandom();
     //testDelegate();
     //testFinalizer();
     //testThread();
-//    testMemory();
+    testMemory();
     //testString();
-    //testStream();
+    testStream();
 
     TEST_FUNCTION(<< "Finished ");
 }

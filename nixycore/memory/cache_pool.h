@@ -153,9 +153,7 @@ namespace private_cache_placer
 
         public:
             explicit lock_guard(LockT& lc)
-                : lc_(lc) {
-                lc_.lock();
-            }
+                : lc_(lc) { lc_.lock(); }
             ~lock_guard() { lc_.unlock(); }
         };
 

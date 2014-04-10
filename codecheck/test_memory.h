@@ -419,13 +419,29 @@ void testObjectPool(void)
 
 //////////////////////////////////////////////////////////////////////////
 
+void testMemLeak(void)
+{
+    TEST_CASE();
+
+    using namespace test_memguard;
+
+    nx_alloc(12);
+    nx_alloc(10);
+    nx_free(nx_alloc<A>());
+    nx_alloc<A>(123);
+    /*nx_free*/(nx_alloc<A[10]>(321));
+}
+
+//////////////////////////////////////////////////////////////////////////
+
 void testMemory(void)
 {
     TEST_FUNCTION();
 
-    testMemPool();
-    testThreadAlloc();
+//    testMemPool();
+//    testThreadAlloc();
     //testMemGuard();
     //testPointer();
     //testObjectPool();
+    testMemLeak();
 }

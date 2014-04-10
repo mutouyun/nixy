@@ -65,6 +65,7 @@ struct pool_alloc_model
 
     static mem_pool_t& instance(void)
     {
+        use::alloc_center_heap::instance(); // Make center heap run first
         return TLSSingleton<mem_pool_t, use::alloc_std>::instance();
     }
 

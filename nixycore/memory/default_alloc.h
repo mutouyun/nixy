@@ -61,12 +61,6 @@ inline void free(T* p)
     nx::free<NX_DEFAULT_ALLOC>(p);
 }
 
-template <typename T, size_t N>
-inline void free(T(* p)[N])
-{
-    nx::free<NX_DEFAULT_ALLOC>(p);
-}
-
 /*
     realloc
 */

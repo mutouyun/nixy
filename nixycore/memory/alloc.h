@@ -32,7 +32,7 @@ namespace private_alloc
 #   pragma warning(disable: 4345)
 #endif
 
-    template <typename AllocT, typename T>
+    template <class AllocT, typename T>
     struct detail
     {
         static T* alloc(void)
@@ -51,7 +51,7 @@ namespace private_alloc
     };
 
     /* Make array to array pointer */
-    template <typename AllocT, typename T_, size_t N>
+    template <class AllocT, typename T_, size_t N>
     struct detail<AllocT, T_[N]>
     {
         typedef T_ T[N];
@@ -74,7 +74,7 @@ namespace private_alloc
 #   undef NX_ALLOC_
     };
 
-    template <typename AllocT>
+    template <class AllocT>
     struct detail<AllocT, void>
     {
         static void* alloc(size_t size)
@@ -88,20 +88,20 @@ namespace private_alloc
 #endif
 }
 
-template <typename AllocT>
+template <class AllocT>
 inline pvoid alloc(size_t size)
 {
     return AllocT::alloc(size);
 }
 
-template <typename AllocT, typename T>
+template <class AllocT, typename T>
 inline T* alloc(void)
 {
     return private_alloc::detail<AllocT, T>::alloc();
 }
 
 #define NX_ALLOC_(n) \
-template <typename AllocT, typename T, NX_PP_TYPE_1(n, typename P)> \
+template <class AllocT, typename T, NX_PP_TYPE_1(n, typename P)> \
 inline T* alloc(NX_PP_TYPE_2(n, P, par)) \
 { \
     return private_alloc::detail<AllocT, T>::alloc(NX_PP_TYPE_1(n, par)); \
@@ -113,7 +113,7 @@ NX_PP_MULT_MAX(NX_ALLOC_)
     destruct free
 */
 
-template <typename AllocT>
+template <class AllocT>
 inline void free(pvoid p, size_t size)
 {
     AllocT::free(p, size);
@@ -126,7 +126,7 @@ NX_CONCEPT(size_of_const , size_t, size_of, const)
 
 // has no virtual-destructor or size_of function
 
-template <typename AllocT, typename T>
+template <class AllocT, typename T>
 inline typename nx::enable_if<!nx::has_virtual_destructor<T>::value ||
                              (!nx::has_size_of_normal<T>::value &&
                               !nx::has_size_of_const<T>::value)
@@ -139,7 +139,7 @@ inline typename nx::enable_if<!nx::has_virtual_destructor<T>::value ||
 
 // has virtual-destructor and size_of function
 
-template <typename AllocT, typename T>
+template <class AllocT, typename T>
 inline typename nx::enable_if<nx::has_virtual_destructor<T>::value &&
                              (nx::has_size_of_normal<T>::value ||
                               nx::has_size_of_const<T>::value)
@@ -153,7 +153,7 @@ inline typename nx::enable_if<nx::has_virtual_destructor<T>::value &&
 
 // array
 
-template <typename AllocT, typename T, size_t N>
+template <class AllocT, typename T, size_t N>
 inline void free(T(* p)[N])
 {
     if (!p) return;
@@ -165,7 +165,7 @@ inline void free(T(* p)[N])
     realloc
 */
 
-template <typename AllocT>
+template <class AllocT>
 inline pvoid realloc(pvoid p, size_t old_size, size_t new_size)
 {
     return AllocT::realloc(p, old_size, new_size);
@@ -173,7 +173,7 @@ inline pvoid realloc(pvoid p, size_t old_size, size_t new_size)
 
 // has no virtual-destructor or size_of function
 
-template <typename AllocT, typename T>
+template <class AllocT, typename T>
 inline typename nx::enable_if<!nx::has_virtual_destructor<T>::value ||
                              (!nx::has_size_of_normal<T>::value &&
                               !nx::has_size_of_const<T>::value),
@@ -185,7 +185,7 @@ pvoid>::type_t realloc(T* p, size_t size)
 
 // has virtual-destructor and size_of function
 
-template <typename AllocT, typename T>
+template <class AllocT, typename T>
 inline typename nx::enable_if<nx::has_virtual_destructor<T>::value &&
                              (nx::has_size_of_normal<T>::value ||
                               nx::has_size_of_const<T>::value),
@@ -199,6 +199,22 @@ pvoid>::type_t realloc(T* p, size_t size)
     }
     return AllocT::realloc(p, s, size);
 }
+
+/*
+    define macros
+*/
+
+#ifndef nx_alloc
+#define nx_alloc    nx::alloc
+#endif
+
+#ifndef nx_free
+#define nx_free     nx::free
+#endif
+
+#ifndef nx_realloc
+#define nx_realloc  nx::realloc
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

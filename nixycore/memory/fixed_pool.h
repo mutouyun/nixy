@@ -64,7 +64,7 @@ namespace use
             nx_assert(blocks);
             blocks->size_ = block_size * (*(++count_ite_));
             blocks->data_ = nx::alloc<AllocT>(blocks->size_);
-            nx_assert(blocks->data_)(blocks->data_)(block_size)(count());
+            nx_assert(blocks->data_)(blocks->data_)(block_size);
             blocks->next_ = blocks_head_;
             blocks_head_ = blocks;
             return blocks->data_;
