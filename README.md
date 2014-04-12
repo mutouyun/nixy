@@ -7,7 +7,7 @@
 
 ## nixyx
 
-    - Nixy的构建系统, 使用 Qt 5.1.1 编写
+    - Nixy的构建系统, 使用 Qt 编写
     - 脚本可以使用ini和js, 其中ini不支持条件判断和循环(当然了,这货只是个ini), 仅用于最简单的情况
     - 目前支持生成: Makefile, Visual Studio项目文件(Format Version 9.00 以上)
 
