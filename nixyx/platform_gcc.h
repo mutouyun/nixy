@@ -89,18 +89,30 @@ public:
                << "\n"
                << "# Files" << "\n"
                << "\n";
+        QList<QString> prj_heads;
         foreach(const Project& prj, projects)
         {
-            if (prj.sources_.empty()) continue;
-            stream << "SRC_" << prj.name_ << " =";
-            foreach(QString con, prj.sources_)
+            if (!prj.heads_.empty())
             {
-                stream << " \\\n\t\"" << con << "\"";
+                prj_heads.append(QString("HEAD_%1").arg(prj.name_));
+                stream << prj_heads.back() << " =";
+                foreach(QString con, prj.heads_)
+                {
+                    stream << " \\\n\t" << con;
+                }
+                stream << "\n\n";
             }
-            stream << "\n";
+            if (!prj.sources_.empty())
+            {
+                stream << "SRC_" << prj.name_ << " =";
+                foreach(QString con, prj.sources_)
+                {
+                    stream << " \\\n\t" << con;
+                }
+                stream << "\n\n";
+            }
         }
-        stream << "\n"
-               << "# Build rules" << "\n"
+        stream << "# Build rules" << "\n"
                << "\n"
                << ".PHONY: all clean out";
         foreach(const Project& prj, projects)
@@ -148,7 +160,12 @@ public:
                 obj_name = obj_name.mid(obj_name.lastIndexOf('/') + 1);
                 obj_name = obj_name.left(obj_name.lastIndexOf('.'));
                 obj_name = QString("$(TMP)%1%2%3%4.o").arg(slash[1]).arg(prj.name_).arg(slash[1]).arg(obj_name);
-                stream << obj_name << ": " << con << " | tmp_" << prj.name_ << "\n"
+                stream << obj_name << ": " << con;
+                foreach(QString head, prj_heads)
+                {
+                    stream << " $(" << head << ")";
+                }
+                stream << " | tmp_" << prj.name_ << "\n"
                        << "\t" << "$(CX) -o " << obj_name << " $(CFLAGS) $(INCPATH) " << con << "\n";
                 names += " ";
                 names += obj_name;

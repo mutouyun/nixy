@@ -2,7 +2,7 @@
     Solution settings
 */
 
-Solution.name           = "nixy"
+Solution.name           = "nixy_" + Make.CC
 Solution.project_path   = "../"
 Solution.include_path   = ""
 Solution.tmp_path       = "!tmp/$(Configuration)/$(CC)"
@@ -25,7 +25,7 @@ else
 
 /* project nixycore */
 {
-    var prj = Projects.create("nixycore")
+    var prj = Projects.create("nixycore_" + Make.CC)
     prj.type = "lib"
     prj.heads = "\
         'nixycore/general/plat_detect.h' \
@@ -151,7 +151,7 @@ else
 }
 /* project test */
 {
-    var prj = Projects.create("codecheck")
+    var prj = Projects.create("codecheck_" + Make.CC)
     prj.type = "console"
     if (Make.PLAT == "linux")
     {

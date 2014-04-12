@@ -38,29 +38,13 @@ int main(int argc, char *argv[])
     }
 
     QString in;
-    switch (cnt)
-    {
-        case 0x0:
-        case 0x1:
-        case 0x2:
-        case 0x4:
-            in = "n"; break;
-        case 0x7:
-            in = "y"; break;
-        default:
-            if (!(cnt & 0x1)) in = "f";
-            else
-            if (!(cnt & 0x2)) in = "p";
-            else
-            if (!(cnt & 0x4)) in = "c";
-    }
+    if (cnt > 0) in = "y";
 
     forever
     {
-        if (in == "y") break;
-
         if (!in.isEmpty())
         {
+            if (in == "y") break;
             QTextStream(stdout) << "\nPlease enter your configuration: ";
             if (in == "f")
             {
@@ -77,10 +61,14 @@ int main(int argc, char *argv[])
                 QTextStream(stdout) << "(gcc/vc8/vc9/...)\n";
                 QTextStream(stdin) >> script_cc;
             }
-            else
+            else if (in == "n")
             {
                 QTextStream(stdout) << "(filename linux gcc)\n";
                 QTextStream(stdin) >> script_file >> script_plat >> script_cc;
+            }
+            else
+            {
+                QTextStream(stdout) << "Error configuration...\n";
             }
         }
 
@@ -107,5 +95,5 @@ int main(int argc, char *argv[])
         system("pause");
     }
 
-    return app.exec();
+    return 0;
 }
