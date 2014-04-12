@@ -11,7 +11,7 @@
 
 #include "nixycore/general/general.h"
 
-#ifdef NX_SP_CXX11_BASIC
+#ifdef NX_SP_CXX11_NULLPTR
 #include <cstddef> // std::nullptr_t
 #endif
 
@@ -29,9 +29,9 @@ struct null_t;
     nulptr_t && nulptr
 */
 
-#ifdef NX_SP_CXX11_BASIC
+#ifdef NX_SP_CXX11_NULLPTR
 typedef std::nullptr_t nulptr_t;
-#else/*NX_SP_CXX11_BASIC*/
+#else/*NX_SP_CXX11_NULLPTR*/
 class nulptr_t
 {
 public:
@@ -46,7 +46,7 @@ public:
 private:
     void operator&() const;
 };
-#endif/*NX_SP_CXX11_BASIC*/
+#endif/*NX_SP_CXX11_NULLPTR*/
 
 static const nulptr_t nulptr = nulptr_t();
 

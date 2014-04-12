@@ -8,10 +8,15 @@
 #pragma once
 
 #include "nixycore/typemanip/typedefs.h"
+#include "nixycore/typemanip/typetools.h"
 #include "nixycore/typemanip/typequalifier.h"
 
 #include "nixycore/general/general.h"
 #include "nixycore/preprocessor/preprocessor.h"
+
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+#include <type_traits>
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -21,18 +26,230 @@ NX_BEG
     reference
 */
 
-template <typename T>                       struct is_reference        : type_if<false> {};
-template <typename T>                       struct is_reference<T&>    : type_if<true>  {};
+#ifdef NX_SP_CXX11_TYPE_TRAITS
 
-template <typename T>                       struct rm_reference        { typedef T type_t; };
-template <typename T>                       struct rm_reference<T&>    { typedef T type_t; };
+/* lvalue_reference */
 
-template <typename T, typename R>           struct cp_reference        { typedef R  type_t; };
-template <typename T, typename R>           struct cp_reference<T&, R> { typedef R& type_t; };
+template <typename T>
+struct is_lvalue_reference
+    : type_if<std::is_lvalue_reference<T>::value>
+{};
+
+namespace private_rm_lvalue_reference
+{
+    template <typename T, bool = is_lvalue_reference<T>::value>
+    struct detail
+    {
+        typedef T type_t;
+    };
+
+    template <typename T>
+    struct detail<T, true>
+    {
+        typedef typename std::remove_reference<T>::type type_t;
+    };
+}
+
+template <typename T>
+struct rm_lvalue_reference
+    : private_rm_lvalue_reference::detail<T>
+{};
+
+namespace private_cp_lvalue_reference
+{
+    template <typename T, typename R, bool = is_lvalue_reference<T>::value>
+    struct detail
+    {
+        typedef R type_t;
+    };
+
+    template <typename T, typename R>
+    struct detail<T, R, true>
+    {
+        typedef typename std::add_lvalue_reference<R>::type type_t;
+    };
+}
+
+template <typename T, typename R>
+struct cp_lvalue_reference
+    : private_cp_lvalue_reference::detail<T, R>
+{};
+
+/* rvalue_reference */
+
+template <typename T>
+struct is_rvalue_reference
+    : type_if<std::is_rvalue_reference<T>::value>
+{};
+
+namespace private_rm_rvalue_reference
+{
+    template <typename T, bool = is_rvalue_reference<T>::value>
+    struct detail
+    {
+        typedef T type_t;
+    };
+
+    template <typename T>
+    struct detail<T, true>
+    {
+        typedef typename std::remove_reference<T>::type type_t;
+    };
+}
+
+template <typename T>
+struct rm_rvalue_reference
+    : private_rm_rvalue_reference::detail<T>
+{};
+
+namespace private_cp_rvalue_reference
+{
+    template <typename T, typename R, bool = is_rvalue_reference<T>::value>
+    struct detail
+    {
+        typedef R type_t;
+    };
+
+    template <typename T, typename R>
+    struct detail<T, R, true>
+    {
+        typedef typename std::add_rvalue_reference<R>::type type_t;
+    };
+}
+
+template <typename T, typename R>
+struct cp_rvalue_reference
+    : private_cp_rvalue_reference::detail<T, R>
+{};
+
+/* lvalue or rvalue reference */
+
+template <typename T>
+struct is_reference
+    : type_if<std::is_reference<T>::value>
+{};
+
+template <typename T>
+struct rm_reference
+{
+    typedef typename std::remove_reference<T>::type type_t;
+};
+
+namespace private_cp_reference
+{
+    template <typename T, typename R, bool = is_lvalue_reference<T>::value,
+                                      bool = is_rvalue_reference<T>::value>
+    struct detail
+    {
+        typedef R type_t;
+    };
+
+    template <typename T, typename R>
+    struct detail<T, R, true, false> : cp_lvalue_reference<T, R>
+    {};
+
+    template <typename T, typename R>
+    struct detail<T, R, false, true> : cp_rvalue_reference<T, R>
+    {};
+}
+
+template <typename T, typename R>
+struct cp_reference
+    : private_cp_reference::detail<T, R>
+{};
+
+#else/*NX_SP_CXX11_TYPE_TRAITS*/
+
+template <typename T>                       struct is_lvalue_reference        : type_if<false> {};
+template <typename T>                       struct is_lvalue_reference<T&>    : type_if<true>  {};
+template <typename T>                       struct rm_lvalue_reference        { typedef T type_t; };
+template <typename T>                       struct rm_lvalue_reference<T&>    { typedef T type_t; };
+template <typename T, typename R>           struct cp_lvalue_reference        { typedef R  type_t; };
+template <typename T, typename R>           struct cp_lvalue_reference<T&, R> { typedef R& type_t; };
+
+template <typename T>                       struct is_rvalue_reference        : type_if<false> {};
+template <typename T>                       struct rm_rvalue_reference        { typedef T type_t; };
+template <typename T, typename R>           struct cp_rvalue_reference        { typedef R type_t; };
+
+template <typename T>
+struct is_reference
+    : type_if<is_lvalue_reference<T>::value ||
+              is_rvalue_reference<T>::value>
+{};
+
+namespace private_rm_reference
+{
+    template <typename T, bool = is_lvalue_reference<T>::value,
+                          bool = is_rvalue_reference<T>::value>
+    struct detail
+    {
+        typedef T type_t;
+    };
+
+    template <typename T>
+    struct detail<T, true, false> : rm_lvalue_reference<T>
+    {};
+
+    template <typename T>
+    struct detail<T, false, true> : rm_rvalue_reference<T>
+    {};
+}
+
+template <typename T>
+struct rm_reference
+    : private_rm_reference::detail<T>
+{};
+
+namespace private_cp_reference
+{
+    template <typename T, typename R,
+                          bool = is_lvalue_reference<T>::value,
+                          bool = is_rvalue_reference<T>::value>
+    struct detail
+    {
+        typedef R type_t;
+    };
+
+    template <typename T, typename R>
+    struct detail<T, R, true, false> : cp_lvalue_reference<T, R>
+    {};
+
+    template <typename T, typename R>
+    struct detail<T, R, false, true> : cp_rvalue_reference<T, R>
+    {};
+}
+
+template <typename T, typename R>
+struct cp_reference
+    : private_cp_reference::detail<T, R>
+{};
+
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
 
 /*
     array
 */
+
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+
+template <typename T>
+struct is_array
+    : type_if<std::is_array<T>::value>
+{};
+
+template <typename T>
+struct rm_array
+{
+    typedef typename std::remove_extent<T>::type type_t;
+};
+
+template <typename T>
+struct rm_extents
+{
+    typedef typename std::remove_all_extents<T>::type type_t;
+};
+
+#else/*NX_SP_CXX11_TYPE_TRAITS*/
 
 template <typename T>                       struct is_array            : type_if<false> {};
 template <typename T>                       struct is_array<T[]>       : type_if<true>  {};
@@ -42,13 +259,15 @@ template <typename T>                       struct rm_array            { typedef
 template <typename T>                       struct rm_array<T[]>       { typedef T type_t; };
 template <typename T, size_t N>             struct rm_array<T[N]>      { typedef T type_t; };
 
-template <typename T, typename R>           struct cp_array            { typedef R type_t;    };
-template <typename T, typename R>           struct cp_array<T[] , R>   { typedef R type_t[];  };
-template <typename T, typename R, size_t N> struct cp_array<T[N], R>   { typedef R type_t[N]; };
-
 template <typename T>                       struct rm_extents          { typedef T type_t; };
 template <typename T>                       struct rm_extents<T[]>     { typedef typename rm_extents<T>::type_t type_t; };
 template <typename T, size_t N>             struct rm_extents<T[N]>    { typedef typename rm_extents<T>::type_t type_t; };
+
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
+
+template <typename T, typename R>           struct cp_array            { typedef R type_t;    };
+template <typename T, typename R>           struct cp_array<T[] , R>   { typedef R type_t[];  };
+template <typename T, typename R, size_t N> struct cp_array<T[N], R>   { typedef R type_t[N]; };
 
 /*
     pointer

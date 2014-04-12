@@ -31,9 +31,11 @@ struct traits
     typedef const type_t* cpoint_t;
     typedef const type_t& crefer_t;
 
-    typedef typename select_if<is_fundamental<T>::value, 
+    typedef typename select_if<
+            is_scalar<T>::value || is_reference<T>::value,
             T, 
-            typename rm_reference<T>::type_t&
+            const typename rm_reference<
+                  typename rm_const<T>::type_t>::type_t&
     >::type_t param_t;
 };
 

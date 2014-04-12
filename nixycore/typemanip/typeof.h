@@ -27,11 +27,11 @@
 #endif
 
 #ifndef nx_auto
-#ifdef NX_SP_CXX11_BASIC
+#ifdef NX_SP_CXX11_AUTO
 #define nx_auto(name, ...) auto name((__VA_ARGS__))
-#else/*NX_SP_CXX11_BASIC*/
+#else/*NX_SP_CXX11_AUTO*/
 #define nx_auto(name, ...) nx_typeof(__VA_ARGS__) name((__VA_ARGS__))
-#endif/*NX_SP_CXX11_BASIC*/
+#endif/*NX_SP_CXX11_AUTO*/
 #endif
 
 //////////////////////////////////////////////////////////////////////////

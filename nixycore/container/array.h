@@ -17,7 +17,7 @@
 #include "nixycore/utility/utility.h"
 #include "nixycore/algorithm/algorithm.h"
 
-#ifdef NX_SP_ARRAY
+#ifdef NX_SP_CXX11_ARRAY
 #include <array> // std::array
 #endif
 
@@ -25,9 +25,9 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-#ifdef NX_SP_ARRAY
+#ifdef NX_SP_CXX11_ARRAY
 
-#ifdef NX_SP_ALIAS
+#ifdef NX_SP_CXX11_ALIAS
 template <typename T, size_t N>
 using array = std::array<T, N>;
 #else
@@ -35,7 +35,7 @@ template <typename T, size_t N>
 class array : public std::array<T, N> {};
 #endif
 
-#else/*NX_SP_ARRAY*/
+#else/*NX_SP_CXX11_ARRAY*/
 
 template <typename T, size_t N>
 class array : nx_operator(typename NX_SHIELD(array<T, N>), unequal, comparable)
@@ -112,8 +112,7 @@ public:
     }
 
     // assign one value to all elements
-    void assign (const T& value)            { fill(value); }    // A synonym for fill
-    void fill   (const T& value)            { nx::fill(*this, value); }
+    void fill(const T& value) { nx::fill(*this, value); }
 
     // comparisons
     friend bool operator==(const array<T, N>& x, const array<T, N>& y)
@@ -126,8 +125,6 @@ public:
     }
 };
 
-#endif/*NX_SP_ARRAY*/
-
 /*
     Special swap algorithm
 */
@@ -137,6 +134,8 @@ inline void swap(array<T, N>& x, array<T, N>& y)
 {
     x.swap(y);
 }
+
+#endif/*NX_SP_CXX11_ARRAY*/
 
 /*
     Special assign algorithm

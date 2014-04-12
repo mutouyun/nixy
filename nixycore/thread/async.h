@@ -116,7 +116,7 @@ namespace private_task
         void start(void)
         {
             nx_assert(data_);
-            singleton<thread_pool>(0, limit_of<size_t>::upper)
+            singleton<thread_pool>(0, (size_t)~0)
                 .put(bind(&data<T>::onProcess, data_));
         }
     };
@@ -202,14 +202,18 @@ inline private_task::prepare<R> async(const F& f)
 
 #define NX_ASYNC_(n) \
 template <typename F, NX_PP_TYPE_1(n, typename P)> \
-inline private_task::prepare<typename function_traits<F>::result_t> async(const F& f, NX_PP_TYPE_2(n, P, p)) \
+inline private_task::prepare<typename function_traits<F>::result_t> \
+    async(const F& f, NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
 { \
-    return private_task::prepare<typename function_traits<F>::result_t>(bind(f, NX_PP_TYPE_1(n, p))); \
+    return private_task::prepare<typename function_traits<F>::result_t> \
+        (bind(f, NX_PP_FORWARD(n, P, par))); \
 } \
 template <typename R, typename F, NX_PP_TYPE_1(n, typename P)> \
-inline private_task::prepare<R> async(const F& f, NX_PP_TYPE_2(n, P, p)) \
+inline private_task::prepare<R> \
+    async(const F& f, NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
 { \
-    return private_task::prepare<R>(bind<R>(f, NX_PP_TYPE_1(n, p))); \
+    return private_task::prepare<R> \
+        (bind<R>(f, NX_PP_FORWARD(n, P, par))); \
 }
 NX_PP_MULT_MAX(NX_ASYNC_)
 #undef NX_ASYNC_

@@ -466,7 +466,7 @@ namespace test_async
         return r;
     }
 
-    nx::rvalue<int> test_3(void)
+    nx_rval(int) test_3(void)
     {
         int r = 0;
         for(int i = 1; i <= 100; ++i)
@@ -483,7 +483,7 @@ void testAsync(void)
 
     nx::task<int> t1 = nx::async(&test_1, 100);
     nx::task<int> t2 = nx::async(&test_2, 10);
-    nx::task<nx::rvalue<int> > t3 = nx::async(&test_3);
+    nx::task<nx_rval(int) > t3 = nx::async(&test_3);
 
     strout << "Check task result: " << t1.result()
                              << " " << t2.result()

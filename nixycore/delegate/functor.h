@@ -418,9 +418,9 @@ public:
     functor(const functor& fr)
         : base_t(static_cast<const base_t&>(fr))
     {}
-    functor(const rvalue<functor, true>& fr)
+    functor(nx_rref(functor, true) fr)
         : base_t()
-    { swap(unmove(fr)); }
+    { swap(moved(fr)); }
 public:
     functor& operator=(functor fr) { return base_t::operator=(fr); }
     using base_t::swap;
@@ -466,9 +466,9 @@ public: \
     functor(const functor& fr) \
         : base_t(static_cast<const base_t&>(fr)) \
     {} \
-    functor(const rvalue<functor, true>& fr) \
+    functor(nx_rref(functor, true) fr) \
         : base_t() \
-    { swap(unmove(fr)); } \
+    { swap(moved(fr)); } \
 public: \
     functor& operator=(functor fr) { return base_t::operator=(fr); } \
     using base_t::swap; \
@@ -496,7 +496,7 @@ inline void swap(functor<F>& x, functor<F>& y)
 */
 
 template <typename T, typename C, typename P>
-inline rvalue<functor<typename function_traits<T C::*>::type_t>, true> bind(T C::* f, P p)
+inline nx_rval(functor<typename function_traits<T C::*>::type_t>, true) bind(T C::* f, P p)
 {
     return functor<typename function_traits<T C::*>::type_t>(f, p);
 }

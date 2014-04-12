@@ -62,10 +62,10 @@ public:
         : base_t(rhs)
     {}
 
-    local_string(const rvalue<local_string>& rhs)
+    local_string(nx_rref(local_string) rhs)
         : base_t()
     {
-        base_t::swap(unmove(rhs));
+        base_t::swap(moved(rhs));
     }
 
     local_string& operator =(local_string rhs)
@@ -129,10 +129,10 @@ public:
         : base_t(rhs, pos, n)
     {}
 
-    string(const rvalue<string>& rhs)
+    string(nx_rref(string) rhs)
         : base_t()
     {
-        swap(unmove(rhs));
+        swap(moved(rhs));
     }
 
 public:
@@ -167,29 +167,29 @@ public:
         link
     */
 
-    friend rvalue<string> operator+(const string& x, const string& y)
+    friend nx_rval(string) operator+(const string& x, const string& y)
     {
-        return string(x) += y;
+        return nx::move(string(x) += y);
     }
 
-    friend rvalue<string> operator+(const rvalue<string>& x, const string& y)
+    friend nx_rval(string) operator+(nx_rref(string) x, const string& y)
     {
-        return unmove(x) += y;
+        return nx::move(moved(x) += y);
     }
 
-    friend rvalue<string> operator+(const string& x, const value_type* y)
+    friend nx_rval(string) operator+(const string& x, const value_type* y)
     {
-        return string(x) += y;
+        return nx::move(string(x) += y);
     }
 
-    friend rvalue<string> operator+(const value_type* x, const string& y)
+    friend nx_rval(string) operator+(const value_type* x, const string& y)
     {
-        return string(x) += y;
+        return nx::move(string(x) += y);
     }
 
-    friend rvalue<string> operator+(const rvalue<string>& x, const value_type* y)
+    friend nx_rval(string) operator+(nx_rref(string) x, const value_type* y)
     {
-        return unmove(x) += y;
+        return nx::move(moved(x) += y);
     }
 
     /*
@@ -256,7 +256,7 @@ public:
         return from_local(str.c_str());
     }
 
-    rvalue<local_string> to_local(void) const
+    nx_rval(local_string) to_local(void) const
     {
         local_string str;
         size_t n = transform::utf_to_local(c_str());
@@ -264,7 +264,7 @@ public:
         str.resize(n);
         transform::utf_to_local(c_str(), const_cast<char*>(str.data()), n);
         str.resize(n - 1);
-        return str;
+        return nx::move(str);
     }
 
     /*

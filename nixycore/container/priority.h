@@ -46,11 +46,11 @@ public:
         : base_t(rhs)
     {}
 
-#ifdef NX_SP_CXX11_BASIC
-    priority(const rvalue<priority, true>& rhs)
+#ifdef NX_SP_CXX11_PRIORITY
+    priority(nx_rref(priority, true) rhs)
         : base_t()
     {
-        base_t::swap(unmove(rhs));
+        base_t::swap(moved(rhs));
     }
 #endif
 

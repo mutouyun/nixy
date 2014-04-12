@@ -71,10 +71,10 @@ public:
         : content_(nx::clone(other.content_))
     {}
 
-    any(const rvalue<any>& rhs)
+    any(nx_rref(any) rhs)
         : content_(nx::nulptr)
     {
-        swap(unmove(rhs));
+        swap(moved(rhs));
     }
 
     ~any(void)

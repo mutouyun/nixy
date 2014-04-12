@@ -36,11 +36,11 @@ public:
         : base_t(rhs)
     {}
 
-#ifdef NX_SP_CXX11_BASIC
-    queue(const rvalue<queue, true>& rhs)
+#ifdef NX_SP_CXX11_QUEUE
+    queue(nx_rref(queue, true) rhs)
         : base_t()
     {
-        base_t::swap(unmove(rhs));
+        base_t::swap(moved(rhs));
     }
 #endif
 

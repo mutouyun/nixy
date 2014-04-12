@@ -55,12 +55,12 @@ namespace private_bind
     */
 
     template <typename F, typename R = nx::null_t
-                        , bool = nx::is_pointer<F>::value
-                        , bool = nx::is_mem_function<F>::value>
+                        , bool = nx::is_pointer<typename nx::rm_reference<F>::type_t>::value
+                        , bool = nx::is_member_function<typename nx::rm_reference<F>::type_t>::value>
     class fr;
 
     template <typename F>
-    class fr<F, void, false, false>
+    class fr<F, void, false, false> // for class type functor
     {
         F f_;
 
@@ -76,16 +76,16 @@ namespace private_bind
 
 #   define NX_BIND_FR_(n) \
         template <NX_PP_TYPE_1(n, typename P)> \
-        result_t operator()(NX_PP_TYPE_2(n, P, p)) \
+        result_t operator()(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
         { \
-            nx::unref(f_)(NX_PP_TYPE_1(n, p)); \
+            nx::unref(f_)(NX_PP_FORWARD(n, P, par)); \
         }
         NX_PP_MULT_MAX(NX_BIND_FR_)
 #   undef NX_BIND_FR_
     };
 
     template <typename F, typename R>
-    class fr<F, R, false, false>
+    class fr<F, R, false, false> // for class type functor
     {
         F f_;
 
@@ -101,9 +101,9 @@ namespace private_bind
 
 #   define NX_BIND_FR_(n) \
         template <NX_PP_TYPE_1(n, typename P)> \
-        result_t operator()(NX_PP_TYPE_2(n, P, p)) \
+        result_t operator()(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
         { \
-            return nx::unref(f_)(NX_PP_TYPE_1(n, p)); \
+            return nx::unref(f_)(NX_PP_FORWARD(n, P, par)); \
         }
         NX_PP_MULT_MAX(NX_BIND_FR_)
 #   undef NX_BIND_FR_
@@ -126,9 +126,9 @@ namespace private_bind
 
 #   define NX_BIND_FR_(n) \
         template <NX_PP_TYPE_1(n, typename P)> \
-        result_t operator()(NX_PP_TYPE_2(n, P, p)) \
+        result_t operator()(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
         { \
-            (*f_)(NX_PP_TYPE_1(n, p)); \
+            (*f_)(NX_PP_FORWARD(n, P, par)); \
         }
         NX_PP_MULT_MAX(NX_BIND_FR_)
 #   undef NX_BIND_FR_
@@ -151,9 +151,9 @@ namespace private_bind
 
 #   define NX_BIND_FR_(n) \
         template <NX_PP_TYPE_1(n, typename P)> \
-        result_t operator()(NX_PP_TYPE_2(n, P, p)) \
+        result_t operator()(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
         { \
-            return (*f_)(NX_PP_TYPE_1(n, p)); \
+            return (*f_)(NX_PP_FORWARD(n, P, par)); \
         }
         NX_PP_MULT_MAX(NX_BIND_FR_)
 #   undef NX_BIND_FR_
@@ -171,9 +171,9 @@ namespace private_bind
 
 #   define NX_BIND_FR_(n) \
         template <NX_PP_TYPE_1(n, typename P)> \
-        result_t operator()(NX_PP_TYPE_2(n, P, p)) \
+        result_t operator()(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
         { \
-            (nx::unref(p1)->*f_)(NX_PP_B1(NX_PP_TYPE_1(n, p))); \
+            (nx::unref(par1)->*f_)(NX_PP_B1(NX_PP_FORWARD(n, P, par))); \
         }
         NX_PP_MULT_MAX(NX_BIND_FR_)
 #   undef NX_BIND_FR_
@@ -191,9 +191,9 @@ namespace private_bind
 
 #   define NX_BIND_FR_(n) \
         template <NX_PP_TYPE_1(n, typename P)> \
-        result_t operator()(NX_PP_TYPE_2(n, P, p)) \
+        result_t operator()(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
         { \
-            return (nx::unref(p1)->*f_)(NX_PP_B1(NX_PP_TYPE_1(n, p))); \
+            return (nx::unref(par1)->*f_)(NX_PP_B1(NX_PP_FORWARD(n, P, par))); \
         }
         NX_PP_MULT_MAX(NX_BIND_FR_)
 #   undef NX_BIND_FR_
@@ -208,8 +208,15 @@ namespace private_bind
     {
         T t_;
 
-        template <typename U>
-        storage(const U& u) : t_(u) {}
+        storage(const T& t) : t_(t) {}
+
+#define NX_BIND_STORAGE_(n) \
+        template <NX_PP_TYPE_1(n, typename P)> \
+        storage(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
+            : t_(NX_PP_FORWARD(n, P, par)) \
+        {}
+        NX_PP_MULT_MAX(NX_BIND_STORAGE_)
+#undef NX_BIND_STORAGE_
 
         template <typename V>
         V& operator[](V& v)
@@ -265,8 +272,9 @@ namespace private_bind
         typedef storage<nx::tuple<NX_PP_TYPE_1(n, P)> > base_t; \
     public: \
         list(const list& l) : base_t(l.t_) {} \
-        template <typename U> \
-        list(const U& u) : base_t(u) {} \
+        list(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
+            : base_t(NX_PP_FORWARD(n, P, par)) \
+        {} \
     public: \
         template <typename R, typename F, typename L> \
         R operator()(type_wrap<R>, F& f, L& l) \
@@ -303,9 +311,9 @@ namespace private_bind
 
 #   define NX_BIND_DETAIL_(n) \
         template <NX_PP_TYPE_1(n, typename P)> \
-        result_t operator()(NX_PP_TYPE_2(n, P, p)) \
+        result_t operator()(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
         { \
-            list<nx::tuple<NX_PP_TYPE_1(n, P)> > l(nx::tie(NX_PP_TYPE_1(n, p))); \
+            list<nx::tuple<NX_PP_TYPE_1(n, P)> > l(NX_PP_FORWARD(n, P, par)); \
             return l_(type_wrap<result_t>(), f_, l); \
         }
         NX_PP_MULT_MAX(NX_BIND_DETAIL_)
@@ -338,16 +346,18 @@ inline private_bind::fr<F> bind(F f)
 
 #define NX_BIND_(n) \
 template <typename F, NX_PP_TYPE_1(n, typename P)> \
-inline private_bind::detail<F, private_bind::list<nx::tuple<NX_PP_TYPE_1(n, P)> > > bind(F f, NX_PP_TYPE_2(n, P, p)) \
+inline private_bind::detail<F, private_bind::list<nx::tuple<NX_PP_TYPE_1(n, P)> > > \
+    bind(F f, NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
 { \
     typedef private_bind::list<nx::tuple<NX_PP_TYPE_1(n, P)> > l_t; \
-    return private_bind::detail<F, l_t>(f, nx::tie(NX_PP_TYPE_1(n, p))); \
+    return private_bind::detail<F, l_t>(f, l_t(NX_PP_FORWARD(n, P, par))); \
 } \
 template <typename R, typename F, NX_PP_TYPE_1(n, typename P)> \
-inline private_bind::detail<F, private_bind::list<nx::tuple<NX_PP_TYPE_1(n, P)> >, R> bind(F f, NX_PP_TYPE_2(n, P, p)) \
+inline private_bind::detail<F, private_bind::list<nx::tuple<NX_PP_TYPE_1(n, P)> >, R> \
+    bind(F f, NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
 { \
     typedef private_bind::list<nx::tuple<NX_PP_TYPE_1(n, P)> > l_t; \
-    return private_bind::detail<F, l_t, R>(f, nx::tie(NX_PP_TYPE_1(n, p))); \
+    return private_bind::detail<F, l_t, R>(f, l_t(NX_PP_FORWARD(n, P, par))); \
 }
 NX_PP_MULT_MAX(NX_BIND_)
 #undef NX_BIND_

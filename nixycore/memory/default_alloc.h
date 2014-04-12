@@ -13,6 +13,7 @@
 
 #include "nixycore/general/general.h"
 #include "nixycore/preprocessor/preprocessor.h"
+#include "nixycore/utility/utility.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -39,9 +40,9 @@ inline T* alloc(void)
 
 #define NX_ALLOC_(n) \
 template <typename T, NX_PP_TYPE_1(n, typename P)> \
-inline T* alloc(NX_PP_TYPE_2(n, P, par)) \
+inline T* alloc(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
 { \
-    return nx::alloc<NX_DEFAULT_ALLOC, T>(NX_PP_TYPE_1(n, par)); \
+    return nx::alloc<NX_DEFAULT_ALLOC, T>(NX_PP_FORWARD(n, P, par)); \
 }
 NX_PP_MULT_MAX(NX_ALLOC_)
 #undef NX_ALLOC_

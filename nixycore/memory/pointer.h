@@ -91,9 +91,9 @@ public:
     pointer(const pointer& r)
         : opt_t(static_cast<const base_t&>(r))
     {}
-    pointer(const rvalue<pointer>& r)
+    pointer(nx_rref(pointer) r)
         : opt_t()
-    { swap(unmove(r)); }
+    { swap(moved(r)); }
 
     pointer& operator=(pointer rhs)
     {
@@ -152,7 +152,7 @@ namespace private_pointer_cast
         typedef pointer<T1, A, M> ret_t;
         typedef pointer<T2, A, M> prm_t;
 
-        static rvalue<ret_t> cast(prm_t& p)
+        static nx_rval(ret_t) cast(prm_t& p)
         {
             return ret_t(p);
         }

@@ -7,6 +7,9 @@
 
 #pragma once
 
+#include "nixycore/utility/rvalue.h"
+#include "nixycore/utility/refer.h"
+
 #include "nixycore/bugfix/assert.h"
 
 #include "nixycore/typemanip/typedefs.h"
@@ -16,6 +19,10 @@
 #include "nixycore/general/general.h"
 #include "nixycore/preprocessor/preprocessor.h"
 #include "nixycore/algorithm/algorithm.h"
+
+#ifdef NX_SP_CXX11_TUPLE
+#include <tuple> // std::tuple
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -34,9 +41,9 @@ namespace private_tuple
         detail(void) {}
 
         template <NX_PP_TYPE_MAX_1(typename P)>
-        detail(NX_PP_TYPE_MAX_2(P, & par))
-            : head_(par1)
-            , tail_(NX_PP_B1(NX_PP_TYPE_MAX_1(par)), nx::none)
+        detail(NX_PP_TYPE_MAX_2(P, NX_PP_FPAR(par)))
+            : head_(nx_fval(P1, par1))
+            , tail_(NX_PP_B1(NX_PP_FORWARD_MAX(P, par)), nx::none)
         {}
 
         template <typename T_, typename U_>
@@ -44,14 +51,6 @@ namespace private_tuple
             : head_(r.head_)
             , tail_(r.tail_)
         {}
-
-        template <typename T_, typename U_>
-        detail& operator=(const detail<T_, U_>& r)
-        {
-            head_ = r.head_;
-            tail_ = r.tail_;
-            return (*this);
-        }
 
         template <typename T_, typename U_>
         void swap(detail<T_, U_>& r)
@@ -71,21 +70,14 @@ namespace private_tuple
         detail(void) {}
 
         template <NX_PP_TYPE_MAX_1(typename P)>
-        detail(P1& par1, NX_PP_B1(NX_PP_TYPE_MAX_1(P, &)))
-            : head_(par1)
+        detail(nx_fref(P1, par1), NX_PP_B1(NX_PP_TYPE_MAX_1(P, NX_PP_FPAR())))
+            : head_(nx_fval(P1, par1))
         {}
 
         template <typename T_>
         detail(const detail<T_, nx::null_t>& r)
             : head_(r.head_)
         {}
-
-        template <typename T_>
-        detail& operator=(const detail<T_, nx::null_t>& r)
-        {
-            head_ = r.head_;
-            return (*this);
-        }
 
         template <typename T_>
         void swap(detail<T_, nx::null_t>& r)
@@ -144,42 +136,67 @@ public:
 public:
     tuple(void) {}
 
+    template <class U1, class U2>
+    tuple(const std::pair<U1, U2>& r)
+        : base_t(r.first, r.second)
+    {}
+
+#ifdef NX_SP_CXX11_TUPLE
+
+#define NX_TUPLE_PAR_1_(n, par) std::get<n>(par)
+#define NX_TUPLE_PAR_2_(n, par) , NX_TUPLE_PAR_1_(n, par)
+
+#define NX_TUPLE_(n) \
+    template <NX_PP_TYPE_1(n, typename P)> \
+    tuple(const std::tuple<NX_PP_TYPE_1(n, P)>& r) \
+        : base_t(NX_PP_REPEATEX(n, NX_TUPLE_PAR_1_, NX_TUPLE_PAR_2_, r), NX_PP_CLONE(NX_PP_REM(n), nx::none, , )) \
+    {}
+    NX_PP_MULT(NX_PP_DEC(NX_PP_MAX), NX_TUPLE_)
+#undef NX_TUPLE_
+
+    template <NX_PP_TYPE_MAX_1(typename P)>
+    tuple(const std::tuple<NX_PP_TYPE_MAX_1(P)>& r)
+        : base_t(NX_PP_REPEATEX_MAX(NX_TUPLE_PAR_1_, NX_TUPLE_PAR_2_, r))
+    {}
+
+#undef NX_TUPLE_PAR_1_
+#undef NX_TUPLE_PAR_2_
+
+#endif/*NX_SP_CXX11_TUPLE*/
+
+#define NX_TUPLE_PAR_1_(n, par) nx_fpar(NX_PP_JOIN(par, n))
+#define NX_TUPLE_PAR_2_(n, par) , NX_TUPLE_PAR_1_(n, par)
+
 #define NX_TUPLE_(n) \
     tuple(NX_PP_TYPE_2(n, typename traits<T, >::param_t par)) \
-        : base_t(NX_PP_TYPE_1(n, par), NX_PP_CLONE(NX_PP_REM(n), nx::none, ,)) \
+        : base_t(NX_PP_REPEATEX(n, NX_TUPLE_PAR_1_, NX_TUPLE_PAR_2_, par), NX_PP_CLONE(NX_PP_REM(n), nx::none, ,)) \
     {}
     NX_PP_MULT(NX_PP_DEC(NX_PP_MAX), NX_TUPLE_)
 #undef NX_TUPLE_
 
     tuple(NX_PP_TYPE_MAX_2(typename traits<T, >::param_t par))
-        : base_t(NX_PP_TYPE_MAX_1(par))
+        : base_t(NX_PP_REPEATEX_MAX(NX_TUPLE_PAR_1_, NX_TUPLE_PAR_2_, par))
     {}
+
+#undef NX_TUPLE_PAR_1_
+#undef NX_TUPLE_PAR_2_
 
     template<NX_PP_TYPE_MAX_1(typename U)>
     tuple(const tuple<NX_PP_TYPE_MAX_1(U)>& r)
         : base_t(r)
     {}
 
-    template<class U1, class U2>
-    tuple& operator=(const private_tuple::detail<U1, U2>& r)
+    template <NX_PP_TYPE_MAX_1(typename U)>
+    tuple& operator=(tuple<NX_PP_TYPE_MAX_1(U)> rhs)
     {
-        base_t::operator=(r);
+        rhs.swap(*this);
         return (*this);
     }
 
-    template <class U1, class U2>
-    tuple& operator=(const std::pair<U1, U2>& r)
+    template <NX_PP_TYPE_MAX_1(typename U)>
+    void swap(tuple<NX_PP_TYPE_MAX_1(U)>& rhs)
     {
-        nx_assert_static(nx::types_len<tuple>::value == 2);
-        this->head_       = r.first;
-        this->tail_.head_ = r.second;
-        return (*this);
-    }
-
-    template <class U1, class U2>
-    void swap(private_tuple::detail<U1, U2>& r)
-    {
-        base_t::swap(r);
+        base_t::swap(rhs);
     }
 
     size_t length(void)
@@ -242,6 +259,19 @@ template <NX_PP_TYPE_1(n, typename T)> \
 inline tuple<NX_PP_TYPE_1(n, T, &)> tie(NX_PP_TYPE_2(n, T, & par)) \
 { \
     return tuple<NX_PP_TYPE_1(n, T, &)>(NX_PP_TYPE_1(n, par)); \
+}
+NX_PP_MULT_MAX(NX_TIE_)
+#undef NX_TIE_
+
+/*
+    Make a tuple
+*/
+
+#define NX_TIE_(n) \
+template <NX_PP_TYPE_1(n, typename P)> \
+inline tuple<NX_PP_TYPE_1(n, P)> make_tuple(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
+{ \
+    return tuple<NX_PP_TYPE_1(n, P)>(NX_PP_FORWARD(n, P, par)); \
 }
 NX_PP_MULT_MAX(NX_TIE_)
 #undef NX_TIE_

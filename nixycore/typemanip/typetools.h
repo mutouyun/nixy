@@ -37,11 +37,15 @@ struct type_if;
 
 template <>
 struct type_if<true> : true_t
-{};
+{
+    typedef true_t type_t;
+};
 
 template <>
 struct type_if<false> : false_t
-{};
+{
+    typedef false_t type_t;
+};
 
 /*
     For select a type

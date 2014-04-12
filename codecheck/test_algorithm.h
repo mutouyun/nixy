@@ -177,7 +177,7 @@ void testAlgorithm(void)
     }
     {
         nx::array<int, 5> arr;
-        arr.assign(123);
+        arr.fill(123);
         nx_foreach(x, arr)
         {
             strout << x << " ";

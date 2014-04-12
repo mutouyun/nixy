@@ -51,10 +51,10 @@ public:
         : base_t(rhs)
     {}
 
-    list(const rvalue<list, true>& rhs)
+    list(nx_rref(list, true) rhs)
         : base_t()
     {
-        base_t::swap(unmove(rhs));
+        base_t::swap(moved(rhs));
     }
 
     list& operator=(list rhs)

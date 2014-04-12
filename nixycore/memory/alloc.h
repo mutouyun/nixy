@@ -12,6 +12,7 @@
 #include "nixycore/general/general.h"
 #include "nixycore/preprocessor/preprocessor.h"
 #include "nixycore/typemanip/typemanip.h"
+#include "nixycore/utility/utility.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -42,9 +43,9 @@ namespace private_alloc
 
 #   define NX_ALLOC_(n) \
         template <NX_PP_TYPE_1(n, typename P)> \
-        static T* alloc(NX_PP_TYPE_2(n, P, par)) \
+        static T* alloc(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
         { \
-            return nx_construct(AllocT::alloc(sizeof(T)), T, NX_PP_TYPE_1(n, par)); \
+            return nx_construct(AllocT::alloc(sizeof(T)), T, NX_PP_FORWARD(n, P, par)); \
         }
         NX_PP_MULT_MAX(NX_ALLOC_)
 #   undef NX_ALLOC_
@@ -64,10 +65,10 @@ namespace private_alloc
 
 #   define NX_ALLOC_(n) \
         template <NX_PP_TYPE_1(n, typename P)> \
-        static T* alloc(NX_PP_TYPE_2(n, P, par)) \
+        static T* alloc(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
         { \
             T* p = (T*)AllocT::alloc(sizeof(T)); \
-            nx_construct_arr(*p, T_, N, NX_PP_TYPE_1(n, par)); \
+            nx_construct_arr(*p, T_, N, NX_PP_FORWARD(n, P, par)); \
             return p; \
         }
         NX_PP_MULT_MAX(NX_ALLOC_)
@@ -102,9 +103,9 @@ inline T* alloc(void)
 
 #define NX_ALLOC_(n) \
 template <class AllocT, typename T, NX_PP_TYPE_1(n, typename P)> \
-inline T* alloc(NX_PP_TYPE_2(n, P, par)) \
+inline T* alloc(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
 { \
-    return private_alloc::detail<AllocT, T>::alloc(NX_PP_TYPE_1(n, par)); \
+    return private_alloc::detail<AllocT, T>::alloc(NX_PP_FORWARD(n, P, par)); \
 }
 NX_PP_MULT_MAX(NX_ALLOC_)
 #undef NX_ALLOC_

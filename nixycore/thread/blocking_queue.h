@@ -45,7 +45,7 @@ public:
         task_coming_.notify();
     }
 
-    rvalue<type_t> take(void)
+    nx_rval(type_t) take(void)
     {
         nx_lock_scope(lock_);
         while (queue_.empty()) // used to avoid spurious wakeups
@@ -55,7 +55,7 @@ public:
         queue_.pop_front();
         if (queue_.empty())
             until_empty_.notify();
-        return ret;
+        return nx::move(ret);
     }
 
     bool wait_empty(int tm_ms = -1)

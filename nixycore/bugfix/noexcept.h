@@ -11,7 +11,7 @@
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
-#ifdef NX_SP_NOEXCEPT
+#ifdef NX_SP_CXX11_NOEXCEPT
 #define nx_noexcept noexcept
 #else
 #define nx_noexcept throw()

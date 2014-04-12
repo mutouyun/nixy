@@ -15,10 +15,10 @@
 
 #include "nixycore/general/general.h"
 #include "nixycore/preprocessor/preprocessor.h"
+#include "nixycore/utility/utility.h"
 #include "nixycore/bugfix/bugfix.h"
 
-// std::map
-#include <map>
+#include <map> // std::map
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -246,15 +246,15 @@ namespace mem_leak
 
 #   define NX_ALLOC_(n) \
         template <class AllocT, typename T, NX_PP_TYPE_1(n, typename P)> \
-        T* alloc(NX_PP_TYPE_2(n, P, par)) \
+        T* alloc(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
         { \
             return tls_recorder::instance().regist \
-                (nx::alloc<AllocT, T>(NX_PP_TYPE_1(n, par)), file_, line_, sizeof(T)); \
+                (nx::alloc<AllocT, T>(NX_PP_FORWARD(n, P, par)), file_, line_, sizeof(T)); \
         } \
         template <typename T, NX_PP_TYPE_1(n, typename P)> \
-        T* alloc(NX_PP_TYPE_2(n, P, par)) \
+        T* alloc(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
         { \
-            return alloc<NX_DEFAULT_ALLOC, T>(NX_PP_TYPE_1(n, par)); \
+            return alloc<NX_DEFAULT_ALLOC, T>(NX_PP_FORWARD(n, P, par)); \
         }
         NX_PP_MULT_MAX(NX_ALLOC_)
 #   undef NX_ALLOC_

@@ -77,14 +77,6 @@ class stream_buffer
     } mode_;
 
 public:
-    void swap(stream_buffer& r)
-    {
-        nx::swap(ref_, r.ref_);
-        fmt_.swap(r.fmt_);
-        buf_.swap(r.buf_);
-        nx::swap(index_, r.index_);
-    }
-
     bool is_read_complete(void) const
     {
         nx_assert(ref_);
@@ -105,14 +97,43 @@ private:
 
 public:
     stream_buffer(void)
-        : ref_(nx::nulptr)
-        , index_(0), ref_index_(0)
-        , mode_(mode_Non)
+        : ref_      (nx::nulptr)
+        , index_    (0)
+        , ref_index_(0)
+        , mode_     (mode_Non)
     {}
+
+    stream_buffer(const stream_buffer& r)
+        : ref_      (r.ref_)
+        , fmt_      (r.fmt_)
+        , buf_      (r.buf_)
+        , index_    (r.index_)
+        , ref_index_(r.ref_index_)
+        , mode_     (r.mode_)
+    {}
+
+    stream_buffer(nx_rref(stream_buffer) r)
+        : ref_      (nx::nulptr)
+        , index_    (0)
+        , ref_index_(0)
+        , mode_     (mode_Non)
+    {
+        swap(nx::moved(r));
+    }
 
     ~stream_buffer(void)
     {
         flush();
+    }
+
+    void swap(stream_buffer &r)
+    {
+        nx::swap(ref_       , r.ref_);
+        nx::swap(fmt_       , r.fmt_);
+        nx::swap(buf_       , r.buf_);
+        nx::swap(index_     , r.index_);
+        nx::swap(ref_index_ , r.ref_index_);
+        nx::swap(mode_      , r.mode_);
     }
 
 public:

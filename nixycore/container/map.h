@@ -52,10 +52,10 @@ public:
         : base_t(rhs)
     {}
 
-    map(const rvalue<map, true>& rhs)
+    map(nx_rref(map, true) rhs)
         : base_t()
     {
-        base_t::swap(unmove(rhs));
+        base_t::swap(moved(rhs));
     }
 
     map& operator=(map rhs)

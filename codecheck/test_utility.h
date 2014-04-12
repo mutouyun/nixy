@@ -299,10 +299,10 @@ namespace test_rvalue
             strout << "Copy Constructor " << str_ << endl;
         }
 
-        Big(const nx::rvalue<Big>& big)
+        Big(nx_rref(Big) big)
             : str_(nx::nulptr)
         {
-            swap(nx::unmove(big));
+            swap(nx::moved(big));
             strout << "Move Constructor ";
             if (str_) strout << str_;
             strout << endl;
@@ -324,9 +324,9 @@ namespace test_rvalue
             return (*this);
         }
 
-        const Big& operator=(const nx::rvalue<Big>& big)
+        const Big& operator=(nx_rref(Big) big)
         {
-            swap(nx::unmove(big));
+            swap(nx::moved(big));
             strout << "Move Assignment ";
             if (str_) strout << str_;
             strout << endl;
@@ -353,10 +353,10 @@ namespace test_rvalue
         else      return Big();
     }
 
-    nx::rvalue<Big> testMove(void)
+    nx_rval(Big) testMove(void)
     {
         Big tmp("Hello Move!");
-        if (true) return tmp;
+        if (true) return nx::move(tmp);
         else      return Big();
     }
 }
@@ -394,8 +394,8 @@ void testRvalue(void)
     strout << endl;
 
     int a = 0;
-    nx::rvalue<int> b(a), c(b);
-    a = nx::unmove(c);
+    nx_rval(int) b(a), c(b);
+    a = nx::moved(c);
     int NX_UNUSED d = nx::move(a);
 
     nx::list<Big> q1, q2;
@@ -471,9 +471,9 @@ void testTuple(void)
     using namespace test_tuple;
 
     int i = 0; char c = 0; double d = 0;
-    nx_auto(tr, nx::tie(i, c, d));
-    tr = func();
+    nx::tie(i, c, d) = func();
     nx::tuple<int, char, double> td(5, 5, 5);
+    nx_auto(tr, nx::tie(i, c, d));
     nx::swap(td, tr);
     strout << tr.at<0>() << " " << tr.at<1>() << " " << tr.at<2>() << " " << endl;
     strout << *td << " " << td.at<char>() << " " << td.at<double>() << " " << endl;
@@ -500,5 +500,5 @@ void testUtility(void)
     //testRefer();
     testRvalue();
     //testValid();
-    //testTuple();
+    testTuple();
 }

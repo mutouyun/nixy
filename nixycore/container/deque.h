@@ -51,10 +51,10 @@ public:
         : base_t(rhs)
     {}
 
-    deque(const rvalue<deque, true>& rhs)
+    deque(nx_rref(deque, true) rhs)
         : base_t()
     {
-        base_t::swap(unmove(rhs));
+        base_t::swap(moved(rhs));
     }
 
     deque& operator=(deque rhs)

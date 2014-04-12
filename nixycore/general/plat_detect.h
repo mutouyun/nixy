@@ -17,16 +17,22 @@
 
 #define NX_CHECK_GNUC(ver, minor, patch) \
     defined(__GNUC__) /* >= ver.minor.patch */ && \
-    ((__GNUC__ > (ver)) || ((__GNUC__ == (ver)) && \
-    ((__GNUC_MINOR__ > (minor)) || ((__GNUC_MINOR__ == (minor)) && \
-    (__GNUC_PATCHLEVEL__ >= (patch)) ) ) ) )
+          ((__GNUC__ > (ver)) || ((__GNUC__ == (ver)) && \
+          ((__GNUC_MINOR__ > (minor)) || ((__GNUC_MINOR__ == (minor)) && \
+           (__GNUC_PATCHLEVEL__ >= (patch)) ) ) ) )
+
+#define NX_CHECK_CLANG(ver, minor, patch) \
+    defined(__clang__) /* >= ver.minor.patch */ && \
+          ((__clang_major__ > (ver)) || ((__clang_major__ == (ver)) && \
+          ((__clang_minor__ > (minor)) || ((__clang_minor__ == (minor)) && \
+          (__clang_patchlevel__ >= (patch)) ) ) ) )
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1400)     /* >= 8.0 */
 #   define NX_CC_MSVC _MSC_VER
 #elif defined(__GNUC__)
 #   define NX_CC_GNUC
 #   if defined(__clang__)
-#       define NX_CC_CLANG                      // Clang also masquerades as GCC
+#   define NX_CC_CLANG                          // Clang also masquerades as GCC
 #   endif
 #else
 #   error "This CC is unsupported."
@@ -50,33 +56,88 @@
 /*
     C++ features support, must be one of: (NX_SP_XX)
 
-    CXX11_BASIC - Support c++ 11 basic features
-    NOEXCEPT    - noexcept
-    ALIAS       - Type alias, alias template
-    RANGEFOR    - Range-based for-loop
-    ARRAY       - Container array
+    CXX11_TYPE_TRAITS  - <type_traits>
+    CXX11_TUPLE        - std::tuple
+    CXX11_ARRAY        - std::array
+    CXX11_QUEUE        - std::queue
+    CXX11_PRIORITY     - std::priority_queue
+    CXX11_NULLPTR      - nullptr
+    CXX11_AUTO         - auto
+    CXX11_RVALUE_REF   - Rvalue references
+    CXX11_SATIC_ASSERT - static_assert
+    CXX11_ALIAS        - Type alias, alias template
+    CXX11_RANGEFOR     - Range-based for-loop
+    CXX11_NOEXCEPT     - noexcept
+    CXX11_CHAR_TYPE    - char16_t/char32_t
+    CXX11_TEMPLATES    - Variadic templates
+    CXX11_TEMPLATES_EX - Extending variadic template template parameters
 */
 //////////////////////////////////////////////////////////////////////////
 
 #if defined(NX_CC_MSVC)
 #   if (NX_CC_MSVC >= 1600)
-#   define NX_SP_CXX11_BASIC
-#   define NX_SP_ARRAY
+#   define NX_SP_CXX11_TYPE_TRAITS
+#   define NX_SP_CXX11_ARRAY
+#   define NX_SP_CXX11_QUEUE
+#   define NX_SP_CXX11_PRIORITY
+#   define NX_SP_CXX11_NULLPTR
+#   define NX_SP_CXX11_AUTO
+#   define NX_SP_CXX11_RVALUE_REF
+#   define NX_SP_CXX11_SATIC_ASSERT
 #   endif
 #   if (NX_CC_MSVC >= 1700)
-#   define NX_SP_RANGEFOR
+#   define NX_SP_CXX11_RANGEFOR
 #   endif
 #   if (NX_CC_MSVC >= 1800)
-#   define NX_SP_ALIAS
+#   define NX_SP_CXX11_ALIAS
+#   define NX_SP_CXX11_TEMPLATES
+#   define NX_SP_CXX11_TEMPLATES_EX
+#   define NX_SP_CXX11_TUPLE
 #   endif
 #elif defined(NX_CC_GNUC)
 #   if (__cplusplus >= 201103L)
-#   define NX_SP_CXX11_BASIC
-#   define NX_SP_NOEXCEPT
-#   define NX_SP_ALIAS
-#   define NX_SP_RANGEFOR
-#   define NX_SP_ARRAY
+#   define NX_SP_CXX11_TYPE_TRAITS
+#   define NX_SP_CXX11_ARRAY
+#   define NX_SP_CXX11_QUEUE
+#   define NX_SP_CXX11_PRIORITY
+#if defined(NX_CC_CLANG)
+#   if NX_CHECK_CLANG(2, 9, 0)
+#   define NX_SP_CXX11_AUTO
+#   define NX_SP_CXX11_RVALUE_REF
+#   define NX_SP_CXX11_SATIC_ASSERT
+#   define NX_SP_CXX11_CHAR_TYPE
+#   define NX_SP_CXX11_TEMPLATES
+#   define NX_SP_CXX11_TEMPLATES_EX
+#   define NX_SP_CXX11_TUPLE
 #   endif
+#   if NX_CHECK_CLANG(3, 0, 0)
+#   define NX_SP_CXX11_NULLPTR
+#   define NX_SP_CXX11_ALIAS
+#   define NX_SP_CXX11_RANGEFOR
+#   define NX_SP_CXX11_NOEXCEPT
+#   endif
+#else
+#   if NX_CHECK_GNUC(4, 3, 0)
+#   define NX_SP_CXX11_RVALUE_REF
+#   define NX_SP_CXX11_SATIC_ASSERT
+#   define NX_SP_CXX11_TEMPLATES
+#   define NX_SP_CXX11_TUPLE
+#   endif
+#   if NX_CHECK_GNUC(4, 4, 0)
+#   define NX_SP_CXX11_AUTO
+#   define NX_SP_CXX11_CHAR_TYPE
+#   define NX_SP_CXX11_TEMPLATES_EX
+#   endif
+#   if NX_CHECK_GNUC(4, 6, 0)
+#   define NX_SP_CXX11_NULLPTR
+#   define NX_SP_CXX11_RANGEFOR
+#   define NX_SP_CXX11_NOEXCEPT
+#   endif
+#   if NX_CHECK_GNUC(4, 7, 0)
+#   define NX_SP_CXX11_ALIAS
+#   endif
+#endif
+#   endif/*(__cplusplus >= 201103L)*/
 #endif
 
 //////////////////////////////////////////////////////////////////////////

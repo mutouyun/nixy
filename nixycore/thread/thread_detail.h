@@ -68,10 +68,10 @@ public:
         : handle_(0), id_(0), thr_dat_(nx::nulptr)
     {}
 
-    thread(const rvalue<thread>& r)
+    thread(nx_rref(thread) r)
         : handle_(0), id_(0), thr_dat_(nx::nulptr)
     {
-        swap(nx::unmove(r));
+        swap(nx::moved(r));
     }
 
     template <typename F>
@@ -83,10 +83,10 @@ public:
 
 #define NX_THREAD_CONSTRUCT_(n) \
     template <typename F, NX_PP_TYPE_1(n, typename P)> \
-    thread(const F& f, NX_PP_TYPE_2(n, P, par)) \
+    thread(const F& f, NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
         : handle_(0), id_(0), thr_dat_(nx::nulptr) \
     { \
-        start(f, NX_PP_TYPE_1(n, par)); \
+        start(f, NX_PP_FORWARD(n, P, par)); \
     }
     NX_PP_MULT_MAX(NX_THREAD_CONSTRUCT_)
 #undef NX_THREAD_CONSTRUCT_
@@ -110,9 +110,9 @@ public:
 
 #define NX_THREAD_CONSTRUCT_(n) \
     template <typename F, NX_PP_TYPE_1(n, typename P)> \
-    void start(const F& f, NX_PP_TYPE_2(n, P, par)) \
+    void start(const F& f, NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
     { \
-        start(bind<void>(f, NX_PP_TYPE_1(n, par))); \
+        start(bind<void>(f, NX_PP_FORWARD(n, P, par))); \
     }
     NX_PP_MULT_MAX(NX_THREAD_CONSTRUCT_)
 #undef NX_THREAD_CONSTRUCT_
@@ -162,9 +162,9 @@ public:
 
 #define NX_THREAD_CONSTRUCT_(n) \
     template <typename F, NX_PP_TYPE_1(n, typename P)> \
-    void post(const F& f, NX_PP_TYPE_2(n, P, par)) \
+    void post(const F& f, NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
     { \
-        post(bind<void>(f, NX_PP_TYPE_1(n, par))); \
+        post(bind<void>(f, NX_PP_FORWARD(n, P, par))); \
     }
     NX_PP_MULT_MAX(NX_THREAD_CONSTRUCT_)
 #undef NX_THREAD_CONSTRUCT_

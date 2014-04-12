@@ -37,7 +37,7 @@ static bool split_check(const_iterator i, const_iterator* t, const string& sep) 
     return (string(i, i + sep.length()) == sep);
 }
 
-rvalue<vector<string>, true> split(const functor<bool(const_iterator, const_iterator*)>& do_check,
+nx_rval(vector<string>, true) split(const functor<bool(const_iterator, const_iterator*)>& do_check,
                                    size_type limit = npos) const
 {
     vector<string> v;
@@ -57,29 +57,29 @@ rvalue<vector<string>, true> split(const functor<bool(const_iterator, const_iter
     }
     if (last != i)
         v.push_back(string(last, i));
-    return v;
+    return nx::move(v);
 }
 
-rvalue<vector<string>, true> split(size_type limit = npos) const
+nx_rval(vector<string>, true) split(size_type limit = npos) const
 {
     return split(static_cast<bool(*)(const_iterator, const_iterator*)>(&string::split_check), limit);
 }
 
-rvalue<vector<string>, true> split(value_type sep, size_type limit = npos) const
+nx_rval(vector<string>, true) split(value_type sep, size_type limit = npos) const
 {
     return split(bind(static_cast<bool(*)(const_iterator, const_iterator*, value_type)>(&string::split_check),
                       nx::_1, nx::_2, sep), 
                  limit);
 }
 
-rvalue<vector<string>, true> split(const string& sep, size_type limit = npos) const
+nx_rval(vector<string>, true) split(const string& sep, size_type limit = npos) const
 {
     return split(bind(static_cast<bool(*)(const_iterator, const_iterator*, const string&)>(&string::split_check),
-                      nx::_1, nx::_2, ref(sep)), 
+                      nx::_1, nx::_2, nx::ref(sep)),
                  limit);
 }
 
-rvalue<vector<string>, true> split_to_chunks(size_type chunk_len) const
+nx_rval(vector<string>, true) split_to_chunks(size_type chunk_len) const
 {
     vector<string> v;
     v.reserve(size() / chunk_len + 1);
@@ -96,7 +96,7 @@ rvalue<vector<string>, true> split_to_chunks(size_type chunk_len) const
     }
     if (last != i)
         v.push_back(string(last, i));
-    return v;
+    return nx::move(v);
 }
 
 /*
@@ -125,12 +125,12 @@ string& replace(value_type needle, value_type c)
     string multiplication
 */
 
-rvalue<string> operator*(size_type n)
+nx_rval(string) operator*(size_type n)
 {
     string ret;
     for (size_type i = 0; i < n; ++i)
         ret.append(*this);
-    return ret;
+    return nx::move(ret);
 }
 
 /*

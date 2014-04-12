@@ -52,10 +52,10 @@ public:
         : base_t(rhs)
     {}
 
-    set(const rvalue<set, true>& rhs)
+    set(nx_rref(set, true) rhs)
         : base_t()
     {
-        base_t::swap(unmove(rhs));
+        base_t::swap(moved(rhs));
     }
 
     set& operator=(set rhs)

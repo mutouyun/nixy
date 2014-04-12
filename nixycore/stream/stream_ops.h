@@ -52,10 +52,10 @@ public:
         , ref_(r)
     {}
 
-    custom_format(const rvalue<custom_format, true> rhs)
-        : ref_(nx::unmove(rhs).ref_)
+    custom_format(nx_rref(custom_format, true) rhs)
+        : ref_(nx::moved(rhs).ref_)
     {
-        nx::unmove(rhs).fmt_.swap(fmt_);
+        nx::moved(rhs).fmt_.swap(fmt_);
     }
 
     friend void operator<<(string& buf, const custom_format<T>& val) // out

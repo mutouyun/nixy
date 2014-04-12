@@ -33,11 +33,6 @@ public:
     {
         base_t::set_format(tp, L"");
     }
-
-    stream(const rvalue<stream, true>& r)
-    {
-        base_t::swap(nx::unmove(r));
-    }
 };
 
 /*

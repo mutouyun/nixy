@@ -107,9 +107,9 @@ public:
         : base_t(r)
     {}
 
-    holder(const rvalue<holder>& r)
+    holder(nx_rref(holder) r)
         : base_t()
-    { swap(unmove(r)); }
+    { swap(moved(r)); }
 
     holder& operator=(holder rhs)
     {

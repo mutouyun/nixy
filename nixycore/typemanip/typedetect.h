@@ -17,6 +17,13 @@
 #include "nixycore/general/general.h"
 #include "nixycore/preprocessor/preprocessor.h"
 
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+#include <type_traits>
+#endif
+#ifdef NX_SP_CXX11_CHAR_TYPE
+#include <uchar.h>
+#endif
+
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
@@ -25,6 +32,12 @@ NX_BEG
     detect void
 */
 
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+template <typename T>
+struct is_void
+    : type_if<std::is_void<T>::value>
+{};
+#else/*NX_SP_CXX11_TYPE_TRAITS*/
 namespace private_is_void
 {
     template <typename T>
@@ -42,12 +55,17 @@ template <typename T>
 struct is_void
     : private_is_void::detail<typename rm_cv<T>::type_t>
 {};
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
 
 /*
     detect character
 */
 
+#ifdef NX_SP_CXX11_CHAR_TYPE
+typedef types<char, uchar, wchar, char16_t, char32_t>::type_t character_types_t;
+#else
 typedef types<char, uchar, wchar>::type_t character_types_t;
+#endif
 
 template <typename T>
 struct is_character
@@ -58,6 +76,12 @@ struct is_character
     detect integral
 */
 
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+template <typename T>
+struct is_integral
+    : type_if<std::is_integral<T>::value>
+{};
+#else/*NX_SP_CXX11_TYPE_TRAITS*/
 typedef types<bool , char  , uchar, wchar,
               short, ushort, int  , uint , 
               long , ulong , llong, ullong>::type_t integral_types_t;
@@ -66,72 +90,121 @@ template <typename T>
 struct is_integral
     : types_exist<integral_types_t, typename rm_cv<T>::type_t>
 {};
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
 
 /*
     detect floating point
 */
 
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+template <typename T>
+struct is_float
+    : type_if<std::is_floating_point<T>::value>
+{};
+#else/*NX_SP_CXX11_TYPE_TRAITS*/
 typedef nx::types<float, double, ldouble>::type_t float_types_t;
 
 template <typename T>
 struct is_float
     : types_exist<float_types_t, typename rm_cv<T>::type_t>
 {};
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
 
 /*
     detect numeric
 */
 
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+template <typename T>
+struct is_numeric
+    : type_if<std::is_arithmetic<T>::value>
+{};
+#else/*NX_SP_CXX11_TYPE_TRAITS*/
 template <typename T>
 struct is_numeric
     : type_if<is_integral<T>::value ||
               is_float   <T>::value>
 {};
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
 
 /*
     detect signed
 */
 
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+template <typename T>
+struct is_signed
+    : type_if<std::is_signed<T>::value>
+{};
+#else/*NX_SP_CXX11_TYPE_TRAITS*/
 typedef types<char, short, int, long, llong>::type_t signed_types_t;
 
 template <typename T>
 struct is_signed
     : types_exist<signed_types_t, typename rm_cv<T>::type_t>
 {};
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
 
 /*
     detect unsigned
 */
 
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+template <typename T>
+struct is_unsigned
+    : type_if<std::is_unsigned<T>::value>
+{};
+#else/*NX_SP_CXX11_TYPE_TRAITS*/
 typedef types<uchar, ushort, uint, ulong, ullong>::type_t unsigned_types_t;
 
 template <typename T>
 struct is_unsigned
     : types_exist<unsigned_types_t, typename rm_cv<T>::type_t>
 {};
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
 
 /*
     detect union
 */
 
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+template <typename T>
+struct is_union
+    : type_if<std::is_union<T>::value>
+{};
+#else/*NX_SP_CXX11_TYPE_TRAITS*/
 template <typename T>
 struct is_union
     : type_if<__is_union(T)>
 {};
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
 
 /*
     detect class
 */
 
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+template <typename T>
+struct is_class
+    : type_if<std::is_class<T>::value>
+{};
+#else/*NX_SP_CXX11_TYPE_TRAITS*/
 template <typename T>
 struct is_class
     : type_if<__is_class(T)>
 {};
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
 
 /*
     detect abstract class
 */
 
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+template <typename T>
+struct is_abstract
+    : type_if<std::is_abstract<T>::value>
+{};
+#else/*NX_SP_CXX11_TYPE_TRAITS*/
 namespace private_is_abstract
 {
     template <typename T>
@@ -162,20 +235,40 @@ struct is_abstract
     >::type_t
     >
 {};
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
 
 /*
     detect virtual destructor
 */
 
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+template <typename T>
+struct has_virtual_destructor
+    : type_if<std::has_virtual_destructor<T>::value>
+{};
+#else/*NX_SP_CXX11_TYPE_TRAITS*/
 template <typename T>
 struct has_virtual_destructor
     : type_if<__has_virtual_destructor(T)>
 {};
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
 
 /*
     detect function type/pointer
 */
 
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+template <typename T>
+struct is_function
+    : type_if<std::is_function<typename rm_pointer
+                              <typename rm_reference
+                              <T
+    >::type_t
+    >::type_t
+    >::value || std::is_member_function_pointer<T>::value
+    >
+{};
+#else/*NX_SP_CXX11_TYPE_TRAITS*/
 namespace private_is_function
 {
     template <typename T>
@@ -210,12 +303,19 @@ struct is_function
     >::type_t
     >
 {};
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
 
 /*
     detect member function pointer
 */
 
-namespace private_is_mem_function
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+template <typename T>
+struct is_member_function
+    : type_if<std::is_member_function_pointer<T>::value>
+{};
+#else/*NX_SP_CXX11_TYPE_TRAITS*/
+namespace private_is_member_function
 {
     template <typename T>             struct detail                           : type_if<false> {};
     template <typename T, typename C> struct detail<T C::*>                   : is_function<T> {};
@@ -234,15 +334,22 @@ namespace private_is_mem_function
 }
 
 template <typename T>
-struct is_mem_function
-    : private_is_mem_function::detail<typename rm_cv<T>::type_t>
+struct is_member_function
+    : private_is_member_function::detail<typename rm_cv<T>::type_t>
 {};
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
 
 /*
     detect member object pointer
 */
 
-namespace private_is_mem_object_pointer
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+template <typename T>
+struct is_member_object_pointer
+    : type_if<std::is_member_object_pointer<T>::value>
+{};
+#else/*NX_SP_CXX11_TYPE_TRAITS*/
+namespace private_is_member_object_pointer
 {
     template <typename T>
     struct detail
@@ -256,69 +363,117 @@ namespace private_is_mem_object_pointer
 }
 
 template <typename T>
-struct is_mem_object_pointer
-    : private_is_mem_object_pointer::detail<typename rm_cv<T>::type_t>
+struct is_member_object_pointer
+    : private_is_member_object_pointer::detail<typename rm_cv<T>::type_t>
 {};
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
 
 /*
     detect member pointer
 */
 
+#ifdef NX_SP_CXX11_TYPE_TRAITS
 template <typename T>
-struct is_mem_pointer
-    : type_if<is_mem_object_pointer<T>::value ||
-              is_mem_function      <T>::value>
+struct is_member_pointer
+    : type_if<std::is_member_pointer<T>::value>
 {};
+#else/*NX_SP_CXX11_TYPE_TRAITS*/
+template <typename T>
+struct is_member_pointer
+    : type_if<is_member_object_pointer<T>::value ||
+              is_member_function      <T>::value>
+{};
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
 
 /*
     detect enum
 */
 
+#ifdef NX_SP_CXX11_TYPE_TRAITS
 template <typename T>
 struct is_enum
-    : type_if<!is_numeric    <T>::value &&
-              !is_void       <T>::value &&
-              !is_array      <T>::value &&
-              !is_pointer    <T>::value &&
-              !is_reference  <T>::value &&
-              !is_mem_pointer<T>::value &&
-              !is_union      <T>::value &&
-              !is_class      <T>::value>
+    : type_if<std::is_enum<T>::value>
 {};
+#else/*NX_SP_CXX11_TYPE_TRAITS*/
+template <typename T>
+struct is_enum
+    : type_if<!is_numeric       <T>::value &&
+              !is_void          <T>::value &&
+              !is_array         <T>::value &&
+              !is_pointer       <T>::value &&
+              !is_reference     <T>::value &&
+              !is_member_pointer<T>::value &&
+              !is_union         <T>::value &&
+              !is_class         <T>::value>
+{};
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
 
 /*
     detect fundamental type
 */
 
+#ifdef NX_SP_CXX11_TYPE_TRAITS
 template <typename T>
 struct is_fundamental
-    : type_if<is_numeric<T>::value ||
-              is_void   <T>::value ||
-              is_enum   <T>::value ||
-              is_pointer<T>::value>
+    : type_if<std::is_fundamental<T>::value>
 {};
+#else/*NX_SP_CXX11_TYPE_TRAITS*/
+template <typename T>
+struct is_fundamental
+    : type_if<is_numeric <T>::value ||
+              is_void    <T>::value ||
+              is_sametype<T, nx::nulptr_t>::value>
+{};
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
+
+/*
+    detect scalar type
+*/
+
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+template <typename T>
+struct is_scalar
+    : type_if<std::is_scalar<T>::value>
+{};
+#else/*NX_SP_CXX11_TYPE_TRAITS*/
+template <typename T>
+struct is_scalar
+    : type_if<is_numeric <T>::value ||
+              is_enum    <T>::value ||
+              is_pointer <T>::value || /* nx::is_pointer includes the member pointers */
+              is_sametype<T, nx::nulptr_t>::value>
+{};
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
 
 /*
     detect POD
 */
 
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+template <typename T>
+struct is_pod
+    : type_if<std::is_pod<T>::value>
+{};
+
+template <>
+struct is_pod<nx::null_t>
+    : type_if<false>
+{};
+#else/*NX_SP_CXX11_TYPE_TRAITS*/
 namespace private_is_pod
 {
     template <typename T>
     struct detail
 #ifdef NX_CC_MSVC
-        : type_if<is_fundamental<T>::value ||
+        : type_if<is_void<T>::value || is_scalar<T>::value ||
                   __has_trivial_constructor(T) && __is_pod(T)>
 #elif defined(NX_CC_GNUC)
         : type_if<__is_pod(T)>
 #else
-        : type_if<is_fundamental<T>::value>
+        : type_if<is_void<T>::value || is_scalar<T>::value>
 #endif
     {};
-}
 
-namespace private_is_pod
-{
     template <>
     struct detail<nx::null_t>
         : type_if<false>
@@ -332,6 +487,7 @@ struct is_pod
     >::type_t
     >
 {};
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

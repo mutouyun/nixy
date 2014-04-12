@@ -8,13 +8,29 @@
 #pragma once
 
 #include "nixycore/typemanip/typedefs.h"
+#include "nixycore/typemanip/typetools.h"
 
 #include "nixycore/general/general.h"
 #include "nixycore/preprocessor/preprocessor.h"
 
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+#include <type_traits>
+#endif
+
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
+
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+
+template <typename T> struct is_const    : type_if<std::is_const   <T>::value> {};
+template <typename T> struct is_volatile : type_if<std::is_volatile<T>::value> {};
+
+template <typename T> struct rm_const    { typedef typename std::remove_const   <T>::type type_t; };
+template <typename T> struct rm_volatile { typedef typename std::remove_volatile<T>::type type_t; };
+template <typename T> struct rm_cv       { typedef typename std::remove_cv      <T>::type type_t; };
+
+#else/*NX_SP_CXX11_TYPE_TRAITS*/
 
 /*
     detect type qualifiers
@@ -55,6 +71,8 @@ struct rm_cv
 {
     typedef typename rm_const<typename rm_volatile<T>::type_t>::type_t type_t;
 };
+
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
 
 /*
     copy type qualifiers

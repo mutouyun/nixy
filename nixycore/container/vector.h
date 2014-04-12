@@ -51,10 +51,10 @@ public:
         : base_t(rhs)
     {}
 
-    vector(const rvalue<vector, true>& rhs)
+    vector(nx_rref(vector, true) rhs)
         : base_t()
     {
-        base_t::swap(unmove(rhs));
+        base_t::swap(moved(rhs));
     }
 
     vector& operator=(vector rhs)

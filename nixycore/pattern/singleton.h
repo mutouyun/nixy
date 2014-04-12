@@ -65,9 +65,9 @@ public:
 
 #define NX_INSTANCE_(n) \
     template <NX_PP_TYPE_1(n, typename P)> \
-    static T& instance(NX_PP_TYPE_2(n, P, par)) \
+    static T& instance(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
     { \
-        NX_SINGLETON_( (NX_PP_TYPE_1(n, par)) ); \
+        NX_SINGLETON_( (NX_PP_FORWARD(n, P, par)) ); \
     }
     NX_PP_MULT_MAX(NX_INSTANCE_)
 #undef NX_INSTANCE_
@@ -97,9 +97,9 @@ inline T& singleton(void)
 
 #define NX_SINGLETON_(n) \
 template <typename T, NX_PP_TYPE_1(n, typename P)> \
-inline T& singleton(NX_PP_TYPE_2(n, P, par)) \
+inline T& singleton(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
 { \
-    return Singleton<T>::instance(NX_PP_TYPE_1(n, par)); \
+    return Singleton<T>::instance(NX_PP_FORWARD(n, P, par)); \
 }
 NX_PP_MULT_MAX(NX_SINGLETON_)
 #undef NX_SINGLETON_
@@ -119,9 +119,9 @@ inline T& singleton(void)
 
 #define NX_SINGLETON_(n) \
 template <typename TypeT, typename T, NX_PP_TYPE_1(n, typename P)> \
-inline T& singleton(NX_PP_TYPE_2(n, P, par)) \
+inline T& singleton(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
 { \
-    return SingletonProxy<TypeT, T>::instance(NX_PP_TYPE_1(n, par)); \
+    return SingletonProxy<TypeT, T>::instance(NX_PP_FORWARD(n, P, par)); \
 }
 NX_PP_MULT_MAX(NX_SINGLETON_)
 #undef NX_SINGLETON_

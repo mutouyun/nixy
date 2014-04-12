@@ -36,10 +36,10 @@ public:
         : base_t(rhs)
     {}
 
-    stack(const rvalue<stack, true>& rhs)
+    stack(nx_rref(stack, true) rhs)
         : base_t()
     {
-        base_t::swap(unmove(rhs));
+        base_t::swap(moved(rhs));
     }
 
     stack& operator=(stack rhs)

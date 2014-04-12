@@ -279,9 +279,9 @@ public:
 
 #define NX_THREAD_POOL_PUT_(n) \
     template <typename F, NX_PP_TYPE_1(n, typename P)> \
-    void put(const F& f, NX_PP_TYPE_2(n, P, par)) \
+    void put(const F& f, NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
     { \
-        put(bind<void>(f, NX_PP_TYPE_1(n, par))); \
+        put(bind<void>(f, NX_PP_FORWARD(n, P, par))); \
     }
     NX_PP_MULT_MAX(NX_THREAD_POOL_PUT_)
 #undef NX_THREAD_POOL_PUT_

@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include "nixycore/utility/addressof.h"
-
 #include "nixycore/typemanip/typebehavior.h"
 
 #include "nixycore/general/general.h"
@@ -31,7 +29,7 @@ protected:
 
 public:
     refer(value_t& r)
-        : content_(nx::addressof(r))
+        : content_(&r)
     {}
 
     operator value_t& () const { return *content_; }

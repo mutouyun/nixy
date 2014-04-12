@@ -117,18 +117,27 @@ public:
 
 namespace private_object_pool
 {
+    template <typename T, typename F>
+    struct invoker;
+
     template <typename T>
-    T* construct(pvoid p)
+    struct invoker<T, void()>
     {
-        return nx_construct(p, T);
-    }
+        static T* construct(pvoid p)
+        {
+            return nx_construct(p, T);
+        }
+    };
 
 #define NX_OBJECT_POOL_HELPER_(n) \
     template <typename T, NX_PP_TYPE_1(n, typename P)> \
-    T* construct(pvoid p, NX_PP_TYPE_2(n, P, par)) \
+    struct invoker<T, void(NX_PP_TYPE_1(n, P))> \
     { \
-        return nx_construct(p, T, NX_PP_TYPE_1(n, par)); \
-    }
+        static T* construct(pvoid p, NX_PP_TYPE_2(n, typename nx::traits<P, >::param_t par)) \
+        { \
+            return nx_construct(p, T, NX_PP_TYPE_1(n, par)); \
+        } \
+    };
     NX_PP_MULT_MAX(NX_OBJECT_POOL_HELPER_)
 #undef NX_OBJECT_POOL_HELPER_
 }
@@ -159,7 +168,7 @@ protected:
 
 public:
     object_pool(size_t min_sz = 0, size_t max_sz = (size_t)~0)
-        : storage_(static_cast<type_t*(*)(pvoid)>(&private_object_pool::construct<type_t>))
+        : storage_(&private_object_pool::invoker<type_t, void()>::construct)
         , min_size_(0)
         , max_size_(0)
     {
@@ -168,9 +177,9 @@ public:
 
 #define NX_OBJECT_POOL_(n) \
     template <NX_PP_TYPE_1(n, typename P)> \
-    object_pool(NX_PP_TYPE_2(n, P, par), size_t min_sz = 0, size_t max_sz = (size_t)~0) \
-        : storage_(bind(&private_object_pool::construct<type_t, NX_PP_TYPE_1(n, P)>, \
-                                                            _1, NX_PP_TYPE_1(n, par))) \
+    object_pool(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par)), size_t min_sz = 0, size_t max_sz = (size_t)~0) \
+        : storage_(bind(&private_object_pool::invoker<type_t, void(NX_PP_TYPE_1(n, P))>::construct, \
+                        _1, NX_PP_FORWARD(n, P, par))) \
         , min_size_(0) \
         , max_size_(0) \
     { \
