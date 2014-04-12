@@ -41,6 +41,10 @@ public:
         : base_t()
     {}
 
+    explicit map(const typename base_t::allocator_type& a)
+        : base_t(a)
+    {}
+
     explicit map(const CompT& c,
                  const typename base_t::allocator_type& a = typename base_t::allocator_type())
         : base_t(c, a)
@@ -89,6 +93,10 @@ public:
 #else/*NX_SP_CXX11_INHERITING*/
     multimap(void)
         : base_t()
+    {}
+
+    explicit multimap(const typename base_t::allocator_type& a)
+        : base_t(a)
     {}
 
     explicit multimap(const CompT& c,
@@ -152,7 +160,7 @@ struct container_traits<std::map<K, T, C, A> >
 {
     typedef typename std::map<K, T, C, A>::value_type val_t;
     typedef typename std::map<K, T, C, A>::iterator   ite_t;
-    typedef std::pair<K, T>                           pair_t;
+    typedef std::pair<K, T> pair_t;
 };
 
 template <typename K, typename T, class C, class A>
@@ -160,7 +168,7 @@ struct container_traits<std::multimap<K, T, C, A> >
 {
     typedef typename std::multimap<K, T, C, A>::value_type val_t;
     typedef typename std::multimap<K, T, C, A>::iterator   ite_t;
-    typedef std::pair<K, T>                                pair_t;
+    typedef std::pair<K, T> pair_t;
 };
 
 #ifndef NX_SP_CXX11_ALIAS
@@ -169,7 +177,7 @@ struct container_traits<nx::map<K, T, C, A> >
 {
     typedef typename nx::map<K, T, C, A>::value_type val_t;
     typedef typename nx::map<K, T, C, A>::iterator   ite_t;
-    typedef std::pair<K, T>                          pair_t;
+    typedef std::pair<K, T> pair_t;
 };
 
 template <typename K, typename T, class C, class A>
@@ -177,7 +185,7 @@ struct container_traits<nx::multimap<K, T, C, A> >
 {
     typedef typename nx::multimap<K, T, C, A>::value_type val_t;
     typedef typename nx::multimap<K, T, C, A>::iterator   ite_t;
-    typedef std::pair<K, T>                               pair_t;
+    typedef std::pair<K, T> pair_t;
 };
 #endif/*NX_SP_CXX11_ALIAS*/
 

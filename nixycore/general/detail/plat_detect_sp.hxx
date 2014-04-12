@@ -14,6 +14,8 @@
     CXX11_STACK_SWAP    - std::stack/std::queue/std::priority_queue's swap
     CXX11_ARRAY         - std::array
     CXX11_FORWARD_LIST  - std::forward_list
+    CXX11_UNORDERED_MAP - std::unordered_map
+    CXX11_UNORDERED_SET - std::unordered_set
     CXX11_NULLPTR       - nullptr
     CXX11_AUTO          - auto
     CXX11_RVALUE_REF    - Rvalue references
@@ -52,6 +54,8 @@
 #       define NX_SP_CXX11_STACK_SWAP
 #       define NX_SP_CXX11_ARRAY
 #       define NX_SP_CXX11_FORWARD_LIST
+#       define NX_SP_CXX11_UNORDERED_MAP
+#       define NX_SP_CXX11_UNORDERED_SET
 #       define NX_SP_CXX11_NULLPTR
 #       define NX_SP_CXX11_AUTO
 #       define NX_SP_CXX11_RVALUE_REF
@@ -78,6 +82,8 @@
 #       define NX_SP_CXX11_STACK_SWAP
 #       define NX_SP_CXX11_ARRAY
 #       define NX_SP_CXX11_FORWARD_LIST
+#       define NX_SP_CXX11_UNORDERED_MAP
+#       define NX_SP_CXX11_UNORDERED_SET
 
 #if defined(NX_CC_CLANG)    // clang
 

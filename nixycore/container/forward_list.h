@@ -7,12 +7,12 @@
 
 #pragma once
 
+#include "nixycore/general/general.h"
+
 #ifdef NX_SP_CXX11_FORWARD_LIST
 
 #include "nixycore/memory/default_alloc.h"
 #include "nixycore/utility/rvalue.h"
-
-#include "nixycore/general/general.h"
 
 #include <forward_list> // std::forward_list
 

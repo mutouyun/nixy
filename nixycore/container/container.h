@@ -20,5 +20,7 @@
 #include "nixycore/container/stack.h"
 #include "nixycore/container/vector.h"
 #include "nixycore/container/forward_list.h"
+#include "nixycore/container/hash_map.h"
+#include "nixycore/container/hash_set.h"
 
 //////////////////////////////////////////////////////////////////////////

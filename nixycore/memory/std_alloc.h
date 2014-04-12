@@ -49,7 +49,7 @@ public:
     { return (nx::limit_of<size_type>::upper / sizeof(T)); }
 
 public:
-    std_allocator() {}
+    std_allocator(void) {}
     std_allocator(const std_allocator<T, AllocT>&) {}
     template <class U>
     std_allocator(const std_allocator<U, AllocT>&) {}

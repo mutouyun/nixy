@@ -123,6 +123,8 @@ else
         'nixycore/container/stack.h' \
         'nixycore/container/vector.h' \
         'nixycore/container/forward_list.h' \
+        'nixycore/container/hash_map.h' \
+        'nixycore/container/hash_set.h' \
         'nixycore/thread/barrier.h' \
         'nixycore/thread/interlocked.h' \
         'nixycore/thread/atomic.h' \

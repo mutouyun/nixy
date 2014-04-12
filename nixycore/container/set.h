@@ -19,12 +19,12 @@ NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
 #ifdef NX_SP_CXX11_ALIAS
-template <typename KeyT, typename CompT = std::less<KeyT>, class AllocT = NX_DEFAULT_ALLOC>
+template <typename KeyT, class CompT = std::less<KeyT>, class AllocT = NX_DEFAULT_ALLOC>
 using set = std::set<KeyT, CompT, typename AllocT::template std_allocator<KeyT>::type_t>;
-template <typename KeyT, typename CompT = std::less<KeyT>, class AllocT = NX_DEFAULT_ALLOC>
+template <typename KeyT, class CompT = std::less<KeyT>, class AllocT = NX_DEFAULT_ALLOC>
 using multiset = std::multiset<KeyT, CompT, typename AllocT::template std_allocator<KeyT>::type_t>;
 #else/*NX_SP_CXX11_ALIAS*/
-template <typename KeyT, typename CompT = std::less<KeyT>, class AllocT = NX_DEFAULT_ALLOC>
+template <typename KeyT, class CompT = std::less<KeyT>, class AllocT = NX_DEFAULT_ALLOC>
 class set : public std::set<KeyT, CompT, typename AllocT::template std_allocator<KeyT>::type_t>
 {
     typedef std::set<KeyT, CompT, typename AllocT::template std_allocator<KeyT>::type_t> base_t;
@@ -35,6 +35,10 @@ public:
 #else/*NX_SP_CXX11_INHERITING*/
     set(void)
         : base_t()
+    {}
+
+    explicit set(const typename base_t::allocator_type& a)
+            : base_t(a)
     {}
 
     explicit set(const CompT& c,
@@ -72,7 +76,7 @@ public:
     }
 };
 
-template <typename KeyT, typename CompT = std::less<KeyT>, class AllocT = NX_DEFAULT_ALLOC>
+template <typename KeyT, class CompT = std::less<KeyT>, class AllocT = NX_DEFAULT_ALLOC>
 class multiset : public std::multiset<KeyT, CompT, typename AllocT::template std_allocator<KeyT>::type_t>
 {
     typedef std::multiset<KeyT, CompT, typename AllocT::template std_allocator<KeyT>::type_t> base_t;
@@ -83,6 +87,10 @@ public:
 #else/*NX_SP_CXX11_INHERITING*/
     multiset(void)
         : base_t()
+    {}
+
+    explicit multiset(const typename base_t::allocator_type& a)
+        : base_t(a)
     {}
 
     explicit multiset(const CompT& c,
@@ -124,13 +132,13 @@ public:
     Special swap algorithm
 */
 
-template <typename K, typename C, class A>
+template <typename K, class C, class A>
 inline void swap(set<K, C, A>& x, set<K, C, A>& y)
 {
     x.swap(y);
 }
 
-template <typename K, typename C, class A>
+template <typename K, class C, class A>
 inline void swap(multiset<K, C, A>& x, multiset<K, C, A>& y)
 {
     x.swap(y);
