@@ -14,13 +14,20 @@
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
 
-// std::priority_queue
-#include <queue>
+#include <queue> // std::priority_queue
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
+#ifdef NX_SP_CXX11_ALIAS
+template
+<
+    typename T, typename SeqT = nx::vector<T>,
+    typename CompT = std::less<typename SeqT::value_type>
+>
+using priority = std::priority_queue<T, SeqT, CompT>;
+#else/*NX_SP_CXX11_ALIAS*/
 template
 <
     typename T, typename SeqT = nx::vector<T>,
@@ -28,10 +35,12 @@ template
 >
 class priority : public std::priority_queue<T, SeqT, CompT>
 {
-public:
     typedef std::priority_queue<T, SeqT, CompT> base_t;
 
 public:
+#ifdef NX_SP_CXX11_INHERITING
+    using base_t::priority_queue;
+#else/*NX_SP_CXX11_INHERITING*/
     explicit priority(const CompT& c = CompT(), const SeqT& s = SeqT())
         : base_t(c, s)
     {}
@@ -46,13 +55,14 @@ public:
         : base_t(rhs)
     {}
 
-#ifdef NX_SP_CXX11_PRIORITY
+#ifdef NX_SP_CXX11_STACK_SWAP
     priority(nx_rref(priority, true) rhs)
         : base_t()
     {
         base_t::swap(moved(rhs));
     }
 #endif
+#endif/*NX_SP_CXX11_INHERITING*/
 
     priority& operator=(priority rhs)
     {
@@ -70,11 +80,27 @@ inline void swap(priority<T, S, C>& x, priority<T, S, C>& y)
 {
     x.swap(y);
 }
+#endif/*NX_SP_CXX11_ALIAS*/
 
 /*
     Special assign algorithm
 */
 
+template <typename T, typename S, typename C, typename V>
+inline void insert(std::priority_queue<T, S, C>& set, 
+                   typename std::priority_queue<T, S, C>::iterator /*ite*/, const V& val)
+{
+    set.push(val);
+}
+
+template <typename T, typename S, typename C>
+inline void erase(std::priority_queue<T, S, C>& set, 
+                  typename std::priority_queue<T, S, C>::iterator /*ite*/)
+{
+    set.pop();
+}
+
+#ifndef NX_SP_CXX11_ALIAS
 template <typename T, typename S, typename C, typename V>
 inline void insert(priority<T, S, C>& set, typename priority<T, S, C>::iterator /*ite*/, const V& val)
 {
@@ -86,6 +112,7 @@ inline void erase(priority<T, S, C>& set, typename priority<T, S, C>::iterator /
 {
     set.pop();
 }
+#endif/*NX_SP_CXX11_ALIAS*/
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

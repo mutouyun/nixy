@@ -13,20 +13,25 @@
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
 
-// std::list
-#include <list>
+#include <list> // std::list
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
+#ifdef NX_SP_CXX11_ALIAS
+template <typename T, class AllocT = NX_DEFAULT_ALLOC>
+using list = std::list<T, typename AllocT::template std_allocator<T>::type_t>;
+#else/*NX_SP_CXX11_ALIAS*/
 template <typename T, class AllocT = NX_DEFAULT_ALLOC>
 class list : public std::list<T, typename AllocT::template std_allocator<T>::type_t>
 {
-public:
     typedef std::list<T, typename AllocT::template std_allocator<T>::type_t> base_t;
 
 public:
+#ifdef NX_SP_CXX11_INHERITING
+    using base_t::list;
+#else/*NX_SP_CXX11_INHERITING*/
     list(void)
         : base_t()
     {}
@@ -56,6 +61,7 @@ public:
     {
         base_t::swap(moved(rhs));
     }
+#endif/*NX_SP_CXX11_INHERITING*/
 
     list& operator=(list rhs)
     {
@@ -73,6 +79,7 @@ inline void swap(list<T, A>& x, list<T, A>& y)
 {
     x.swap(y);
 }
+#endif/*NX_SP_CXX11_ALIAS*/
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

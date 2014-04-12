@@ -13,20 +13,25 @@
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
 
-// std::deque
-#include <deque>
+#include <deque> // std::deque
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
+#ifdef NX_SP_CXX11_ALIAS
+template <typename T, class AllocT = NX_DEFAULT_ALLOC>
+using deque = std::deque<T, typename AllocT::template std_allocator<T>::type_t>;
+#else/*NX_SP_CXX11_ALIAS*/
 template <typename T, class AllocT = NX_DEFAULT_ALLOC>
 class deque : public std::deque<T, typename AllocT::template std_allocator<T>::type_t>
 {
-public:
     typedef std::deque<T, typename AllocT::template std_allocator<T>::type_t> base_t;
 
 public:
+#ifdef NX_SP_CXX11_INHERITING
+    using base_t::deque;
+#else/*NX_SP_CXX11_INHERITING*/
     deque(void)
         : base_t()
     {}
@@ -56,6 +61,7 @@ public:
     {
         base_t::swap(moved(rhs));
     }
+#endif/*NX_SP_CXX11_INHERITING*/
 
     deque& operator=(deque rhs)
     {
@@ -73,6 +79,7 @@ inline void swap(deque<T, A>& x, deque<T, A>& y)
 {
     x.swap(y);
 }
+#endif/*NX_SP_CXX11_ALIAS*/
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

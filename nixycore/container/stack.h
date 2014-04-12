@@ -14,20 +14,25 @@
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
 
-// std::stack
-#include <stack>
+#include <stack> // std::stack
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
+#ifdef NX_SP_CXX11_ALIAS
+template <typename T, typename SeqT = nx::deque<T> >
+using stack = std::stack<T, SeqT>;
+#else/*NX_SP_CXX11_ALIAS*/
 template <typename T, typename SeqT = nx::deque<T> >
 class stack : public std::stack<T, SeqT>
 {
-public:
     typedef std::stack<T, SeqT> base_t;
 
 public:
+#ifdef NX_SP_CXX11_INHERITING
+    using base_t::stack;
+#else/*NX_SP_CXX11_INHERITING*/
     explicit stack(const SeqT& s = SeqT())
         : base_t(s)
     {}
@@ -36,11 +41,14 @@ public:
         : base_t(rhs)
     {}
 
+#ifdef NX_SP_CXX11_STACK_SWAP
     stack(nx_rref(stack, true) rhs)
         : base_t()
     {
         base_t::swap(moved(rhs));
     }
+#endif
+#endif/*NX_SP_CXX11_INHERITING*/
 
     stack& operator=(stack rhs)
     {
@@ -58,11 +66,25 @@ inline void swap(stack<T, S>& x, stack<T, S>& y)
 {
     x.swap(y);
 }
+#endif/*NX_SP_CXX11_ALIAS*/
 
 /*
     Special assign algorithm
 */
 
+template <typename T, typename S, typename V>
+inline void insert(std::stack<T, S>& set, typename std::stack<T, S>::iterator /*ite*/, const V& val)
+{
+    set.push(val);
+}
+
+template <typename T, typename S>
+inline void erase(std::stack<T, S>& set, typename std::stack<T, S>::iterator /*ite*/)
+{
+    set.pop();
+}
+
+#ifndef NX_SP_CXX11_ALIAS
 template <typename T, typename S, typename V>
 inline void insert(stack<T, S>& set, typename stack<T, S>::iterator /*ite*/, const V& val)
 {
@@ -74,6 +96,7 @@ inline void erase(stack<T, S>& set, typename stack<T, S>::iterator /*ite*/)
 {
     set.pop();
 }
+#endif/*NX_SP_CXX11_ALIAS*/
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

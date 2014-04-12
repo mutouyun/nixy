@@ -13,20 +13,25 @@
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
 
-// std::vector
-#include <vector>
+#include <vector> // std::vector
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
+#ifdef NX_SP_CXX11_ALIAS
+template <typename T, class AllocT = NX_DEFAULT_ALLOC>
+using vector = std::vector<T, typename AllocT::template std_allocator<T>::type_t>;
+#else/*NX_SP_CXX11_ALIAS*/
 template <typename T, class AllocT = NX_DEFAULT_ALLOC>
 class vector : public std::vector<T, typename AllocT::template std_allocator<T>::type_t>
 {
-public:
     typedef std::vector<T, typename AllocT::template std_allocator<T>::type_t> base_t;
 
 public:
+#ifdef NX_SP_CXX11_INHERITING
+    using base_t::vector;
+#else/*NX_SP_CXX11_INHERITING*/
     vector(void)
         : base_t()
     {}
@@ -56,6 +61,7 @@ public:
     {
         base_t::swap(moved(rhs));
     }
+#endif/*NX_SP_CXX11_INHERITING*/
 
     vector& operator=(vector rhs)
     {
@@ -73,6 +79,7 @@ inline void swap(vector<T_, A_>& x, vector<T_, A_>& y)
 {
     x.swap(y);
 }
+#endif/*NX_SP_CXX11_ALIAS*/
 
 //////////////////////////////////////////////////////////////////////////
 NX_END
