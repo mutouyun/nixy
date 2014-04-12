@@ -9,10 +9,11 @@
 /*
     C++ features support, must be one of: (NX_SP_XX)
 
-    CXX11_TUPLE         - std::tuple
-    CXX11_ARRAY         - std::array
-    CXX11_STACK_SWAP    - std::stack/std::queue/std::priority_queue's swap
     CXX11_TYPE_TRAITS   - <type_traits>
+    CXX11_TUPLE         - std::tuple
+    CXX11_STACK_SWAP    - std::stack/std::queue/std::priority_queue's swap
+    CXX11_ARRAY         - std::array
+    CXX11_FORWARD_LIST  - std::forward_list
     CXX11_NULLPTR       - nullptr
     CXX11_AUTO          - auto
     CXX11_RVALUE_REF    - Rvalue references
@@ -48,8 +49,9 @@
 
 #   if (NX_CC_MSVC >= 1600)
 #       define NX_SP_CXX11_TYPE_TRAITS
-#       define NX_SP_CXX11_ARRAY
 #       define NX_SP_CXX11_STACK_SWAP
+#       define NX_SP_CXX11_ARRAY
+#       define NX_SP_CXX11_FORWARD_LIST
 #       define NX_SP_CXX11_NULLPTR
 #       define NX_SP_CXX11_AUTO
 #       define NX_SP_CXX11_RVALUE_REF
@@ -73,8 +75,9 @@
 #elif defined(NX_CC_GNUC) && (__cplusplus >= 201103L)
 
 #       define NX_SP_CXX11_TYPE_TRAITS
-#       define NX_SP_CXX11_ARRAY
 #       define NX_SP_CXX11_STACK_SWAP
+#       define NX_SP_CXX11_ARRAY
+#       define NX_SP_CXX11_FORWARD_LIST
 
 #if defined(NX_CC_CLANG)    // clang
 

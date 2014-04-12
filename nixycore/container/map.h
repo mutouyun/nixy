@@ -11,7 +11,6 @@
 #include "nixycore/utility/rvalue.h"
 
 #include "nixycore/general/general.h"
-#include "nixycore/typemanip/typemanip.h"
 
 #include <map> // std::map
 

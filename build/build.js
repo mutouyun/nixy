@@ -122,6 +122,7 @@ else
         'nixycore/container/set.h' \
         'nixycore/container/stack.h' \
         'nixycore/container/vector.h' \
+        'nixycore/container/forward_list.h' \
         'nixycore/thread/barrier.h' \
         'nixycore/thread/interlocked.h' \
         'nixycore/thread/atomic.h' \
