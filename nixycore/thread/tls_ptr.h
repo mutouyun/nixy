@@ -36,7 +36,7 @@ public:
         : base_t(destructor)
     {}
 
-    bool checkSafeBool(void) const
+    bool check_safe_bool(void) const
     { return !!base_t::get(); }
 
     tls_ptr& operator=(T* ptr)

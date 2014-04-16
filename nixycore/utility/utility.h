@@ -9,6 +9,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 
+#include "nixycore/utility/alignof.h"
 #include "nixycore/utility/addressof.h"
 #include "nixycore/utility/type_cast.h"
 #include "nixycore/utility/countof.h"

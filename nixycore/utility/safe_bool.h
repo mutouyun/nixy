@@ -37,7 +37,7 @@ class safe_bool : private_safe_bool::detail
 public:
     operator bool_type(void) const
     {
-        return (static_cast<const T*>(this))->checkSafeBool() ? 
+        return (static_cast<const T*>(this))->check_safe_bool() ?
             &private_safe_bool::detail::this_type_does_not_support_comparisons : 0;
     }
 protected:
