@@ -74,7 +74,7 @@ template <typename T>
 inline typename enable_if<is_function<T>::value,
 functor<void()> >::type_t make_destructor(nx_fref(T, r))
 {
-    return nx_extract(T, r);
+    return nx_forward(T, r);
 }
 
 template <typename T, typename F>
