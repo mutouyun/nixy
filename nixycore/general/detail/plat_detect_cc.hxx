@@ -34,7 +34,7 @@
 #       define NX__FUNCTION__ __FUNCSIG__
 #   endif
 #elif defined(NX_CC_GNUC)
-#   define NX_UNUSED __attribute__ ((unused))
+#   define NX_UNUSED __attribute__((unused))
 #   ifndef NX__FUNCTION__
 #       define NX__FUNCTION__ __PRETTY_FUNCTION__
 #   endif

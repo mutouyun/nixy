@@ -37,7 +37,7 @@ template <typename T>
 struct is_void
     : type_if<std::is_void<T>::value>
 {};
-#else/*NX_SP_CXX11_TYPE_TRAITS*/
+#else /*NX_SP_CXX11_TYPE_TRAITS*/
 namespace private_is_void
 {
     template <typename T>
@@ -81,7 +81,7 @@ template <typename T>
 struct is_integral
     : type_if<std::is_integral<T>::value>
 {};
-#else/*NX_SP_CXX11_TYPE_TRAITS*/
+#else /*NX_SP_CXX11_TYPE_TRAITS*/
 typedef types<bool , char  , uchar, wchar,
               short, ushort, int  , uint , 
               long , ulong , llong, ullong>::type_t integral_types_t;
@@ -101,7 +101,7 @@ template <typename T>
 struct is_float
     : type_if<std::is_floating_point<T>::value>
 {};
-#else/*NX_SP_CXX11_TYPE_TRAITS*/
+#else /*NX_SP_CXX11_TYPE_TRAITS*/
 typedef nx::types<float, double, ldouble>::type_t float_types_t;
 
 template <typename T>
@@ -119,7 +119,7 @@ template <typename T>
 struct is_numeric
     : type_if<std::is_arithmetic<T>::value>
 {};
-#else/*NX_SP_CXX11_TYPE_TRAITS*/
+#else /*NX_SP_CXX11_TYPE_TRAITS*/
 template <typename T>
 struct is_numeric
     : type_if<is_integral<T>::value ||
@@ -136,7 +136,7 @@ template <typename T>
 struct is_signed
     : type_if<std::is_signed<T>::value>
 {};
-#else/*NX_SP_CXX11_TYPE_TRAITS*/
+#else /*NX_SP_CXX11_TYPE_TRAITS*/
 typedef types<char, short, int, long, llong>::type_t signed_types_t;
 
 template <typename T>
@@ -154,7 +154,7 @@ template <typename T>
 struct is_unsigned
     : type_if<std::is_unsigned<T>::value>
 {};
-#else/*NX_SP_CXX11_TYPE_TRAITS*/
+#else /*NX_SP_CXX11_TYPE_TRAITS*/
 typedef types<uchar, ushort, uint, ulong, ullong>::type_t unsigned_types_t;
 
 template <typename T>
@@ -172,7 +172,7 @@ template <typename T>
 struct is_union
     : type_if<std::is_union<T>::value>
 {};
-#else/*NX_SP_CXX11_TYPE_TRAITS*/
+#else /*NX_SP_CXX11_TYPE_TRAITS*/
 template <typename T>
 struct is_union
     : type_if<__is_union(T)>
@@ -188,7 +188,7 @@ template <typename T>
 struct is_class
     : type_if<std::is_class<T>::value>
 {};
-#else/*NX_SP_CXX11_TYPE_TRAITS*/
+#else /*NX_SP_CXX11_TYPE_TRAITS*/
 template <typename T>
 struct is_class
     : type_if<__is_class(T)>
@@ -204,7 +204,7 @@ template <typename T>
 struct is_abstract
     : type_if<std::is_abstract<T>::value>
 {};
-#else/*NX_SP_CXX11_TYPE_TRAITS*/
+#else /*NX_SP_CXX11_TYPE_TRAITS*/
 namespace private_is_abstract
 {
     template <typename T>
@@ -246,7 +246,7 @@ template <typename T>
 struct has_virtual_destructor
     : type_if<std::has_virtual_destructor<T>::value>
 {};
-#else/*NX_SP_CXX11_TYPE_TRAITS*/
+#else /*NX_SP_CXX11_TYPE_TRAITS*/
 template <typename T>
 struct has_virtual_destructor
     : type_if<__has_virtual_destructor(T)>
@@ -268,7 +268,7 @@ struct is_function
     >::value || std::is_member_function_pointer<T>::value
     >
 {};
-#else/*NX_SP_CXX11_TYPE_TRAITS*/
+#else /*NX_SP_CXX11_TYPE_TRAITS*/
 namespace private_is_function
 {
     template <typename T>
@@ -314,11 +314,19 @@ template <typename T>
 struct is_member_function
     : type_if<std::is_member_function_pointer<T>::value>
 {};
-#else/*NX_SP_CXX11_TYPE_TRAITS*/
+#else /*NX_SP_CXX11_TYPE_TRAITS*/
 namespace private_is_member_function
 {
-    template <typename T>             struct detail                           : type_if<false> {};
-    template <typename T, typename C> struct detail<T C::*>                   : is_function<T> {};
+    template <typename T>             struct detail         : type_if<false> {};
+    template <typename T, typename C> struct detail<T C::*> : is_function<T> {};
+#ifdef NX_SP_CXX11_TEMPLATES
+    template <typename R, typename C, typename... P> struct detail<R(C::*)(P...) const>
+        : type_if<true> {};
+    template <typename R, typename C, typename... P> struct detail<R(C::*)(P...) volatile>
+        : type_if<true> {};
+    template <typename R, typename C, typename... P> struct detail<R(C::*)(P...) const volatile>
+        : type_if<true> {};
+#else /*NX_SP_CXX11_TEMPLATES*/
     template <typename R, typename C> struct detail<R(C::*)() const>          : type_if<true>  {};
     template <typename R, typename C> struct detail<R(C::*)() volatile>       : type_if<true>  {};
     template <typename R, typename C> struct detail<R(C::*)() const volatile> : type_if<true>  {};
@@ -331,6 +339,7 @@ namespace private_is_member_function
         : type_if<true> {};
     NX_PP_MULT_MAX(NX_IS_MEM_FUNCTION_)
 #undef NX_IS_MEM_FUNCTION_
+#endif/*NX_SP_CXX11_TEMPLATES*/
 }
 
 template <typename T>
@@ -348,7 +357,7 @@ template <typename T>
 struct is_member_object_pointer
     : type_if<std::is_member_object_pointer<T>::value>
 {};
-#else/*NX_SP_CXX11_TYPE_TRAITS*/
+#else /*NX_SP_CXX11_TYPE_TRAITS*/
 namespace private_is_member_object_pointer
 {
     template <typename T>
@@ -377,7 +386,7 @@ template <typename T>
 struct is_member_pointer
     : type_if<std::is_member_pointer<T>::value>
 {};
-#else/*NX_SP_CXX11_TYPE_TRAITS*/
+#else /*NX_SP_CXX11_TYPE_TRAITS*/
 template <typename T>
 struct is_member_pointer
     : type_if<is_member_object_pointer<T>::value ||
@@ -394,7 +403,7 @@ template <typename T>
 struct is_enum
     : type_if<std::is_enum<T>::value>
 {};
-#else/*NX_SP_CXX11_TYPE_TRAITS*/
+#else /*NX_SP_CXX11_TYPE_TRAITS*/
 template <typename T>
 struct is_enum
     : type_if<!is_numeric       <T>::value &&
@@ -417,7 +426,7 @@ template <typename T>
 struct is_fundamental
     : type_if<std::is_fundamental<T>::value>
 {};
-#else/*NX_SP_CXX11_TYPE_TRAITS*/
+#else /*NX_SP_CXX11_TYPE_TRAITS*/
 template <typename T>
 struct is_fundamental
     : type_if<is_numeric <T>::value ||
@@ -435,7 +444,7 @@ template <typename T>
 struct is_scalar
     : type_if<std::is_scalar<T>::value>
 {};
-#else/*NX_SP_CXX11_TYPE_TRAITS*/
+#else /*NX_SP_CXX11_TYPE_TRAITS*/
 template <typename T>
 struct is_scalar
     : type_if<is_numeric <T>::value ||
@@ -459,7 +468,7 @@ template <>
 struct is_pod<nx::null_t>
     : type_if<false>
 {};
-#else/*NX_SP_CXX11_TYPE_TRAITS*/
+#else /*NX_SP_CXX11_TYPE_TRAITS*/
 namespace private_is_pod
 {
     template <typename T>

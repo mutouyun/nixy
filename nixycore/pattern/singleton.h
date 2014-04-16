@@ -15,6 +15,14 @@
 #include "nixycore/utility/utility.h"
 #include "nixycore/preprocessor/preprocessor.h"
 
+#if defined(NX_CC_MSVC) && (NX_CC_MSVC == 1800)
+/*
+    type_traits(1509): fatal error C1001
+    With: NX_SINGLETON_( (nx_forward(P, par)...) );
+*/
+#   undef NX_SP_CXX11_TEMPLATES
+#endif
+
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
@@ -63,15 +71,23 @@ public:
         NX_SINGLETON_();
     }
 
+#ifdef NX_SP_CXX11_TEMPLATES
+    template <typename... P>
+    static T& instance(nx_fref(P, ... par))
+    {
+        NX_SINGLETON_( (nx_forward(P, par)...) );
+    }
+#else /*NX_SP_CXX11_TEMPLATES*/
 #define NX_INSTANCE_(n) \
     template <NX_PP_TYPE_1(n, typename P)> \
-    static T& instance(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
+    static T& instance(NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
     { \
         NX_SINGLETON_( (NX_PP_FORWARD(n, P, par)) ); \
     }
     NX_PP_MULT_MAX(NX_INSTANCE_)
 #undef NX_INSTANCE_
 #undef NX_SINGLETON_
+#endif/*NX_SP_CXX11_TEMPLATES*/
 };
 
 #ifndef NX_SINGLE_THREAD
@@ -89,6 +105,13 @@ template <typename T> T* Singleton<T>::ip_;
     singleton functions
 */
 
+#ifdef NX_SP_CXX11_TEMPLATES
+template <typename T, typename... P>
+inline T& singleton(nx_fref(P, ... par))
+{
+    return Singleton<T>::instance(nx_forward(P, par)...);
+}
+#else /*NX_SP_CXX11_TEMPLATES*/
 template <typename T>
 inline T& singleton(void)
 {
@@ -97,12 +120,13 @@ inline T& singleton(void)
 
 #define NX_SINGLETON_(n) \
 template <typename T, NX_PP_TYPE_1(n, typename P)> \
-inline T& singleton(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
+inline T& singleton(NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
 { \
     return Singleton<T>::instance(NX_PP_FORWARD(n, P, par)); \
 }
 NX_PP_MULT_MAX(NX_SINGLETON_)
 #undef NX_SINGLETON_
+#endif/*NX_SP_CXX11_TEMPLATES*/
 
 /*
     Get a singleton from a type
@@ -111,6 +135,13 @@ NX_PP_MULT_MAX(NX_SINGLETON_)
 template <typename TypeT, typename T>
 class SingletonProxy : public Singleton<T> {};
 
+#ifdef NX_SP_CXX11_TEMPLATES
+template <typename TypeT, typename T, typename... P>
+inline T& singleton(nx_fref(P, ... par))
+{
+    return SingletonProxy<TypeT, T>::instance(nx_forward(P, par)...);
+}
+#else /*NX_SP_CXX11_TEMPLATES*/
 template <typename TypeT, typename T>
 inline T& singleton(void)
 {
@@ -119,13 +150,18 @@ inline T& singleton(void)
 
 #define NX_SINGLETON_(n) \
 template <typename TypeT, typename T, NX_PP_TYPE_1(n, typename P)> \
-inline T& singleton(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
+inline T& singleton(NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
 { \
     return SingletonProxy<TypeT, T>::instance(NX_PP_FORWARD(n, P, par)); \
 }
 NX_PP_MULT_MAX(NX_SINGLETON_)
 #undef NX_SINGLETON_
+#endif/*NX_SP_CXX11_TEMPLATES*/
 
 //////////////////////////////////////////////////////////////////////////
 NX_END
 //////////////////////////////////////////////////////////////////////////
+
+#if defined(NX_CC_MSVC) && (NX_CC_MSVC == 1800)
+#   define NX_SP_CXX11_TEMPLATES
+#endif

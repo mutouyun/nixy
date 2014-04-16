@@ -35,7 +35,7 @@ template <typename T, size_t N>
 class array : public std::array<T, N> {};
 #endif
 
-#else/*NX_SP_CXX11_ARRAY*/
+#else /*NX_SP_CXX11_ARRAY*/
 
 template <typename T, size_t N>
 class array : nx_operator(typename NX_SHIELD(array<T, N>), unequal, comparable)

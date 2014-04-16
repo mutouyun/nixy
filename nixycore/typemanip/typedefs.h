@@ -31,7 +31,7 @@ struct null_t;
 
 #ifdef NX_SP_CXX11_NULLPTR
 typedef std::nullptr_t nulptr_t;
-#else/*NX_SP_CXX11_NULLPTR*/
+#else /*NX_SP_CXX11_NULLPTR*/
 class nulptr_t
 {
 public:

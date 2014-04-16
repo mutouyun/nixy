@@ -23,7 +23,7 @@ template <typename KeyT, class CompT = std::less<KeyT>, class AllocT = NX_DEFAUL
 using set = std::set<KeyT, CompT, typename AllocT::template std_allocator<KeyT>::type_t>;
 template <typename KeyT, class CompT = std::less<KeyT>, class AllocT = NX_DEFAULT_ALLOC>
 using multiset = std::multiset<KeyT, CompT, typename AllocT::template std_allocator<KeyT>::type_t>;
-#else/*NX_SP_CXX11_ALIAS*/
+#else /*NX_SP_CXX11_ALIAS*/
 template <typename KeyT, class CompT = std::less<KeyT>, class AllocT = NX_DEFAULT_ALLOC>
 class set : public std::set<KeyT, CompT, typename AllocT::template std_allocator<KeyT>::type_t>
 {
@@ -32,7 +32,7 @@ class set : public std::set<KeyT, CompT, typename AllocT::template std_allocator
 public:
 #ifdef NX_SP_CXX11_INHERITING
     using base_t::set;
-#else/*NX_SP_CXX11_INHERITING*/
+#else /*NX_SP_CXX11_INHERITING*/
     set(void)
         : base_t()
     {}
@@ -84,7 +84,7 @@ class multiset : public std::multiset<KeyT, CompT, typename AllocT::template std
 public:
 #ifdef NX_SP_CXX11_INHERITING
     using base_t::multiset;
-#else/*NX_SP_CXX11_INHERITING*/
+#else /*NX_SP_CXX11_INHERITING*/
     multiset(void)
         : base_t()
     {}

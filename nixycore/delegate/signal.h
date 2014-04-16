@@ -16,6 +16,14 @@
 #include "nixycore/typemanip/typemanip.h"
 #include "nixycore/utility/utility.h"
 
+#if defined(NX_CC_MSVC) && (NX_CC_MSVC == 1800)
+/*
+    fatal error C1001
+    With: typename nx::traits<P>::param_t... par
+*/
+#   undef NX_SP_CXX11_TEMPLATES
+#endif
+
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
@@ -23,6 +31,41 @@ NX_BEG
 template <typename F>
 class signal;
 
+#ifdef NX_SP_CXX11_TEMPLATES
+template <typename R, typename... P>
+class signal<R(P...)>
+{
+public:
+    typedef functor<R(P...)> functor_t;
+
+private:
+    nx::deque<functor_t> queue_;
+
+public:
+    template <typename FuncT>
+    void connect(nx_fref(FuncT, f))
+    {
+        queue_.push_back(nx_forward(FuncT, f));
+    }
+
+    template <typename FuncT, typename ObjT>
+    void connect(ObjT* o, nx_fref(FuncT, f))
+    {
+        queue_.push_back(nx::move(functor_t(nx_forward(FuncT, f), o)));
+    }
+
+    void operator()(typename nx::traits<P>::param_t... par) const
+    {
+        typename deque<functor_t>::const_iterator ite = queue_.begin();
+        for(; ite != queue_.end(); ++ite) (*ite)(par...);
+    }
+
+    void clear(void)
+    {
+        queue_.clear();
+    }
+};
+#else /*NX_SP_CXX11_TEMPLATES*/
 template <typename R>
 class signal<R()>
 {
@@ -33,16 +76,16 @@ private:
     deque<functor_t> queue_;
 
 public:
-    template <typename FrT>
-    void connect(const FrT& f)
+    template <typename FuncT>
+    void connect(nx_fref(FuncT, f))
     {
-        queue_.push_back(f);
+        queue_.push_back(nx_forward(FuncT, f));
     }
 
-    template <typename FrT, typename ObT>
-    void connect(ObT* o, FrT f) // object pointer is the first parameter
+    template <typename FuncT, typename ObjT>
+    void connect(ObjT* o, nx_fref(FuncT, f)) // object pointer is the first parameter
     {
-        queue_.push_back(nx::move(functor_t(f, o)));
+        queue_.push_back(nx::move(functor_t(nx_forward(FuncT, f), o)));
     }
 
     void operator()(void) const
@@ -66,15 +109,15 @@ public: \
 private: \
     deque<functor_t> queue_; \
 public: \
-    template <typename FrT> \
-    void connect(const FrT& f) \
+    template <typename FuncT> \
+    void connect(nx_fref(FuncT, f)) \
     { \
-        queue_.push_back(f); \
+        queue_.push_back(nx_forward(FuncT, f)); \
     } \
-    template <typename FrT, typename ObT> \
-    void connect(ObT* o, FrT f) \
+    template <typename FuncT, typename ObjT> \
+    void connect(ObjT* o, nx_fref(FuncT, f)) \
     { \
-        queue_.push_back(nx::move(functor_t(f, o))); \
+        queue_.push_back(nx::move(functor_t(nx_forward(FuncT, f), o))); \
     } \
     void operator()(NX_PP_TYPE_2(n, typename nx::traits<P, >::param_t par)) const \
     { \
@@ -88,7 +131,12 @@ public: \
 };
 NX_PP_MULT_MAX(NX_SIGNAL_)
 #undef NX_SIGNAL_
+#endif/*NX_SP_CXX11_TEMPLATES*/
 
 //////////////////////////////////////////////////////////////////////////
 NX_END
 //////////////////////////////////////////////////////////////////////////
+
+#if defined(NX_CC_MSVC) && (NX_CC_MSVC == 1800)
+#   define NX_SP_CXX11_TEMPLATES
+#endif

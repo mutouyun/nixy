@@ -21,7 +21,7 @@ NX_BEG
 */
 
 #define nx_construct(p, T, ...) \
-    (T*)::new ((void*)(p)) T(__VA_ARGS__)
+    (T*)::new ((void*)(p)) T __VA_ARGS__
 
 #define nx_construct_arr(p, T, N, ...) \
     do \

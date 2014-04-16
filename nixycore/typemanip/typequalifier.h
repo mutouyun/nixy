@@ -30,7 +30,7 @@ template <typename T> struct rm_const    { typedef typename std::remove_const   
 template <typename T> struct rm_volatile { typedef typename std::remove_volatile<T>::type type_t; };
 template <typename T> struct rm_cv       { typedef typename std::remove_cv      <T>::type type_t; };
 
-#else/*NX_SP_CXX11_TYPE_TRAITS*/
+#else /*NX_SP_CXX11_TYPE_TRAITS*/
 
 /*
     detect type qualifiers

@@ -17,7 +17,7 @@
 
 #include "nixycore/general/general.h"
 
-#ifdef NX_SP_CXX11_RVALUE_REF
+#if defined(NX_SP_CXX11_RVALUE_REF) || defined(NX_SP_CXX11_PERFECT_FWD)
 #include <utility> // std::move, std::forward
 #endif
 
@@ -42,7 +42,7 @@ template <typename T>             struct is_rvalue : type_if<false> {};
 template <typename T>             struct rm_rvalue { typedef T type_t; };
 template <typename T, typename R> struct cp_rvalue { typedef R type_t; };
 
-#else/*NX_SP_CXX11_RVALUE_REF*/
+#else /*NX_SP_CXX11_RVALUE_REF*/
 
 /*
     rvalue
@@ -144,15 +144,18 @@ template <typename T, typename R> struct cp_rvalue<nx_rval(T), R>           { ty
     Perfect Forwarding
 */
 
-#ifdef NX_SP_CXX11_RVALUE_REF
-#define nx_fref(T, ...) T && __VA_ARGS__
-#define nx_fval(T, ...) std::forward<T>(__VA_ARGS__)
-#define nx_fpar(...)    __VA_ARGS__
-#else/*NX_SP_CXX11_RVALUE_REF*/
-#define nx_fref(T, ...) T __VA_ARGS__
-#define nx_fval(T, ...) nx::unref(__VA_ARGS__)
-#define nx_fpar(...)    nx::ref(__VA_ARGS__)
-#endif/*NX_SP_CXX11_RVALUE_REF*/
+#ifdef NX_SP_CXX11_PERFECT_FWD
+#define NX_PF_SYM_          &&
+#define nx_fval(...)        __VA_ARGS__
+#define nx_forward(T, ...)  std::forward<T>(__VA_ARGS__)
+#define nx_extract(T, ...)  std::forward<T>(__VA_ARGS__)
+#else /*NX_SP_CXX11_PERFECT_FWD*/
+#define NX_PF_SYM_
+#define nx_fval(...)        nx::ref(__VA_ARGS__)
+#define nx_forward(T, ...)  __VA_ARGS__
+#define nx_extract(T, ...)  nx::unref(__VA_ARGS__)
+#endif/*NX_SP_CXX11_PERFECT_FWD*/
+#define nx_fref(T, ...)     T NX_PF_SYM_ __VA_ARGS__
 
 /*
     NX_PP_FORWARD(3, P, par)
@@ -162,14 +165,14 @@ template <typename T, typename R> struct cp_rvalue<nx_rval(T), R>           { ty
     std::forward<P1>(par1) , std::forward<P2>(par2) , std::forward<P3>(par3)
 */
 
-#define NX_PP_FPAR(...)                 nx_fref(, __VA_ARGS__)
-#ifdef NX_SP_CXX11_RVALUE_REF
-#define NX_PP_FORWARD_1_(n, P, ...)     nx_fval(NX_PP_JOIN(P, n), NX_PP_JOIN(__VA_ARGS__, n))
+#define NX_PP_FREF(...)                 NX_PF_SYM_ __VA_ARGS__
+#ifdef NX_SP_CXX11_PERFECT_FWD
+#define NX_PP_FORWARD_1_(n, P, ...)     nx_forward(NX_PP_JOIN(P, n), NX_PP_JOIN(__VA_ARGS__, n))
 #define NX_PP_FORWARD_2_(n, P, ...)     , NX_PP_FORWARD_1_(n, P, __VA_ARGS__)
 #define NX_PP_FORWARD(n, P, ...)        NX_PP_REPEATEX(n, NX_PP_FORWARD_1_, NX_PP_FORWARD_2_, P, __VA_ARGS__)
-#else/*NX_SP_CXX11_RVALUE_REF*/
+#else /*NX_SP_CXX11_PERFECT_FWD*/
 #define NX_PP_FORWARD(n, P, ...)        NX_PP_TYPE_1(n, __VA_ARGS__)
-#endif/*NX_SP_CXX11_RVALUE_REF*/
+#endif/*NX_SP_CXX11_PERFECT_FWD*/
 #define NX_PP_FORWARD_MAX(P, ...)       NX_PP_FORWARD(NX_PP_MAX, P, __VA_ARGS__)
 
 //////////////////////////////////////////////////////////////////////////

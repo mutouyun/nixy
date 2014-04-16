@@ -31,7 +31,7 @@ template <typename KeyT, class HashT = std::hash<KeyT>
                        , class AllocT = NX_DEFAULT_ALLOC>
 using hash_multiset = std::unordered_multiset<KeyT, HashT, PredT, 
             typename AllocT::template std_allocator<KeyT>::type_t>;
-#else/*NX_SP_CXX11_ALIAS*/
+#else /*NX_SP_CXX11_ALIAS*/
 template <typename KeyT, class HashT = std::hash<KeyT>
                        , class PredT = std::equal_to<KeyT>
                        , class AllocT = NX_DEFAULT_ALLOC>
@@ -44,7 +44,7 @@ class hash_set : public std::unordered_set<KeyT, HashT, PredT,
 public:
 #ifdef NX_SP_CXX11_INHERITING
     using base_t::unordered_set;
-#else/*NX_SP_CXX11_INHERITING*/
+#else /*NX_SP_CXX11_INHERITING*/
     hash_set(void)
         : base_t()
     {}
@@ -104,7 +104,7 @@ class hash_multiset : public std::unordered_multiset<KeyT, HashT, PredT,
 public:
 #ifdef NX_SP_CXX11_INHERITING
     using base_t::unordered_multiset;
-#else/*NX_SP_CXX11_INHERITING*/
+#else /*NX_SP_CXX11_INHERITING*/
     hash_multiset(void)
         : base_t()
     {}

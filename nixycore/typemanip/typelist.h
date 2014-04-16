@@ -288,10 +288,9 @@ template <typename T, typename U,
 template <typename, typename> class L_>
 struct types_reverse<L_<T, U> >
 {
-    typedef typename types_add
-                <typename types_reverse<U>::type_t,
-                    T
-                >::type_t type_t;
+    typedef typename types_add<
+            typename types_reverse<U>::type_t, T
+    >::type_t type_t;
 };
 
 /*
@@ -314,9 +313,10 @@ struct types_sub<L_<T, U>, TypeT>
 private:
     typedef typename types_sub<U, TypeT>::type_t tmp;
 public:
-    typedef typename select_if
-            <is_supersub<tmp, T>::value, T, tmp
-            >::type_t type_t;
+    typedef typename select_if<
+            is_supersub<tmp, T>::value,
+            T, tmp
+    >::type_t type_t;
 };
 
 /*
@@ -337,9 +337,9 @@ template <typename, typename> class L_>
 struct types_sort<L_<T, U> >
 {
 private:
-    typedef typename types_sub<U, T>::type_t                sub_type;
-    typedef typename types_replace<U, sub_type, T>::type_t  rep_type;
-    typedef typename types_sort<rep_type>::type_t           srt_type;
+    typedef typename types_sub<U, T>::type_t               sub_type;
+    typedef typename types_replace<U, sub_type, T>::type_t rep_type;
+    typedef typename types_sort<rep_type>::type_t          srt_type;
 public:
     typedef L_<sub_type, srt_type> type_t;
 };
@@ -413,6 +413,19 @@ struct types_join<L1_<T1, U1>, L2_<T2, U2> >
     Make types to a Sequence
 */
 
+#ifdef NX_SP_CXX11_TEMPLATES
+template <typename... TypesT>
+struct types;
+
+template <typename T1, typename... TypesT>
+struct types<T1, TypesT...>
+{
+private:
+    typedef typename types<TypesT...>::type_t tail_type;
+public:
+    typedef typename types_join<T1, tail_type>::type_t type_t;
+};
+#else /*NX_SP_CXX11_TEMPLATES*/
 template <NX_PP_TYPE_MAX_1(typename T, = nx::null_t)>
 struct types
 {
@@ -421,6 +434,7 @@ private:
 public:
     typedef typename types_join<T1, tail_type>::type_t type_t;
 };
+#endif/*NX_SP_CXX11_TEMPLATES*/
 
 template <>
 struct types<>
@@ -432,55 +446,85 @@ struct types<>
     Helper for special list algorithms
 */
 
-#define NX_SPECIAL_TYPES_0(name, spl_class, ...) \
-    template <NX_PP_PARAM(T, __VA_ARGS__)> \
-    struct name<spl_class<NX_PP_TYPE_1(NX_PP_COUNT(__VA_ARGS__), T)> > \
-         : name<typename spl_class<NX_PP_TYPE_1(NX_PP_COUNT(__VA_ARGS__), T)>::base_t> \
+#ifdef NX_SP_CXX11_TEMPLATES
+#define NX_SPECIAL_TYPES_0(name, spl_class) \
+    template <typename... T> \
+    struct name<spl_class<T...> > \
+         : name<typename spl_class<T...>::base_t> \
     {};
 
-#define NX_SPECIAL_TYPES_1(name, typename1, spl_class, ...) \
-    template <NX_PP_PARAM(T, __VA_ARGS__), typename1 TypeT> \
-    struct name<spl_class<NX_PP_TYPE_1(NX_PP_COUNT(__VA_ARGS__), T)>, TypeT> \
-         : name<typename spl_class<NX_PP_TYPE_1(NX_PP_COUNT(__VA_ARGS__), T)>::base_t, TypeT> \
+#define NX_SPECIAL_TYPES_1(name, typename1, spl_class) \
+    template <typename... T, typename1 TypeT> \
+    struct name<spl_class<T...>, TypeT> \
+         : name<typename spl_class<T...>::base_t, TypeT> \
     {};
 
-#define NX_SPECIAL_TYPES_2(name, typename1, typename2, spl_class, ...) \
-    template <NX_PP_PARAM(T, __VA_ARGS__), typename1 Type1_, typename2 Type2_> \
-    struct name<spl_class<NX_PP_TYPE_1(NX_PP_COUNT(__VA_ARGS__), T)>, Type1_, Type2_> \
-         : name<typename spl_class<NX_PP_TYPE_1(NX_PP_COUNT(__VA_ARGS__), T)>::base_t, Type1_, Type2_> \
+#define NX_SPECIAL_TYPES_2(name, typename1, typename2, spl_class) \
+    template <typename... T, typename1 Type1_, typename2 Type2_> \
+    struct name<spl_class<T...>, Type1_, Type2_> \
+         : name<typename spl_class<T...>::base_t, Type1_, Type2_> \
     {};
 
-#define NX_SPECIAL_TYPES_R(name, typename1, spl_class, ...) \
-    template <typename1 TypeT, NX_PP_PARAM(T, __VA_ARGS__)> \
-    struct name<TypeT, spl_class<NX_PP_TYPE_1(NX_PP_COUNT(__VA_ARGS__), T)> > \
-         : name<TypeT, typename spl_class<NX_PP_TYPE_1(NX_PP_COUNT(__VA_ARGS__), T)>::base_t> \
+#define NX_SPECIAL_TYPES_R(name, typename1, spl_class) \
+    template <typename1 TypeT, typename... T> \
+    struct name<TypeT, spl_class<T...> > \
+         : name<TypeT, typename spl_class<T...>::base_t> \
     {};
 
-#define NX_SPECIAL_TYPES_D(name, spl_class, ...) \
-    template <NX_PP_PARAM(T, __VA_ARGS__), \
-              NX_PP_PARAM(U, __VA_ARGS__)> \
-    struct name<spl_class<NX_PP_TYPE_1(NX_PP_COUNT(__VA_ARGS__), T)>, \
-                spl_class<NX_PP_TYPE_1(NX_PP_COUNT(__VA_ARGS__), U)> > \
-         : name<typename spl_class<NX_PP_TYPE_1(NX_PP_COUNT(__VA_ARGS__), T)>::base_t, \
-                typename spl_class<NX_PP_TYPE_1(NX_PP_COUNT(__VA_ARGS__), U)>::base_t> \
+#define NX_SPECIAL_TYPES_D(name, spl_class) \
+    template <typename... T, typename... U> \
+    struct name<spl_class<T...>, spl_class<U...> > \
+         : name<typename spl_class<T...>::base_t, typename spl_class<U...>::base_t> \
+    {};
+#else /*NX_SP_CXX11_TEMPLATES*/
+#define NX_SPECIAL_TYPES_0(name, spl_class) \
+    template <NX_PP_TYPE_MAX_1(typename T)> \
+    struct name<spl_class<NX_PP_TYPE_MAX_1(T)> > \
+         : name<typename spl_class<NX_PP_TYPE_MAX_1(T)>::base_t> \
     {};
 
-#define NX_SPECIAL_TYPES(spl_class, ...) \
-    NX_SPECIAL_TYPES_0(types_len                        , spl_class, __VA_ARGS__) \
-    NX_SPECIAL_TYPES_1(types_at     , int               , spl_class, __VA_ARGS__) \
-    NX_SPECIAL_TYPES_1(types_find   , typename          , spl_class, __VA_ARGS__) \
-    NX_SPECIAL_TYPES_1(types_add    , typename          , spl_class, __VA_ARGS__) \
-    NX_SPECIAL_TYPES_1(types_del    , typename          , spl_class, __VA_ARGS__) \
-    NX_SPECIAL_TYPES_1(types_erase  , typename          , spl_class, __VA_ARGS__) \
-    NX_SPECIAL_TYPES_0(types_compact                    , spl_class, __VA_ARGS__) \
-    NX_SPECIAL_TYPES_2(types_replace, typename, typename, spl_class, __VA_ARGS__) \
-    NX_SPECIAL_TYPES_0(types_reverse                    , spl_class, __VA_ARGS__) \
-    NX_SPECIAL_TYPES_1(types_sub    , typename          , spl_class, __VA_ARGS__) \
-    NX_SPECIAL_TYPES_0(types_sort                       , spl_class, __VA_ARGS__)/* \
+#define NX_SPECIAL_TYPES_1(name, typename1, spl_class) \
+    template <NX_PP_TYPE_MAX_1(typename T), typename1 TypeT> \
+    struct name<spl_class<NX_PP_TYPE_MAX_1(T)>, TypeT> \
+         : name<typename spl_class<NX_PP_TYPE_MAX_1(T)>::base_t, TypeT> \
+    {};
+
+#define NX_SPECIAL_TYPES_2(name, typename1, typename2, spl_class) \
+    template <NX_PP_TYPE_MAX_1(typename T), typename1 Type1_, typename2 Type2_> \
+    struct name<spl_class<NX_PP_TYPE_MAX_1(T)>, Type1_, Type2_> \
+         : name<typename spl_class<NX_PP_TYPE_MAX_1(T)>::base_t, Type1_, Type2_> \
+    {};
+
+#define NX_SPECIAL_TYPES_R(name, typename1, spl_class) \
+    template <typename1 TypeT, NX_PP_TYPE_MAX_1(typename T)> \
+    struct name<TypeT, spl_class<NX_PP_TYPE_MAX_1(T)> > \
+         : name<TypeT, typename spl_class<NX_PP_TYPE_MAX_1(T)>::base_t> \
+    {};
+
+#define NX_SPECIAL_TYPES_D(name, spl_class) \
+    template <NX_PP_TYPE_MAX_1(typename T), NX_PP_TYPE_MAX_1(typename U)> \
+    struct name<spl_class<NX_PP_TYPE_MAX_1(T)>, spl_class<NX_PP_TYPE_MAX_1(U)> > \
+         : name<typename spl_class<NX_PP_TYPE_MAX_1(T)>::base_t, \
+                typename spl_class<NX_PP_TYPE_MAX_1(U)>::base_t> \
+    {};
+#endif/*NX_SP_CXX11_TEMPLATES*/
+
+#define NX_SPECIAL_TYPES(spl_class) \
+    NX_SPECIAL_TYPES_0(types_len                        , spl_class) \
+    NX_SPECIAL_TYPES_1(types_at     , int               , spl_class) \
+    NX_SPECIAL_TYPES_1(types_find   , typename          , spl_class) \
+    NX_SPECIAL_TYPES_1(types_add    , typename          , spl_class) \
+    NX_SPECIAL_TYPES_1(types_del    , typename          , spl_class) \
+    NX_SPECIAL_TYPES_1(types_erase  , typename          , spl_class) \
+    NX_SPECIAL_TYPES_0(types_compact                    , spl_class) \
+    NX_SPECIAL_TYPES_2(types_replace, typename, typename, spl_class) \
+    NX_SPECIAL_TYPES_0(types_reverse                    , spl_class) \
+    NX_SPECIAL_TYPES_1(types_sub    , typename          , spl_class) \
+    NX_SPECIAL_TYPES_0(types_sort                       , spl_class)/* \
 //  this may get an ambiguous class template instantiation
-//  NX_SPECIAL_TYPES_1(types_join   , typename          , spl_class, __VA_ARGS__) \
-//  NX_SPECIAL_TYPES_R(types_join   , typename          , spl_class, __VA_ARGS__) \
-//  NX_SPECIAL_TYPES_D(types_join                       , spl_class, __VA_ARGS__)*/
+//  NX_SPECIAL_TYPES_1(types_join   , typename          , spl_class) \
+//  NX_SPECIAL_TYPES_R(types_join   , typename          , spl_class) \
+//  NX_SPECIAL_TYPES_D(types_join                       , spl_class)*/
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

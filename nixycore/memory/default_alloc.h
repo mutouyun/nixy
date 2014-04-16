@@ -32,6 +32,14 @@ inline pvoid alloc(size_t size)
     return nx::alloc<NX_DEFAULT_ALLOC>(size);
 }
 
+#ifdef NX_SP_CXX11_TEMPLATES
+template <typename T, typename... P>
+inline typename nx::enable_if<!nx::is_alloc<T>::value,
+T*>::type_t alloc(nx_fref(P, ... par))
+{
+    return nx::alloc<NX_DEFAULT_ALLOC, T>(nx_forward(P, par)...);
+}
+#else /*NX_SP_CXX11_TEMPLATES*/
 template <typename T>
 inline T* alloc(void)
 {
@@ -40,12 +48,14 @@ inline T* alloc(void)
 
 #define NX_ALLOC_(n) \
 template <typename T, NX_PP_TYPE_1(n, typename P)> \
-inline T* alloc(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
+inline typename nx::enable_if<!nx::is_alloc<T>::value, \
+T*>::type_t alloc(NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
 { \
     return nx::alloc<NX_DEFAULT_ALLOC, T>(NX_PP_FORWARD(n, P, par)); \
 }
 NX_PP_MULT_MAX(NX_ALLOC_)
 #undef NX_ALLOC_
+#endif/*NX_SP_CXX11_TEMPLATES*/
 
 /*
     destruct free

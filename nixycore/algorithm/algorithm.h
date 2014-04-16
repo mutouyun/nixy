@@ -21,10 +21,8 @@
 
 #include "nixycore/general/general.h"
 
-// std algorithms
-#include <algorithm>
-// fabs...
-#include <math.h>
+#include <algorithm> // std algorithms
+#include <math.h>    // fabs...
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG

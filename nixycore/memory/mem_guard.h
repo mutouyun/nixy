@@ -44,11 +44,10 @@ namespace private_mem_guard
 }
 
 template <typename T>
-inline typename enable_if<is_pointer<T>::value &&
-                         !is_function<T>::value,
-functor<void()> >::type_t make_destructor(T r)
+inline typename enable_if<!is_function<T>::value,
+functor<void()> >::type_t make_destructor(T* r)
 {
-    return private_mem_guard::free_fr<T>(r);
+    return private_mem_guard::free_fr<T*>(r);
 }
 
 inline functor<void()> make_destructor(pvoid r, size_t s)

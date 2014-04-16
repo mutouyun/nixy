@@ -24,18 +24,16 @@ NX_BEG
 
 namespace private_alloc
 {
-#if defined(NX_CC_MSVC)
-#   pragma warning(push)
-    /*
-        behavior change: an object of POD type constructed 
-        with an initializer of the form () will be default-initialized
-    */
-#   pragma warning(disable: 4345)
-#endif
-
     template <class AllocT, typename T>
     struct detail
     {
+#ifdef NX_SP_CXX11_TEMPLATES
+        template <typename... P>
+        static T* alloc(nx_fref(P, ... par))
+        {
+            return nx_construct(AllocT::alloc(sizeof(T)), T, (nx_forward(P, par)...));
+        }
+#else /*NX_SP_CXX11_TEMPLATES*/
         static T* alloc(void)
         {
             return nx_construct(AllocT::alloc(sizeof(T)), T);
@@ -43,12 +41,13 @@ namespace private_alloc
 
 #   define NX_ALLOC_(n) \
         template <NX_PP_TYPE_1(n, typename P)> \
-        static T* alloc(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
+        static T* alloc(NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
         { \
-            return nx_construct(AllocT::alloc(sizeof(T)), T, NX_PP_FORWARD(n, P, par)); \
+            return nx_construct(AllocT::alloc(sizeof(T)), T, (NX_PP_FORWARD(n, P, par))); \
         }
         NX_PP_MULT_MAX(NX_ALLOC_)
 #   undef NX_ALLOC_
+#endif/*NX_SP_CXX11_TEMPLATES*/
     };
 
     /* Make array to array pointer */
@@ -56,6 +55,15 @@ namespace private_alloc
     struct detail<AllocT, T_[N]>
     {
         typedef T_ T[N];
+#ifdef NX_SP_CXX11_TEMPLATES
+        template <typename... P>
+        static T* alloc(nx_fref(P, ... par))
+        {
+            T* p = (T*)AllocT::alloc(sizeof(T));
+            nx_construct_arr(*p, T_, N, (nx_forward(P, par)...));
+            return p;
+        }
+#else /*NX_SP_CXX11_TEMPLATES*/
         static T* alloc(void)
         {
             T* p = (T*)AllocT::alloc(sizeof(T));
@@ -65,14 +73,15 @@ namespace private_alloc
 
 #   define NX_ALLOC_(n) \
         template <NX_PP_TYPE_1(n, typename P)> \
-        static T* alloc(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
+        static T* alloc(NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
         { \
             T* p = (T*)AllocT::alloc(sizeof(T)); \
-            nx_construct_arr(*p, T_, N, NX_PP_FORWARD(n, P, par)); \
+            nx_construct_arr(*p, T_, N, (NX_PP_FORWARD(n, P, par))); \
             return p; \
         }
         NX_PP_MULT_MAX(NX_ALLOC_)
 #   undef NX_ALLOC_
+#endif/*NX_SP_CXX11_TEMPLATES*/
     };
 
     template <class AllocT>
@@ -83,10 +92,6 @@ namespace private_alloc
             return AllocT::alloc(size);
         }
     };
-
-#if defined(NX_CC_MSVC)
-#   pragma warning(pop)
-#endif
 }
 
 template <class AllocT>
@@ -95,6 +100,13 @@ inline pvoid alloc(size_t size)
     return AllocT::alloc(size);
 }
 
+#ifdef NX_SP_CXX11_TEMPLATES
+template <class AllocT, typename T, typename... P>
+inline T* alloc(nx_fref(P, ... par))
+{
+    return private_alloc::detail<AllocT, T>::alloc(nx_forward(P, par)...);
+}
+#else /*NX_SP_CXX11_TEMPLATES*/
 template <class AllocT, typename T>
 inline T* alloc(void)
 {
@@ -103,12 +115,13 @@ inline T* alloc(void)
 
 #define NX_ALLOC_(n) \
 template <class AllocT, typename T, NX_PP_TYPE_1(n, typename P)> \
-inline T* alloc(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
+inline T* alloc(NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
 { \
     return private_alloc::detail<AllocT, T>::alloc(NX_PP_FORWARD(n, P, par)); \
 }
 NX_PP_MULT_MAX(NX_ALLOC_)
 #undef NX_ALLOC_
+#endif/*NX_SP_CXX11_TEMPLATES*/
 
 /*
     destruct free

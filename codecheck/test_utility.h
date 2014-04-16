@@ -162,7 +162,7 @@ namespace test_safe_bool
     class TestBool : public nx::safe_bool<TestBool>
     {
     public:
-        bool checkSafeBool(void) const
+        bool check_safe_bool(void) const
         {
             return false;
         }
@@ -234,9 +234,9 @@ namespace test_refer
     }
 
     template <typename T>
-    void forwardValue(T val)
+    void forwardValue(nx_fref(T, val))
     {
-        processValue(val);
+        processValue(nx_forward(T, val));
     }
 }
 
@@ -255,9 +255,9 @@ void testRefer(void)
         int a = 0;
         const int &b = 1;
 
-        forwardValue(nx::ref(a));
-        forwardValue(nx::ref(b));
-        forwardValue(nx::ref(2));
+        forwardValue(nx_fval(a)); // int
+        forwardValue(nx_fval(b)); // const int
+        forwardValue(nx_fval(2)); // const int
     }
 }
 
@@ -438,14 +438,20 @@ void testValid(void)
     nx::valid<A&> vc = nx::none;
 
     va = a;
+    strout << "(*va).a_ = " << (*va).a_ << endl;
     if (va || vb)
         strout << "yes!" << endl;
 
-    vb = a; vc = a;
+    strout << endl;
+    vb = a;
+    vc = a;
     (*vb).a_ = 2;
+    strout << "(*va).a_ = " << (*va).a_ << endl;
     *vc = *vb;
-    va = vb;
+    strout << "(*va).a_ = " << (*va).a_ << endl;
 
+    strout << endl;
+    va = vb;
     strout << "reset vb -> ";
     vb.reset();
     strout << "reset va -> ";
@@ -472,7 +478,11 @@ void testTuple(void)
 
     int i = 0; char c = 0; double d = 0;
     nx::tie(i, c, d) = func();
+#ifdef NX_SP_CXX11_TUPLE
+    nx::tuple<int, char, double> td(std::make_tuple(5, 5, 5));
+#else /*NX_SP_CXX11_TUPLE*/
     nx::tuple<int, char, double> td(5, 5, 5);
+#endif/*NX_SP_CXX11_TUPLE*/
     nx_auto(tr, nx::tie(i, c, d));
     nx::swap(td, tr);
     strout << tr.at<0>() << " " << tr.at<1>() << " " << tr.at<2>() << " " << endl;
@@ -487,6 +497,30 @@ void testTuple(void)
 
 //////////////////////////////////////////////////////////////////////////
 
+namespace test_alignof
+{
+    struct nx_alignas(8) Foo { char a; char b; int c; };
+    typedef Foo Bar[100];
+}
+
+void testAlignOf(void)
+{
+    TEST_CASE();
+
+    using namespace test_alignof;
+
+    strout << sizeof(Foo) << " " << nx_alignof(Foo) << endl;
+    strout << sizeof(Bar) << " " << nx_alignof(Bar) << endl;
+
+    typedef nx::aligned<Foo>::storage_t foo_t;
+    typedef nx::aligned<Bar>::storage_t bar_t;
+
+    strout << sizeof(foo_t) << " " << nx_alignof(foo_t) << endl;
+    strout << sizeof(bar_t) << " " << nx_alignof(bar_t) << endl;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
 void testUtility(void)
 {
     TEST_FUNCTION();
@@ -497,8 +531,9 @@ void testUtility(void)
     //testCountOf();
     //testLimitOf();
     //testSafeBool();
-    //testRefer();
+    testRefer();
     testRvalue();
-    //testValid();
+    testValid();
     testTuple();
+    testAlignOf();
 }

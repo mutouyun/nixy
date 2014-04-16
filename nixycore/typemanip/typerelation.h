@@ -12,6 +12,7 @@
 
 #include "nixycore/typemanip/typedefs.h"
 #include "nixycore/typemanip/typetools.h"
+#include "nixycore/typemanip/typebehavior.h"
 
 #include "nixycore/general/general.h"
 
@@ -57,26 +58,36 @@ struct is_convertible<T, T> :
     Check the Super-Sub inheritance of two classes
 */
 
+namespace private_is_supersub
+{
+    template <typename T, typename U>
+    struct detail : 
+        type_if<is_convertible<const U*, const T*>::value &&
+               !is_sametype<const T*, const void*>::value &&
+               !is_sametype<const T , const U    >::value>
+    {};
+
+    template <>
+    struct detail<void, void> : 
+        type_if<false>
+    {};
+
+    template <typename T>
+    struct detail<T, void> : 
+        type_if<false>
+    {};
+
+    template <typename U>
+    struct detail<void, U> : 
+        type_if<false>
+    {};
+}
+
 template <typename T, typename U>
-struct is_supersub : 
-    type_if<is_convertible<const U*, const T*>::value &&
-           !is_sametype<const T*, const void*>::value &&
-           !is_sametype<const T , const U    >::value>
-{};
-
-template <>
-struct is_supersub<void, void> : 
-    type_if<false>
-{};
-
-template <typename T>
-struct is_supersub<T, void> : 
-    type_if<false>
-{};
-
-template <typename U>
-struct is_supersub<void, U> : 
-    type_if<false>
+struct is_supersub
+    : private_is_supersub::detail
+    <typename rm_reference<typename rm_cv<T>::type_t>::type_t,
+     typename rm_reference<typename rm_cv<U>::type_t>::type_t>
 {};
 
 //////////////////////////////////////////////////////////////////////////

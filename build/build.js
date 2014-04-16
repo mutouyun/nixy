@@ -55,6 +55,7 @@ else
         'nixycore/typemanip/typetraits.h' \
         'nixycore/typemanip/typeof.h' \
         'nixycore/typemanip/typemanip.h' \
+        'nixycore/utility/alignof.h' \
         'nixycore/utility/addressof.h' \
         'nixycore/utility/type_cast.h' \
         'nixycore/utility/countof.h' \
@@ -98,6 +99,7 @@ else
         'nixycore/finalizer/finalizer.h' \
         'nixycore/memory/construct.h' \
         'nixycore/memory/alloc.h' \
+        'nixycore/memory/alloc_model.h' \
         'nixycore/memory/std_alloc.h' \
         'nixycore/memory/fixed_pool.h' \
         'nixycore/memory/cache_pool.h' \

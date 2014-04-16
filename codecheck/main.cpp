@@ -9,6 +9,7 @@ void dummy(void);
 
 int main(void)
 {
+    cout << __cplusplus << endl;
     dummy();
     testAll();
     return 0;

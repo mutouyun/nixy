@@ -22,7 +22,7 @@ NX_BEG
 #ifdef NX_SP_CXX11_ALIAS
 template <typename T, typename SeqT = nx::deque<T> >
 using queue = std::queue<T, SeqT>;
-#else/*NX_SP_CXX11_ALIAS*/
+#else /*NX_SP_CXX11_ALIAS*/
 template <typename T, typename SeqT = nx::deque<T> >
 class queue : public std::queue<T, SeqT>
 {
@@ -31,7 +31,7 @@ class queue : public std::queue<T, SeqT>
 public:
 #ifdef NX_SP_CXX11_INHERITING
     using base_t::queue;
-#else/*NX_SP_CXX11_INHERITING*/
+#else /*NX_SP_CXX11_INHERITING*/
     explicit queue(const SeqT& s = SeqT())
         : base_t(s)
     {}

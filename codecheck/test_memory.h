@@ -441,7 +441,7 @@ void testMemory(void)
 //    testMemPool();
 //    testThreadAlloc();
     //testMemGuard();
-    //testPointer();
+    testPointer();
     //testObjectPool();
     testMemLeak();
 }

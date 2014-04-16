@@ -98,11 +98,12 @@ namespace private_task
         pointer<data<T> > data_;
 
         template <typename F>
-        prepare(const F& f)
+        prepare(nx_fref(F, f),
+                typename nx::enable_if<!is_sametype<F, prepare>::value, int>::type_t = 0)
             : data_(nx::alloc<data<T> >())
         {
             nx_assert(data_);
-            nx_verify(data_->task_ = f);
+            nx_verify(data_->task_ = nx_forward(F, f));
             start();
         }
 
@@ -188,35 +189,52 @@ public:
     async call, will return a task object for controlling asynchronous call
 */
 
-template <typename F>
-inline private_task::prepare<typename function_traits<F>::result_t> async(const F& f)
+#ifdef NX_SP_CXX11_TEMPLATES
+template <typename F, typename... P>
+inline private_task::prepare<typename function_traits<F>::result_t>
+    async(nx_fref(F, f), nx_fref(P, ... par))
 {
-    return private_task::prepare<typename function_traits<F>::result_t>(f);
+    return private_task::prepare<typename function_traits<F>::result_t>
+        (bind(nx_forward(F, f), nx_forward(P, par)...));
+}
+template <typename R, typename F, typename... P>
+inline private_task::prepare<R>
+    async(nx_fref(F, f), nx_fref(P, ... par))
+{
+    return private_task::prepare<R>
+        (bind<R>(nx_forward(F, f), nx_forward(P, par)...));
+}
+#else /*NX_SP_CXX11_TEMPLATES*/
+template <typename F>
+inline private_task::prepare<typename function_traits<F>::result_t> async(nx_fref(F, f))
+{
+    return private_task::prepare<typename function_traits<F>::result_t>(nx_forward(F, f));
 }
 
 template <typename R, typename F>
-inline private_task::prepare<R> async(const F& f)
+inline private_task::prepare<R> async(nx_fref(F, f))
 {
-    return private_task::prepare<R>(f);
+    return private_task::prepare<R>(nx_forward(F, f));
 }
 
 #define NX_ASYNC_(n) \
 template <typename F, NX_PP_TYPE_1(n, typename P)> \
 inline private_task::prepare<typename function_traits<F>::result_t> \
-    async(const F& f, NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
+    async(nx_fref(F, f), NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
 { \
     return private_task::prepare<typename function_traits<F>::result_t> \
-        (bind(f, NX_PP_FORWARD(n, P, par))); \
+        (bind(nx_forward(F, f), NX_PP_FORWARD(n, P, par))); \
 } \
 template <typename R, typename F, NX_PP_TYPE_1(n, typename P)> \
 inline private_task::prepare<R> \
-    async(const F& f, NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
+    async(nx_fref(F, f), NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
 { \
     return private_task::prepare<R> \
-        (bind<R>(f, NX_PP_FORWARD(n, P, par))); \
+        (bind<R>(nx_forward(F, f), NX_PP_FORWARD(n, P, par))); \
 }
 NX_PP_MULT_MAX(NX_ASYNC_)
 #undef NX_ASYNC_
+#endif/*NX_SP_CXX11_TEMPLATES*/
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

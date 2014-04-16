@@ -54,10 +54,10 @@ void testAll(void)
     testUtility();
     //testTime();
     //testRandom();
-    //testDelegate();
+    testDelegate();
     //testFinalizer();
     //testThread();
-    //testMemory();
+    testMemory();
     //testString();
     //testStream();
 

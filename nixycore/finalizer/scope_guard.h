@@ -72,16 +72,16 @@ public:
 
 template <typename T>
 inline typename enable_if<is_function<T>::value,
-functor<void()> >::type_t make_destructor(T r)
+functor<void()> >::type_t make_destructor(nx_fref(T, r))
 {
-    return r;
+    return nx_extract(T, r);
 }
 
 template <typename T, typename F>
 inline typename nx::enable_if<!nx::is_numeric<F>::value,
-functor<void()> >::type_t make_destructor(T r, F dest_fr)
+functor<void()> >::type_t make_destructor(nx_fref(T, r), nx_fref(F, dest_fr))
 {
-    return bind<void>(dest_fr, r);
+    return bind<void>(nx_forward(F, dest_fr), nx_forward(T, r));
 }
 
 #define NX_GUARD_SCOPE_NAM_(nn) guard_##nn##__

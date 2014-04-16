@@ -25,7 +25,7 @@ using map = std::map<KeyT, TypeT, CompT,
 template <typename KeyT, typename TypeT, class CompT = std::less<KeyT>, class AllocT = NX_DEFAULT_ALLOC>
 using multimap = std::multimap<KeyT, TypeT, CompT,
             typename AllocT::template std_allocator<std::pair<const KeyT, TypeT> >::type_t>;
-#else/*NX_SP_CXX11_ALIAS*/
+#else /*NX_SP_CXX11_ALIAS*/
 template <typename KeyT, typename TypeT, class CompT = std::less<KeyT>, class AllocT = NX_DEFAULT_ALLOC>
 class map : public std::map<KeyT, TypeT, CompT, 
             typename AllocT::template std_allocator<std::pair<const KeyT, TypeT> >::type_t>
@@ -36,7 +36,7 @@ class map : public std::map<KeyT, TypeT, CompT,
 public:
 #ifdef NX_SP_CXX11_INHERITING
     using base_t::map;
-#else/*NX_SP_CXX11_INHERITING*/
+#else /*NX_SP_CXX11_INHERITING*/
     map(void)
         : base_t()
     {}
@@ -90,7 +90,7 @@ class multimap : public std::multimap<KeyT, TypeT, CompT,
 public:
 #ifdef NX_SP_CXX11_INHERITING
     using base_t::multimap;
-#else/*NX_SP_CXX11_INHERITING*/
+#else /*NX_SP_CXX11_INHERITING*/
     multimap(void)
         : base_t()
     {}

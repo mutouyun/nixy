@@ -28,7 +28,7 @@ class blocking_queue : noncopyable
     mutable mutex lock_;
     condition     task_coming_;
     condition     until_empty_;
-    deque<T>      queue_;
+    nx::deque<T>  queue_;
 
 public:
     typedef T type_t;

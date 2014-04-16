@@ -8,6 +8,7 @@
 #pragma once
 
 #include "nixycore/typemanip/typebehavior.h"
+#include "nixycore/typemanip/typetraits.h"
 
 #include "nixycore/general/general.h"
 
@@ -63,6 +64,30 @@ template <typename T>
 inline typename refer<T>::value_t&      unref(refer<T>& r)       { return (*r); }
 template <typename T>
 inline const typename refer<T>::type_t& unref(const refer<T>& r) { return (*r); }
+
+/*
+    Unwrap a reference wrapper
+*/
+
+namespace private_unrefwrap
+{
+    template <typename T>
+    struct detail
+    {
+        typedef T type_t;
+    };
+
+    template <typename T>
+    struct detail<refer<T> >
+    {
+        typedef T& type_t;
+    };
+}
+
+template <typename T>
+struct unrefwrap
+    : private_unrefwrap::detail<typename decay<T>::type_t>
+{};
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

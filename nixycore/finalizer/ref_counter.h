@@ -48,7 +48,7 @@ public:
         dec();
         ref_   = nx::alloc<AllocT, ref_t>(1);
         nx_assert(ref_);
-        guard_ = nx::alloc<AllocT, scope_guard>(nx::ref(guard));
+        guard_ = nx::alloc<AllocT, scope_guard>(nx_fval(guard));
         nx_assert(guard_);
     }
 
@@ -102,29 +102,26 @@ class ref_counter : public P
 public:
     ref_counter(void) {}
 
-    template <typename T>
-    ref_counter(const T& r)
+    ref_counter(const ref_counter& r)
     {
         P::set(r);
     }
 
-    template <typename T, typename F>
-    ref_counter(const T& r, F f)
+    template <typename U>
+    ref_counter(nx_fref(U, r))
     {
-        P::set(r, f);
+        P::set(nx_forward(U, r));
+    }
+
+    template <typename U, typename F>
+    ref_counter(nx_fref(U, r), nx_fref(F, dest_fr))
+    {
+        P::set(nx_forward(U, r), nx_forward(F, dest_fr));
     }
 
     ~ref_counter(void)
     {
         P::dec();
-    }
-
-public:
-    template <typename T>
-    ref_counter& operator=(const T& r)
-    {
-        P::set(r);
-        return (*this);
     }
 };
 

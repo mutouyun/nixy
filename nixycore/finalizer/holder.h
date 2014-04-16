@@ -34,11 +34,11 @@ namespace private_holder
         type_t res_;
 
         template <typename F>
-        void assign_to(const type_t& r, const F& dest_fr)
+        void assign_to(const type_t& r, nx_fref(F, dest_fr))
         {
             if (policy_t::is_valid(r))
             {
-                base_t::init(dest_fr);
+                base_t::init(nx_forward(F, dest_fr));
                 res_ = r;
             }
         }
@@ -56,9 +56,9 @@ namespace private_holder
         }
 
         template <typename F>
-        void set(const type_t& r, F dest_fr)
+        void set(const type_t& r, nx_fref(F, dest_fr))
         {
-            assign_to(r, make_destructor(r, dest_fr));
+            assign_to(r, make_destructor(r, nx_forward(F, dest_fr)));
         }
 
         template <typename U>
@@ -95,16 +95,19 @@ public:
     holder(void)
         : base_t()
     {}
+
     template <typename U>
-    holder(const U& r)
-        : base_t(r)
+    holder(nx_fref(U, r))
+        : base_t(nx_forward(U, r))
     {}
+
     template <typename U, typename F>
-    holder(const U& r, F dest_fr)
-        : base_t(r, dest_fr)
+    holder(nx_fref(U, r), nx_fref(F, dest_fr))
+        : base_t(nx_forward(U, r), nx_forward(F, dest_fr))
     {}
+
     holder(const holder& r)
-        : base_t(r)
+        : base_t(static_cast<const base_t&>(r))
     {}
 
     holder(nx_rref(holder) r)
@@ -117,7 +120,7 @@ public:
         return (*this);
     }
 
-    bool checkSafeBool(void) const
+    bool check_safe_bool(void) const
     { return base_t::is_valid(base_t::get()); }
 
     void swap(holder& rhs) { base_t::swap(static_cast<base_t&>(rhs)); }

@@ -111,7 +111,7 @@ namespace private_assert
         if (true) ; \
         else const nx::assert_detail& NX_UNUSED dummy_ = \
         nx::private_assert::detail<false>(#__VA_ARGS__).context(__FILE__, __LINE__).NX_ASSERT_1_
-#else/*NDEBUG*/
+#else /*NDEBUG*/
 #   define nx_assert(...) nx_ensure(__VA_ARGS__)
 #endif/*NDEBUG*/
 

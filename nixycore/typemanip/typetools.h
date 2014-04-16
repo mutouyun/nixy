@@ -67,10 +67,10 @@ struct select_if<false, T, U>
     Enable if (bool == true)
 */
 
-template <bool, class T = void> 
+template <bool, typename T = void>
 struct enable_if;
 
-template <class T>
+template <typename T>
 struct enable_if<true, T> 
 { 
     typedef T type_t; 

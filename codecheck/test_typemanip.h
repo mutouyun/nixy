@@ -152,9 +152,9 @@ void testTypeManip(void)
 {
     TEST_FUNCTION();
 
-//    testTypeQualifier();
-//    testTypeBehavior();
-    testTypeDetect();
+    //testTypeQualifier();
+    //testTypeBehavior();
+    //testTypeDetect();
 
     TEST_CASE();
 

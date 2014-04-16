@@ -21,7 +21,7 @@ NX_BEG
 #ifdef NX_SP_CXX11_ALIAS
 template <typename T, class AllocT = NX_DEFAULT_ALLOC>
 using list = std::list<T, typename AllocT::template std_allocator<T>::type_t>;
-#else/*NX_SP_CXX11_ALIAS*/
+#else /*NX_SP_CXX11_ALIAS*/
 template <typename T, class AllocT = NX_DEFAULT_ALLOC>
 class list : public std::list<T, typename AllocT::template std_allocator<T>::type_t>
 {
@@ -30,7 +30,7 @@ class list : public std::list<T, typename AllocT::template std_allocator<T>::typ
 public:
 #ifdef NX_SP_CXX11_INHERITING
     using base_t::list;
-#else/*NX_SP_CXX11_INHERITING*/
+#else /*NX_SP_CXX11_INHERITING*/
     list(void)
         : base_t()
     {}

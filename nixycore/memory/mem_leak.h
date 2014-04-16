@@ -231,6 +231,21 @@ namespace mem_leak
             return alloc<NX_DEFAULT_ALLOC>(size);
         }
 
+#ifdef NX_SP_CXX11_TEMPLATES
+        template <class AllocT, typename T, typename... P>
+        T* alloc(nx_fref(P, ... par))
+        {
+            return tls_recorder::instance().regist
+                (nx::alloc<AllocT, T>(nx_forward(P, par)...), file_, line_, sizeof(T));
+        }
+
+        template <typename T, typename... P>
+        typename nx::enable_if<!nx::is_alloc<T>::value,
+        T*>::type_t alloc(nx_fref(P, ... par))
+        {
+            return alloc<NX_DEFAULT_ALLOC, T>(nx_forward(P, par)...);
+        }
+#else /*NX_SP_CXX11_TEMPLATES*/
         template <class AllocT, typename T>
         T* alloc(void)
         {
@@ -246,18 +261,20 @@ namespace mem_leak
 
 #   define NX_ALLOC_(n) \
         template <class AllocT, typename T, NX_PP_TYPE_1(n, typename P)> \
-        T* alloc(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
+        T* alloc(NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
         { \
             return tls_recorder::instance().regist \
                 (nx::alloc<AllocT, T>(NX_PP_FORWARD(n, P, par)), file_, line_, sizeof(T)); \
         } \
         template <typename T, NX_PP_TYPE_1(n, typename P)> \
-        T* alloc(NX_PP_TYPE_2(n, P, NX_PP_FPAR(par))) \
+        typename nx::enable_if<!nx::is_alloc<T>::value, \
+        T*>::type_t alloc(NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
         { \
             return alloc<NX_DEFAULT_ALLOC, T>(NX_PP_FORWARD(n, P, par)); \
         }
         NX_PP_MULT_MAX(NX_ALLOC_)
 #   undef NX_ALLOC_
+#endif/*NX_SP_CXX11_TEMPLATES*/
 
         /* catch free */
 

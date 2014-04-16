@@ -23,8 +23,8 @@ namespace use
 {
     struct dest_memory // destructor policy for memory
     {
-        template <typename T> bool is_valid(const T& r) const
-        { return !!r; }
+        template <typename T> bool is_valid(nx_fref(T, r)) const
+        { return !!nx_extract(T, r); }
         template <typename T> void reset(T& r)
         { r = nx::nulptr; }
     };
@@ -37,11 +37,19 @@ namespace private_pointer
     {
         typedef PtrT base_t;
 
-        opt() : base_t() {}
+        opt()
+            : base_t()
+        {}
+
         template <typename U>
-        opt(const U& r) : base_t(r) {}
+        opt(nx_fref(U, r))
+            : base_t(nx_forward(U, r))
+        {}
+
         template <typename U, typename F>
-        opt(const U& r, F dest_fr) : base_t(r, dest_fr) {}
+        opt(nx_fref(U, r), nx_fref(F, dest_fr))
+            : base_t(nx_forward(U, r), nx_forward(F, dest_fr))
+        {}
 
         T* operator->(void) const { return  PtrT::get(); }
         T& operator* (void) const { return *PtrT::get(); }
@@ -52,11 +60,19 @@ namespace private_pointer
     {
         typedef PtrT base_t;
 
-        opt() : base_t() {}
+        opt()
+            : base_t()
+        {}
+
         template <typename U>
-        opt(const U& r) : base_t(r) {}
+        opt(nx_fref(U, r))
+            : base_t(nx_forward(U, r))
+        {}
+
         template <typename U, typename F>
-        opt(const U& r, F dest_fr) : base_t(r, dest_fr) {}
+        opt(nx_fref(U, r), nx_fref(F, dest_fr))
+            : base_t(nx_forward(U, r), nx_forward(F, dest_fr))
+        {}
     };
 }
 
@@ -81,12 +97,12 @@ public:
         : opt_t()
     {}
     template <typename U>
-    pointer(const U& r)
-        : opt_t(r)
+    pointer(nx_fref(U, r))
+        : opt_t(nx_forward(U, r))
     {}
     template <typename U, typename F>
-    pointer(const U& r, F dest_fr)
-        : opt_t(r, dest_fr)
+    pointer(nx_fref(U, r), nx_fref(F, dest_fr))
+        : opt_t(nx_forward(U, r), nx_forward(F, dest_fr))
     {}
     pointer(const pointer& r)
         : opt_t(static_cast<const base_t&>(r))

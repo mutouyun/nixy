@@ -22,7 +22,7 @@ NX_BEG
 #ifdef NX_SP_CXX11_ALIAS
 template <typename T, typename SeqT = nx::deque<T> >
 using stack = std::stack<T, SeqT>;
-#else/*NX_SP_CXX11_ALIAS*/
+#else /*NX_SP_CXX11_ALIAS*/
 template <typename T, typename SeqT = nx::deque<T> >
 class stack : public std::stack<T, SeqT>
 {
@@ -31,7 +31,7 @@ class stack : public std::stack<T, SeqT>
 public:
 #ifdef NX_SP_CXX11_INHERITING
     using base_t::stack;
-#else/*NX_SP_CXX11_INHERITING*/
+#else /*NX_SP_CXX11_INHERITING*/
     explicit stack(const SeqT& s = SeqT())
         : base_t(s)
     {}

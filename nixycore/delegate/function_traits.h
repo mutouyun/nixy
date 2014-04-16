@@ -28,6 +28,14 @@ namespace private_function_traits
     /*
         Traits for normal function
     */
+#ifdef NX_SP_CXX11_TEMPLATES
+    template <typename R, typename... P>
+    struct detail<R(*)(P...), true>
+    {
+        typedef R result_t;
+        typedef R type_t(P...);
+    };
+#else /*NX_SP_CXX11_TEMPLATES*/
     template <typename R>
     struct detail<R(*)(), true>
     {
@@ -43,10 +51,25 @@ namespace private_function_traits
     };
     NX_PP_MULT_MAX(NX_FUNC_TRAITS_)
 #undef NX_FUNC_TRAITS_
+#endif/*NX_SP_CXX11_TEMPLATES*/
 
     /*
         Traits for member function
     */
+#ifdef NX_SP_CXX11_TEMPLATES
+#define NX_FUNC_MEM_(...) \
+    template <typename R, typename C, typename... P> \
+    struct detail<R(C::*)(P...) __VA_ARGS__, true> \
+    { \
+        typedef R result_t; \
+        typedef R type_t(P...); \
+    };
+    NX_FUNC_MEM_()
+    NX_FUNC_MEM_(const)
+    NX_FUNC_MEM_(volatile)
+    NX_FUNC_MEM_(const volatile)
+#undef NX_FUNC_MEM_
+#else /*NX_SP_CXX11_TEMPLATES*/
 #define NX_FUNC_MEM_(...) \
     template <typename R, typename C> \
     struct detail<NX_PP_VA(R(C::*)() __VA_ARGS__), true> \
@@ -74,6 +97,7 @@ namespace private_function_traits
     NX_PP_MULT_MAX(NX_FUNC_TRAITS_)
 #undef NX_FUNC_TRAITS_
 #undef NX_FUNC_MEM_
+#endif/*NX_SP_CXX11_TEMPLATES*/
 
 #if !(defined(NX_OS_WINCE) && (NX_CC_MSVC <= 1400))
 
@@ -82,16 +106,24 @@ namespace private_function_traits
     {};
 
 #endif
+
+    template <typename T>
+    struct adjust
+    {
+    private:
+        typedef typename nx::decay<T>::type_t clear_type;
+
+    public:
+        typedef typename nx::select_if<
+                nx::is_pointer<clear_type>::value,
+                    clear_type, clear_type*
+        >::type_t type_t;
+    };
 }
 
 template <typename T>
 struct function_traits
-    : private_function_traits::detail<typename nx::rm_cv
-                                     <typename nx::select_if
-                                     <nx::is_pointer<T>::value, T, T*
-    >::type_t
-    >::type_t
-    >
+    : private_function_traits::detail<typename private_function_traits::adjust<T>::type_t>
 {};
 
 //////////////////////////////////////////////////////////////////////////

@@ -26,7 +26,7 @@ template
     typename CompT = std::less<typename SeqT::value_type>
 >
 using priority = std::priority_queue<T, SeqT, CompT>;
-#else/*NX_SP_CXX11_ALIAS*/
+#else /*NX_SP_CXX11_ALIAS*/
 template
 <
     typename T, typename SeqT = nx::vector<T>,
@@ -39,7 +39,7 @@ class priority : public std::priority_queue<T, SeqT, CompT>
 public:
 #ifdef NX_SP_CXX11_INHERITING
     using base_t::priority_queue;
-#else/*NX_SP_CXX11_INHERITING*/
+#else /*NX_SP_CXX11_INHERITING*/
     explicit priority(const CompT& c = CompT(), const SeqT& s = SeqT())
         : base_t(c, s)
     {}

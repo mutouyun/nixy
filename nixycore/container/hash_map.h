@@ -31,7 +31,7 @@ template <typename KeyT, typename TypeT, class HashT = std::hash<KeyT>
                                        , class AllocT = NX_DEFAULT_ALLOC>
 using hash_multimap = std::unordered_multimap<KeyT, TypeT, HashT, PredT,
             typename AllocT::template std_allocator<std::pair<const KeyT, TypeT> >::type_t>;
-#else/*NX_SP_CXX11_ALIAS*/
+#else /*NX_SP_CXX11_ALIAS*/
 template <typename KeyT, typename TypeT, class HashT = std::hash<KeyT>
                                        , class PredT = std::equal_to<KeyT>
                                        , class AllocT = NX_DEFAULT_ALLOC>
@@ -44,7 +44,7 @@ class hash_map : public std::unordered_map<KeyT, TypeT, HashT, PredT,
 public:
 #ifdef NX_SP_CXX11_INHERITING
     using base_t::unordered_map;
-#else/*NX_SP_CXX11_INHERITING*/
+#else /*NX_SP_CXX11_INHERITING*/
     hash_map(void)
         : base_t()
     {}
@@ -104,7 +104,7 @@ class hash_multimap : public std::unordered_multimap<KeyT, TypeT, HashT, PredT,
 public:
 #ifdef NX_SP_CXX11_INHERITING
     using base_t::unordered_multimap;
-#else/*NX_SP_CXX11_INHERITING*/
+#else /*NX_SP_CXX11_INHERITING*/
     hash_multimap(void)
         : base_t()
     {}

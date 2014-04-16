@@ -201,7 +201,7 @@ void testBind(void)
         strout << nx::bind(&func2, nx::_2, nx::_2)(1, 2) << endl;
         strout << nx::bind(&A::func, &a, nx::_4, nx::_3, nx::_2, nx::_1)(4, 3, 2, 1) << endl;
         std::string s("Hello bind");
-        strout << nx::bind<const char*>(&f1, nx::ref(s))() << endl;
+        strout << nx::bind<const char*>(&f1, nx_fval(s))() << endl;
     }
     strout << endl;
     {
