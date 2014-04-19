@@ -67,15 +67,15 @@ nx_rval(vector<string>, true) split(size_type limit = npos) const
 
 nx_rval(vector<string>, true) split(value_type sep, size_type limit = npos) const
 {
-    return split(bind(static_cast<bool(*)(const_iterator, const_iterator*, value_type)>(&string::split_check),
-                      nx::_1, nx::_2, nx_fval(sep)),
+    return split(nx::bind(static_cast<bool(*)(const_iterator, const_iterator*, value_type)>(&string::split_check),
+                          nx::_1, nx::_2, nx_fval(sep)),
                  limit);
 }
 
 nx_rval(vector<string>, true) split(const string& sep, size_type limit = npos) const
 {
-    return split(bind(static_cast<bool(*)(const_iterator, const_iterator*, const string&)>(&string::split_check),
-                      nx::_1, nx::_2, nx_fval(sep)),
+    return split(nx::bind(static_cast<bool(*)(const_iterator, const_iterator*, const string&)>(&string::split_check),
+                          nx::_1, nx::_2, nx_fval(sep)),
                  limit);
 }
 

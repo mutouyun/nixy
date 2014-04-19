@@ -58,12 +58,17 @@ class rvalue : public nx::traits<T>::type_t
     typedef base_t value_t;
 
 public:
+    typedef rvalue self_t;
+
     rvalue(const rvalue& rv)
         : base_t(rv)
     {}
     rvalue(const value_t& rv)
         : base_t(static_cast<rvalue&>(const_cast<value_t&>(rv)))
     {}
+
+    operator value_t&()             { return (*this); }
+    operator const value_t&() const { return (*this); }
 };
 
 template <typename T>
@@ -76,6 +81,8 @@ class rvalue<T, false>
     value_t content_;
 
 public:
+    typedef value_t self_t;
+
     rvalue(const rvalue& rv)
         : content_(rv.content_)
     {}
@@ -103,6 +110,12 @@ nx_rref(T)>::type_t move(const T& rv) nx_noexcept
 template <typename T>
 inline typename enable_if<!is_class<T>::value,
 const T&>::type_t move(const T& rv) nx_noexcept
+{
+    return rv;
+}
+
+template <typename T>
+inline nx_rref(T) move(nx_rref(T) rv) nx_noexcept
 {
     return rv;
 }

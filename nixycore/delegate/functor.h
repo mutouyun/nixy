@@ -689,7 +689,7 @@ template <typename T, typename C, typename P>
 inline nx_rval(functor<typename function_traits<T C::*>::type_t>, true)
     bind(T C::* f, P p)
 {
-    return functor<typename function_traits<T C::*>::type_t>(f, p);
+    return nx::move(functor<typename function_traits<T C::*>::type_t>(f, p));
 }
 
 //////////////////////////////////////////////////////////////////////////

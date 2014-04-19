@@ -68,6 +68,20 @@ namespace private_tuple
         {}
 #endif/*NX_SP_CXX11_TEMPLATES*/
 
+#ifdef NX_SP_CXX11_RVALUE_REF
+        template <typename T_, typename U_>
+        detail(detail<T_, U_>&& r)
+            : head_(nx::move(r.head_))
+            , tail_(nx::move(r.tail_))
+        {}
+#else /*NX_SP_CXX11_RVALUE_REF*/
+        template <typename T_, typename U_>
+        detail(const nx::rvalue<detail<T_, U_>, true>& r)
+            : head_(r.head_)
+            , tail_(nx::move(r.tail_))
+        {}
+#endif/*NX_SP_CXX11_RVALUE_REF*/
+
         template <typename T_, typename U_>
         detail(const detail<T_, U_>& r)
             : head_(r.head_)
@@ -114,6 +128,18 @@ namespace private_tuple
         detail(const detail<T_, nx::null_t>& r)
             : head_(r.head_)
         {}
+
+#ifdef NX_SP_CXX11_RVALUE_REF
+        template <typename T_>
+        detail(detail<T_, nx::null_t>&& r)
+            : head_(nx::move(r.head_))
+        {}
+#else /*NX_SP_CXX11_RVALUE_REF*/
+        template <typename T_>
+        detail(const nx::rvalue<detail<T_, nx::null_t>, true>& r)
+            : head_(r.head_)
+        {}
+#endif/*NX_SP_CXX11_RVALUE_REF*/
 
         template <typename T_>
         void swap(detail<T_, nx::null_t>& r)
@@ -240,6 +266,15 @@ public:
     {}
 
     template<typename... U>
+    tuple(nx_rref(tuple<U...>, true) r)
+#ifdef NX_SP_CXX11_RVALUE_REF
+        : base_t(nx::move(r))
+#else /*NX_SP_CXX11_RVALUE_REF*/
+        : base_t(nx::move(static_cast<typename tuple<U...>::base_t>(nx::moved(r))))
+#endif/*NX_SP_CXX11_RVALUE_REF*/
+    {}
+
+    template<typename... U>
     tuple& operator=(tuple<U...> rhs)
     {
         rhs.swap(*this);
@@ -295,6 +330,16 @@ public:
     template<NX_PP_TYPE_MAX_1(typename U)>
     tuple(const tuple<NX_PP_TYPE_MAX_1(U)>& r)
         : base_t(r)
+    {}
+
+    template<NX_PP_TYPE_MAX_1(typename U)>
+#ifdef NX_SP_CXX11_RVALUE_REF
+    tuple(tuple<NX_PP_TYPE_MAX_1(U)>&& r)
+        : base_t(nx::move(r))
+#else /*NX_SP_CXX11_RVALUE_REF*/
+    tuple(const nx::rvalue<tuple<NX_PP_TYPE_MAX_1(U)>, true>& r)
+        : base_t(nx::move(static_cast<typename tuple<NX_PP_TYPE_MAX_1(U)>::base_t>(nx::moved(r))))
+#endif/*NX_SP_CXX11_RVALUE_REF*/
     {}
 
     template <NX_PP_TYPE_MAX_1(typename U)>
