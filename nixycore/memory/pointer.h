@@ -37,7 +37,7 @@ namespace private_pointer
     {
         typedef PtrT base_t;
 
-        opt()
+        opt(void)
             : base_t()
         {}
 
@@ -60,7 +60,7 @@ namespace private_pointer
     {
         typedef PtrT base_t;
 
-        opt()
+        opt(void)
             : base_t()
         {}
 
@@ -69,10 +69,24 @@ namespace private_pointer
             : base_t(nx_forward(U, r))
         {}
 
+        template <typename U>
+        opt(nx_fref(U, r), size_t size)
+            : base_t()
+        {
+            base_t::assign_to(nx_forward(U, r), nx::make_destructor(r, size));
+        }
+
         template <typename U, typename F>
-        opt(nx_fref(U, r), nx_fref(F, dest_fr))
+        opt(nx_fref(U, r), nx_fref(F, dest_fr), 
+            typename nx::enable_if<!nx::is_scalar<F>::value, int>::type_t = 0)
             : base_t(nx_forward(U, r), nx_forward(F, dest_fr))
         {}
+
+        template <typename U>
+        void set(nx_fref(U, r), size_t size)
+        {
+            base_t::assign_to(nx_forward(U, r), nx::make_destructor(r, size));
+        }
     };
 }
 

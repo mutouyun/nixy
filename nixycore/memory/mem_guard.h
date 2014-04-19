@@ -11,6 +11,7 @@
 
 #include "nixycore/delegate/functor.h"
 #include "nixycore/finalizer/scope_guard.h"
+#include "nixycore/utility/rvalue.h"
 
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
@@ -44,16 +45,18 @@ namespace private_mem_guard
 }
 
 template <typename T>
-inline typename enable_if<!is_function<T>::value,
-functor<void()> >::type_t make_destructor(T* r)
+inline private_mem_guard::free_fr<T*> make_destructor(T* r)
 {
     return private_mem_guard::free_fr<T*>(r);
 }
 
-inline functor<void()> make_destructor(pvoid r, size_t s)
+inline private_mem_guard::free_fr<pvoid> make_destructor(pvoid r, size_t s)
 {
     return private_mem_guard::free_fr<pvoid>(r, s);
 }
+
+#define nx_memory_scope(...) \
+    nx_guard_scope(nx::make_destructor(__VA_ARGS__))
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

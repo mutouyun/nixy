@@ -31,6 +31,7 @@
     CXX11_INHERITING    - Inheriting constructors
     CXX11_ALIGNMENT     - Alignment
     CXX11_INITIALIZER   - Initializer lists
+    CXX11_LAMBDA        - Lambda expressions
 */
 //////////////////////////////////////////////////////////////////////////
 
@@ -65,6 +66,7 @@
 #       define NX_SP_CXX11_AUTO
 #       define NX_SP_CXX11_RVALUE_REF
 #       define NX_SP_CXX11_SATIC_ASSERT
+#       define NX_SP_CXX11_LAMBDA
 #   endif
 #   if (NX_CC_MSVC >= 1700)
 #       define NX_SP_CXX11_TYPE_TRAITS
@@ -118,6 +120,7 @@
 #   endif
 #   if NX_CHECK_CLANG(3, 1, 0)
 #       define NX_SP_CXX11_INITIALIZER
+#       define NX_SP_CXX11_LAMBDA
 #   endif
 #   if NX_CHECK_CLANG(3, 3, 0)
 #       define NX_SP_CXX11_INHERITING
@@ -152,6 +155,9 @@
 #       define NX_SP_CXX11_CHAR_TYPE
 #       define NX_SP_CXX11_TEMPLATES_EX
 #       define NX_SP_CXX11_INITIALIZER
+#   endif
+#   if NX_CHECK_GNUC(4, 5, 0)
+#       define NX_SP_CXX11_LAMBDA
 #   endif
 #   if NX_CHECK_GNUC(4, 6, 0)
 #       define NX_SP_CXX11_NULLPTR

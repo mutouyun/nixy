@@ -51,10 +51,10 @@ private:
     {
         data* thr_dat = static_cast<data*>(args);
         nx_assert(thr_dat);
-        nx_guard_scope(thr_dat);
+        nx_memory_scope(thr_dat);
         if (thr_dat->task_queue_)
         {
-            nx_guard_scope(thr_dat->task_queue_);
+            nx_memory_scope(thr_dat->task_queue_);
             task_t task;
             while (!!(task = thr_dat->task_queue_->take())) // wait for a new task
                 task();

@@ -43,16 +43,20 @@ namespace private_gc
 
     struct res : tag
     {
-        scope_guard sp_;        // use scope_guard to recover resource
+        typedef scope_guard<nx::functor<void()> > guard_t;
+
+        guard_t sp_;        // use scope_guard to recover resource
         nx::list<tag*> links_;  // linked handles
 
-        res(pvoid gc, const nx::functor<void()>& destructor)
-            : tag(gc), sp_(destructor)
+        template <typename F>
+        res(pvoid gc, nx_fref(F, dest_fr))
+            : tag(gc), sp_(nx_forward(F, dest_fr))
         {}
 
-        static res* alloc(pvoid gc, const nx::functor<void()>& destructor)
+        template <typename F>
+        static res* alloc(pvoid gc, nx_fref(F, dest_fr))
         {
-            return nx::alloc<res>(gc, nx::ref(destructor));
+            return nx::alloc<res>(gc, nx_forward(F, dest_fr));
         }
 
         void free(void)
@@ -196,9 +200,10 @@ namespace private_gc
             nx_foreach(d, dest_list_) d->free();
         }
 
-        res* regist(pvoid gc, const nx::functor<void()>& destructor)
+        template <typename F>
+        res* regist(pvoid gc, nx_fref(F, dest_fr))
         {
-            dest_list_.push_front(res::alloc(gc, destructor)); // push_front for reversed destruction
+            dest_list_.push_front(res::alloc(gc, nx_forward(F, dest_fr))); // push_front for reversed destruction
             index_map_[dest_list_.front()] = dest_list_.begin();
             return dest_list_.front();
         }
@@ -272,8 +277,9 @@ namespace private_gc
         static inf* regist(T& hd, pvoid gc)
         { return get_gc(gc)->handles_.regist(hd, gc); }
 
-        static res* regist(pvoid gc, const nx::functor<void()>& destructor)
-        { return get_gc(gc)->resours_.regist(gc, destructor); }
+        template <typename F>
+        static res* regist(pvoid gc, nx_fref(F, dest_fr))
+        { return get_gc(gc)->resours_.regist(gc, nx_forward(F, dest_fr)); }
 
         /////////////////////////////////////
 
@@ -364,10 +370,10 @@ namespace private_gc
     {
         pvoid gc_;
 
-        template <typename U>
-        const U& regist_resour(const U& r, const nx::functor<void()>& destructor)
+        template <typename U, typename F>
+        const U& regist_resour(const U& r, nx_fref(F, dest_fr))
         {
-            connecter::link_handles(r, connecter::regist(gc_, destructor));
+            connecter::link_handles(r, connecter::regist(gc_, nx_forward(F, dest_fr)));
             return r;
         }
 
@@ -385,9 +391,9 @@ namespace private_gc
         }
 
         template <typename U, typename F>
-        const U& operator()(const U& r, const F& dest_fr)
+        const U& operator()(const U& r, nx_fref(F, dest_fr))
         {
-            return regist_resour(r, make_destructor(r, dest_fr));
+            return regist_resour(r, make_destructor(r, nx_forward(F, dest_fr)));
         }
 
         nx::nulptr_t operator()(nx::nulptr_t)
@@ -408,10 +414,10 @@ namespace private_gc
             connecter::remember_parent(rh_tp_, parent_res);
         }
 
-        template <typename U>
-        res* regist_resour(const U& r, const nx::functor<void()>& destructor)
+        template <typename U, typename F>
+        res* regist_resour(const U& r, nx_fref(F, dest_fr))
         {
-            res* rs_tp = connecter::regist(connecter::track(), destructor);
+            res* rs_tp = connecter::regist(connecter::track(), nx_forward(F, dest_fr));
             connecter::link_handles(r, rs_tp);
             return rs_tp;
         }
@@ -426,11 +432,11 @@ namespace private_gc
             return rh_ = r;
         }
 
-        template <typename U>
-        T& assign_to(const U& r, const nx::functor<void()>& destructor)
+        template <typename U, typename F>
+        T& assign_to(const U& r, nx_fref(F, dest_fr))
         {
             if (rh_ == r) return rh_;
-            res* rs_tp = regist_resour(r, destructor);
+            res* rs_tp = regist_resour(r, nx_forward(F, dest_fr));
             connecter::refresh_gc(rs_tp, rh_tp_->gc_);
             connecter::link_to(rh_tp_, rs_tp);
             return rh_ = r;
@@ -463,9 +469,9 @@ namespace private_gc
         }
 
         template <typename U, typename F>
-        T& operator()(const U& r, F dest_fr)
+        T& operator()(const U& r, nx_fref(F, dest_fr))
         {
-            return assign_to(r, make_destructor(r, dest_fr));
+            return assign_to(r, make_destructor(r, nx_forward(F, dest_fr)));
         }
 
         T& operator()(nx::nulptr_t)
@@ -515,9 +521,9 @@ public:
     }
 
     template <typename U, typename F>
-    const U& operator()(const U& r, F dest_fr)
+    const U& operator()(const U& r, nx_fref(F, dest_fr))
     {
-        return private_gc::assigner<>(gc_)(r, dest_fr);
+        return private_gc::assigner<>(gc_)(r, nx_forward(F, dest_fr));
     }
 
     template <typename T>

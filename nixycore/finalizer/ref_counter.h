@@ -27,10 +27,11 @@ class ref_base : nx_operator(typename NX_SHIELD(ref_base<AllocT, ModelT>), unequ
 {
 public:
     typedef typename ModelT::template atomic<ulong>::type_t ref_t;
+    typedef scope_guard<nx::functor<void()> > guard_t;
 
 protected:
     ref_t* ref_;
-    scope_guard* guard_;
+    guard_t* guard_;
 
 public:
     ref_base(void)
@@ -43,12 +44,13 @@ public:
         return (r1.ref_ == r2.ref_);
     }
 
-    void init(const nx::functor<void()>& guard)
+    template <typename F>
+    void init(nx_fref(F, dest_fr))
     {
         dec();
         ref_   = nx::alloc<AllocT, ref_t>(1);
         nx_assert(ref_);
-        guard_ = nx::alloc<AllocT, scope_guard>(nx_fval(guard));
+        guard_ = nx::alloc<AllocT, guard_t>(nx_forward(F, dest_fr));
         nx_assert(guard_);
     }
 
@@ -108,7 +110,8 @@ public:
     }
 
     template <typename U>
-    ref_counter(nx_fref(U, r))
+    ref_counter(nx_fref(U, r), 
+                typename nx::enable_if<!nx::is_sametype<U, ref_counter>::value, int>::type_t = 0)
     {
         P::set(nx_forward(U, r));
     }
@@ -124,6 +127,25 @@ public:
         P::dec();
     }
 };
+
+/*
+    The destructor maker
+*/
+
+#ifdef NX_SP_CXX11_RVALUE_REF
+template <typename T, typename F>
+inline functor<void()> make_destructor(nx_fref(T, r), nx_fref(F, dest_fr))
+{
+    return bind<void>(nx_forward(F, dest_fr), nx_forward(T, r));
+}
+#else /*NX_SP_CXX11_RVALUE_REF*/
+template <typename T, typename F>
+inline nx_rval(functor<void()>, true)
+    make_destructor(nx_fref(T, r), nx_fref(F, dest_fr))
+{
+    return nx::move(functor<void()>(bind<void>(nx_forward(F, dest_fr), nx_forward(T, r))));
+}
+#endif/*NX_SP_CXX11_RVALUE_REF*/
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

@@ -25,8 +25,6 @@ NX_BEG
 
 namespace private_lock_scope
 {
-    NX_CONCEPT(lock_t, lock_t);
-
     template <typename T>
     struct lock_fr
     {
@@ -37,8 +35,7 @@ namespace private_lock_scope
 }
 
 template <typename T>
-inline typename enable_if<private_lock_scope::has_lock_t<T>::value,
-functor<void()> >::type_t make_destructor(T& r)
+inline private_lock_scope::lock_fr<T> make_lock_fr(T& r)
 {
     return private_lock_scope::lock_fr<T>(r);
 }
@@ -52,7 +49,7 @@ functor<void()> >::type_t make_destructor(T& r)
 #else /*NX_SINGLE_THREAD*/
 
 #define nx_lock_scope(...) \
-    nx_guard_scope(__VA_ARGS__)
+    nx_guard_scope(nx::make_lock_fr(__VA_ARGS__))
 
 #define nx_lock_sole(Lock_) \
     nx_lock_scope(nx::singleton<Lock_>())

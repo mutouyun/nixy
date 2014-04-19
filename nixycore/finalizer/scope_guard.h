@@ -8,7 +8,6 @@
 #pragma once
 
 #include "nixycore/delegate/functor.h"
-#include "nixycore/delegate/bind.h"
 
 #include "nixycore/bugfix/noexcept.h"
 
@@ -24,18 +23,33 @@ NX_BEG
     Execute guard function when the enclosing scope exits
 */
 
+template <typename F>
 class scope_guard : noncopyable
 {
-    mutable nx::functor<void()> destructor_;
+    F destructor_;
+    mutable bool dismiss_;
 
 public:
-    explicit scope_guard(const nx::functor<void()>& destructor)
+    explicit scope_guard(const F& destructor)
         : destructor_(destructor)
+        , dismiss_(false)
     {}
+
+    explicit scope_guard(nx_rref(F) destructor)
+        : destructor_(nx::move(destructor))
+        , dismiss_(false)
+    {}
+
+    scope_guard(nx_rref(scope_guard, true) rhs)
+        : destructor_(nx::move(rhs.destructor_))
+        , dismiss_(rhs.dismiss_)
+    {
+        rhs.dismiss();
+    }
 
     ~scope_guard(void)
     {
-        if (destructor_) try
+        if (!dismiss_) try
         {
             destructor_();
         }
@@ -51,13 +65,20 @@ public:
     }
 
     void dismiss() const nx_noexcept
-    { destructor_ = nx::nulptr; }
+    {
+        dismiss_ = true;
+    }
 
-    const nx::functor<void()>& get(void) const
-    { return destructor_; }
+    nx_rval(functor<void()>, true) get(void) const
+    {
+        return destructor_;
+    }
 
     void swap(scope_guard& rhs)
-    { destructor_.swap(rhs.destructor_); }
+    {
+        nx::swap(destructor_, rhs.destructor_);
+        nx::swap(dismiss_,    rhs.dismiss_);
+    }
 };
 
 /*
@@ -65,30 +86,23 @@ public:
     void func(void)
     {
         int* p = new int(2);
-        nx_guard_scope(p, new_dest);
+        nx_guard_scope(nx::bind(new_dest, p));
         ...
     }
 */
 
-template <typename T>
-inline typename enable_if<is_function<T>::value,
-functor<void()> >::type_t make_destructor(nx_fref(T, r))
+template <typename F>
+inline nx_rval(scope_guard<typename nx::decay<F>::type_t>, true)
+    make_scope_guard(nx_fref(F, f))
 {
-    return nx_forward(T, r);
+    return nx::move(scope_guard<typename nx::decay<F>::type_t>(nx_forward(F, f)));
 }
 
-template <typename T, typename F>
-inline typename nx::enable_if<!nx::is_numeric<F>::value,
-functor<void()> >::type_t make_destructor(nx_fref(T, r), nx_fref(F, dest_fr))
-{
-    return bind<void>(nx_forward(F, dest_fr), nx_forward(T, r));
-}
-
-#define NX_GUARD_SCOPE_NAM_(nn) guard_##nn##__
+#define NX_GUARD_SCOPE_NAM_(nn) scope_guard_##nn##__
 #define NX_GUARD_SCOPE_(nn, call) \
-    nx::scope_guard NX_UNUSED NX_GUARD_SCOPE_NAM_(nn)(call)
+    nx_auto(NX_UNUSED NX_GUARD_SCOPE_NAM_(nn), call)
 
-#define nx_guard_scope(...) NX_GUARD_SCOPE_(__LINE__, nx::make_destructor(__VA_ARGS__))
+#define nx_guard_scope(...) NX_GUARD_SCOPE_(__LINE__, nx::make_scope_guard(__VA_ARGS__))
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

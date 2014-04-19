@@ -26,6 +26,13 @@ void testScopeGuard(void)
     {
         nx_guard_scope(onScopeExit);
         static nx_guard_scope(onSoleExit);
+
+#   ifdef NX_SP_CXX11_LAMBDA
+        nx_guard_scope([]()
+        {
+            strout << NX__FUNCTION__ << endl;
+        });
+#   endif
     }
 
     strout << __FUNCTION__ << " ending..." << endl;
@@ -120,6 +127,6 @@ void testFinalizer(void)
 {
     TEST_FUNCTION();
 
-    //testScopeGuard();
-    testGC();
+    testScopeGuard();
+    //testGC();
 }

@@ -352,13 +352,13 @@ void testMemGuard(void)
     using namespace test_memguard;
 
     A* p1 = nx::alloc<A>(1);
-    nx_guard_scope(p1);
+    nx_memory_scope(p1);
 
     A* p2 = new A(2);
-    nx_guard_scope(p2, new_dest);
+    nx_memory_scope(p2, new_dest);
 
     A* p3 = nx::alloc<A>(3);
-    nx_guard_scope(p3);
+    nx_memory_scope(p3);
 
     strout << "...Do something..." << endl;
 }
