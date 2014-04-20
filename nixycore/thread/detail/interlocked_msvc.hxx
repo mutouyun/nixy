@@ -6,8 +6,6 @@
 */
 
 //////////////////////////////////////////////////////////////////////////
-NX_BEG namespace use { struct interlocked_mt : private_interlocked::base<interlocked_mt> {
-//////////////////////////////////////////////////////////////////////////
 
 #ifdef NX_INTERLOCKED_EXCHANGE8
 NX_STATIC_PROPERTY(int, mask_8_, 0x1);
@@ -33,7 +31,7 @@ NX_STATIC_PROPERTY(int, mask_64_, 0x8);
 NX_STATIC_PROPERTY(int, mask_64_, 0x0);
 #endif
 
-NX_STATIC_PROPERTY(int, supported_mask, mask_8_ | mask_16_ | mask_32_ | mask_64_);
+NX_STATIC_PROPERTY(int, SUPPORTED_MASK, mask_8_ | mask_16_ | mask_32_ | mask_64_);
 
 #ifdef NX_INTERLOCKED_EXCHANGE8
 
@@ -225,6 +223,4 @@ bool>::type_t compare_exchange(T& dest, U val, T comp)
 
 #endif/*NX_INTERLOCKED_EXCHANGE64*/
 
-//////////////////////////////////////////////////////////////////////////
-}; } NX_END
 //////////////////////////////////////////////////////////////////////////

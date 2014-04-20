@@ -39,14 +39,14 @@ class Singleton : noncopyable
         if (!ip_) \
         { \
             lc_.lock(); \
-            if (!(ip_.get())) \
+            if (!(ip_.load(memory_order::relaxed))) \
             { \
                 static T ir __VA_ARGS__; \
                 ip_ = &ir; \
             } \
             lc_.unlock(); \
         } \
-        return (*(ip_.get()))
+        return (*(ip_.load(memory_order::relaxed)))
 
 #else /*NX_SINGLE_THREAD*/
 

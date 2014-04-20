@@ -190,7 +190,7 @@ public:
             pool_ptr = &(cache.at(n, i)); // at() may change the cache
         }
         nx_assert(pool_ptr)(n)(i);
-        R*(& ret) = (*(pool_ptr.get()));
+        R*(& ret) = (*(pool_ptr.load(memory_order::relaxed)));
         if (*pool_ptr) return ret;
         // alloc a new pool, and put it into cache
         {

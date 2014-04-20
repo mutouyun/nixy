@@ -6,15 +6,13 @@
 */
 
 //////////////////////////////////////////////////////////////////////////
-NX_BEG namespace use { struct interlocked_mt : private_interlocked::base<interlocked_mt> {
-//////////////////////////////////////////////////////////////////////////
 
 #if NX_CHECK_GNUC(4, 1, 2)
 
 #ifdef NX_PC_X64
-NX_STATIC_PROPERTY(int, supported_mask, 0xF);
+NX_STATIC_PROPERTY(int, SUPPORTED_MASK, 0xF);
 #else
-NX_STATIC_PROPERTY(int, supported_mask, 0x7);
+NX_STATIC_PROPERTY(int, SUPPORTED_MASK, 0x7);
 #endif
 
 template <typename T, typename U>
@@ -38,9 +36,9 @@ inline static bool compare_exchange(T& dest, U val, T comp)
 #elif defined(NX_PC_X86)
 
 #ifdef NX_PC_X86_64
-NX_STATIC_PROPERTY(int, supported_mask, 0xF);
+NX_STATIC_PROPERTY(int, SUPPORTED_MASK, 0xF);
 #else
-NX_STATIC_PROPERTY(int, supported_mask, 0x7);
+NX_STATIC_PROPERTY(int, SUPPORTED_MASK, 0x7);
 #endif
 
 /*
@@ -245,7 +243,7 @@ bool>::type_t compare_exchange(T& dest, U val, T comp)
 
 #elif defined(NX_PC_ARM)
 
-NX_STATIC_PROPERTY(int, supported_mask, 0x4);
+NX_STATIC_PROPERTY(int, SUPPORTED_MASK, 0x4);
 
 template <typename T, typename U>
 inline static typename nx::enable_if<sizeof(T) == 4,
@@ -278,6 +276,4 @@ bool>::type_t compare_exchange(T& dest, U val, T comp)
 
 #endif/*NX_CHECK_GNUC(4, 1, 2)*/
 
-//////////////////////////////////////////////////////////////////////////
-}; } NX_END
 //////////////////////////////////////////////////////////////////////////
