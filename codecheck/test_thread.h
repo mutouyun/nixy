@@ -10,7 +10,10 @@ void testInterlocked(void)
     TEST_CASE();
 
     long a = 3, b = 2, c = 2;
+#ifdef NX_SP_CXX11_ATOMIC
+#else
     c = nx::use::interlocked_mt::compare_exchange(b, -a, c);
+#endif
     strout << (int)a << " " << (int)b << " " << (int)c << endl;
 }
 
@@ -24,6 +27,10 @@ void testAtomic(void)
     strout << a << endl;
     if (!a) a = true;
     strout << a << endl;
+
+    nx::atomic<int> b = 10;
+    strout << (b++) << endl;
+    strout << (b = 123) << endl;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -34,13 +41,13 @@ namespace test_threadops
 
     NX_THREAD_PROC(proc)
     {
-        rdm.srand(nx::thread_ops::current_id());
+        rdm.srand(nx::thread_ops::native_current_id());
         for(int n = 0; n < 10; ++n)
         {
             unsigned st = 0;
             {
                 nx_lock_sole(nx::spin_lock);
-                strout << nx::thread_ops::current_id() << "\t";
+                strout << nx::thread_ops::native_current_id() << "\t";
                 for(int i = 0; i < 10; ++i) strout << i << " ";
                 strout << (st = rdm.roll<unsigned>()) << endl;
             }
@@ -336,7 +343,7 @@ namespace test_tlsptr
     NX_THREAD_PROC(proc)
     {
         intptr.set(new nx::ulong(0));
-        (*intptr) = nx::thread_ops::current_id();
+        (*intptr) = nx::thread_ops::native_current_id();
         {
             nx_lock_sole(nx::spin_lock);
             strout << "[proc " << (*intptr) << "]\tis running..." << endl;
@@ -413,6 +420,7 @@ void testThreadDetail(void)
     thr1.start();
     thr1.post(&hello_world);
     thr1.post(nx::none); // exit this thread
+    nx::thread::sleep(1000);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -439,7 +447,8 @@ void testThreadPool(void)
 
     using namespace test_threadpool;
 
-    nx::thread_pool pool(0, 10);
+    nx::thread_pool pool/*(0, 10)*/;
+    strout << "Pool max size: " << pool.max_size() << endl << endl;
     for(int i = 0; i < 10; ++i)
         pool.put(&test_proc, i);
 
@@ -483,7 +492,7 @@ void testAsync(void)
 
     nx::task<int> t1 = nx::async(&test_1, 100);
     nx::task<int> t2 = nx::async(&test_2, 10);
-    nx::task<nx_rval(int) > t3 = nx::async(&test_3);
+    nx_auto(t3, nx::async(&test_3));
 
     strout << "Check task result: " << t1.result()
                              << " " << t2.result()
@@ -503,7 +512,7 @@ void testThread(void)
     //testSemaphore();
     //testWaiter();
     //testTlsPtr();
-    //testThreadDetail();
-    //testThreadPool();
+    testThreadDetail();
+    testThreadPool();
     testAsync();
 }

@@ -48,10 +48,8 @@ public:
     void init(nx_fref(F, dest_fr))
     {
         dec();
-        ref_   = nx::alloc<AllocT, ref_t>(1);
-        nx_assert(ref_);
-        guard_ = nx::alloc<AllocT, guard_t>(nx_forward(F, dest_fr));
-        nx_assert(guard_);
+        nx_verify(ref_   = nx::alloc<AllocT, ref_t>(1));
+        nx_verify(guard_ = nx::alloc<AllocT, guard_t>(nx_forward(F, dest_fr)));
     }
 
     bool set(const ref_base& r)
@@ -65,15 +63,15 @@ public:
     {
         ref_ = r.ref_;
         if (!ref_) return false;
-        ++ (*ref_);
+        ref_->fetch_add(1, memory_order::relaxed);
         guard_ = r.guard_;
         return true;
     }
 
     void dec(void)
     {
-        if (!ref_ || (*ref_) == 0) return;
-        if (--(*ref_)) return;
+        if (!ref_ ||
+             ref_->fetch_sub(1, memory_order::relaxed) > 1) return;
         // free the ref counter
         nx::free<AllocT>(ref_);
         ref_ = nx::nulptr;
@@ -84,7 +82,7 @@ public:
 
     ulong ref(void)
     {
-        return (ref_ ? (*ref_) : 0);
+        return (ref_ ? ref_->load(memory_order::relaxed) : 0);
     }
 
     void swap(ref_base& rhs)
@@ -111,7 +109,7 @@ public:
 
     template <typename U>
     ref_counter(nx_fref(U, r), 
-                typename nx::enable_if<!nx::is_sametype<U, ref_counter>::value, int>::type_t = 0)
+                typename nx::enable_if<!nx::is_same<U, ref_counter>::value, int>::type_t = 0)
     {
         P::set(nx_forward(U, r));
     }

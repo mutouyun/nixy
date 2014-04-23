@@ -132,7 +132,7 @@ namespace transform
         }
 
         size_t i = 1;
-        for (; i < len; ++i)
+        for(; i < len; ++i)
         {
             b = *(src++);
             if (b < 0x80 || b > 0xBF) return 0; // the src is invalid

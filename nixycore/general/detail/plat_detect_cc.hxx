@@ -21,6 +21,8 @@
 #   define NX_CC_GNUC
 #   if defined(__clang__)
 #   define NX_CC_CLANG                          // Clang also masquerades as GCC
+#   else
+#   define NX_CC_GCC
 #   endif
 #else
 #   error "This CC is unsupported."

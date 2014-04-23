@@ -20,7 +20,10 @@
     type_traits(1509): fatal error C1001
     With: NX_SINGLETON_( (nx_forward(P, par)...) );
 */
+#ifdef NX_SP_CXX11_TEMPLATES
+#   define NX_UNDEF_HELPER_
 #   undef NX_SP_CXX11_TEMPLATES
+#endif/*NX_SP_CXX11_TEMPLATES*/
 #endif
 
 //////////////////////////////////////////////////////////////////////////
@@ -36,29 +39,26 @@ class Singleton : noncopyable
     static atomic<T*> ip_;
 
 #   define NX_SINGLETON_(...) \
-        if (!ip_) \
+        T* tp = ip_.load(memory_order::acquire); \
+        if (!tp) \
         { \
             lc_.lock(); \
-            if (!(ip_.load(memory_order::relaxed))) \
+            tp = ip_.load(memory_order::relaxed); \
+            if (!tp) \
             { \
                 static T ir __VA_ARGS__; \
-                ip_ = &ir; \
+                tp = &ir; \
+                ip_.store(tp, memory_order::release); \
             } \
             lc_.unlock(); \
         } \
-        return (*(ip_.load(memory_order::relaxed)))
+        return (*tp);
 
 #else /*NX_SINGLE_THREAD*/
 
-    static T* ip_;
-
 #   define NX_SINGLETON_(...) \
-        if (!ip_) \
-        { \
-            static T ir __VA_ARGS__; \
-            ip_ = &ir; \
-        } \
-        return (*ip_)
+        static T ir __VA_ARGS__; \
+        return ir
 
 #endif/*NX_SINGLE_THREAD*/
 
@@ -91,14 +91,8 @@ public:
 };
 
 #ifndef NX_SINGLE_THREAD
-
 template <typename T> spin_lock  Singleton<T>::lc_;
 template <typename T> atomic<T*> Singleton<T>::ip_;
-
-#else /*NX_SINGLE_THREAD*/
-
-template <typename T> T* Singleton<T>::ip_;
-
 #endif/*NX_SINGLE_THREAD*/
 
 /*
@@ -162,6 +156,7 @@ NX_PP_MULT_MAX(NX_SINGLETON_)
 NX_END
 //////////////////////////////////////////////////////////////////////////
 
-#if defined(NX_CC_MSVC) && (NX_CC_MSVC == 1800)
+#ifdef NX_UNDEF_HELPER_
+#   undef NX_UNDEF_HELPER_
 #   define NX_SP_CXX11_TEMPLATES
 #endif

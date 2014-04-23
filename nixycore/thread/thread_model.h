@@ -22,25 +22,25 @@ template <class ModelT>
 struct thread_model : ModelT
 {
     template <typename T>
-    struct atomic { typedef nx::atomic<T, typename ModelT::interlocked_t> type_t; };
+    struct atomic { typedef nx::atomic<T, typename ModelT::interlocked> type_t; };
 };
 
 /*
-    none_lock, for single-thread model
+    non_lock, for single-thread model
 */
 
-class none_lock : nx::noncopyable
+class non_lock : nx::noncopyable
 {
 public:
-    typedef none_lock lock_t;
-    typedef lock_t handle_t;
+    typedef non_lock lock_t;
+    typedef lock_t   handle_t;
     handle_t&       operator*(void)       { return (*this); }
     const handle_t& operator*(void) const { return (*this); }
 
 public:
-    bool trylock(void) { return true; }
-    void lock   (void) {}
-    void unlock (void) {}
+    bool try_lock(void) { return true; }
+    void lock    (void) {}
+    void unlock  (void) {}
 };
 
 /*
@@ -49,9 +49,9 @@ public:
 
 struct single_thread_model
 {
-    typedef use::interlocked_st interlocked_t;
-    typedef none_lock   lock_t;
-    typedef none_lock   mutex_t;
+    typedef use::interlocked_st interlocked;
+    typedef non_lock lock_t;
+    typedef non_lock mutex_t;
 };
 
 /*
@@ -60,9 +60,9 @@ struct single_thread_model
 
 struct multi_thread_model
 {
-    typedef use::interlocked_mt interlocked_t;
-    typedef spin_lock   lock_t;
-    typedef mutex       mutex_t;
+    typedef use::interlocked_mt interlocked;
+    typedef spin_lock lock_t;
+    typedef mutex     mutex_t;
 };
 
 /*

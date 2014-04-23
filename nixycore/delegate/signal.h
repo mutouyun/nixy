@@ -21,7 +21,10 @@
     fatal error C1001
     With: typename nx::traits<P>::param_t... par
 */
+#ifdef NX_SP_CXX11_TEMPLATES
+#   define NX_UNDEF_HELPER_
 #   undef NX_SP_CXX11_TEMPLATES
+#endif/*NX_SP_CXX11_TEMPLATES*/
 #endif
 
 //////////////////////////////////////////////////////////////////////////
@@ -137,6 +140,7 @@ NX_PP_MULT_MAX(NX_SIGNAL_)
 NX_END
 //////////////////////////////////////////////////////////////////////////
 
-#if defined(NX_CC_MSVC) && (NX_CC_MSVC == 1800)
+#ifdef NX_UNDEF_HELPER_
+#   undef NX_UNDEF_HELPER_
 #   define NX_SP_CXX11_TEMPLATES
 #endif

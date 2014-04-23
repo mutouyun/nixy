@@ -55,9 +55,9 @@ void testAll(void)
     //testTime();
     //testRandom();
     //testDelegate();
-    testFinalizer();
-    //testThread();
-    testMemory();
+    //testFinalizer();
+    testThread();
+    //testMemory();
     //testString();
     //testStream();
 

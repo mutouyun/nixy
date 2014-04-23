@@ -15,6 +15,8 @@
 #include "nixycore/thread/condition.h"
 
 #include "nixycore/bugfix/assert.h"
+#include "nixycore/delegate/functor.h"
+#include "nixycore/delegate/bind.h"
 
 #include "nixycore/general/general.h"
 #include "nixycore/preprocessor/preprocessor.h"
@@ -49,8 +51,13 @@ namespace private_thread_pool
 #       pragma warning(pop)
 #   endif
 
-        void start(void) { wait_.unlock(); }
-        void wait(void)  { wait_.lock(); }
+        ~wrapper(void)
+        {
+            wait_.unlock();
+        }
+
+        void start(void)          { wait_.unlock(); }
+        void wait_for_start(void) { wait_.lock()  ; }
     };
 
     template <typename T, class FixedAllocT>
@@ -71,7 +78,6 @@ namespace private_thread_pool
         condition until_empty_;
 
         typedef typename base_t::type_t type_t;
-        nx_assert_static(is_sametype<type_t, wrapper>::value);
 
     public:
         template <typename F>
@@ -168,7 +174,7 @@ namespace private_thread_pool
         {
             nx_lock_scope(queue_lock_);
             alloc_t* p = free_head_;
-            for (size_t i = 0; i < size_; ++i)
+            for(size_t i = 0; i < size_; ++i)
             {
                 reinterpret_cast<type_t*>(p)->is_exit_ = true;
                 p = p->next_;
@@ -198,7 +204,7 @@ private:
     {
         if (tp->is_exit_)
             return false;
-        if (base_t::is_full())
+        if (base_t::is_over())
             return false;
         return true;
     }
@@ -217,7 +223,7 @@ private:
     void onProcess(type_t* tp)
     {
         nx_assert(tp);
-        tp->wait();
+        tp->wait_for_start();
         while (is_continue(tp))
         {
             task_t task = task_queue_.take(); // wait for a new task
@@ -233,7 +239,7 @@ private:
 
     void shock(size_t size)
     {
-        for (size_t i = 0; i < size; ++i)
+        for(size_t i = 0; i < size; ++i)
             task_queue_.put(nx::none); // put an empty task
     }
 
@@ -253,7 +259,7 @@ public:
 
     ~thread_pool(void)
     {
-        storage_.clear(functor<void(size_t)>(&thread_pool::shock, this));
+        storage_.clear(nx::bind(&thread_pool::shock, this));
     }
 
 public:
@@ -261,11 +267,10 @@ public:
     {
         if (max_sz == 0)
         {
-            max_sz = nx::detect_cpu_count();
+            max_sz = thread::hardware_concurrency();
             if (max_sz < min_sz)
                 max_sz = min_sz;
         }
-        nx_lock_scope(storage_.queue_lock_);
         base_t::limit(min_sz, max_sz);
     }
 

@@ -7,13 +7,25 @@
 
 #include <pthread.h>
 #include <unistd.h>
+#include <sys/sysinfo.h> // get_nprocs
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG namespace thread_ops {
 //////////////////////////////////////////////////////////////////////////
 
-typedef pthread_t   id_t;
-typedef pthread_t   handle_t;
+typedef pthread_t id_t;
+typedef pthread_t handle_t;
+typedef pthread_t native_id_t;
+
+inline void clear_id(id_t& id)
+{
+    id = 0;
+}
+
+inline void clear_hd(handle_t& hd)
+{
+    hd = 0;
+}
 
 #define NX_THREAD_PROC(name, ...) void* (name)(void* __VA_ARGS__)
 typedef NX_THREAD_PROC(*proc_t);
@@ -31,7 +43,12 @@ inline handle_t create(proc_t proc, pvoid arg = 0, id_t* thr_id = 0)
     return hd;
 }
 
-inline handle_t current_handle(void)
+inline void exit(void)
+{
+    pthread_exit(0);
+}
+
+inline native_id_t native_current_id(void)
 {
     return pthread_self();
 }
@@ -41,19 +58,9 @@ inline id_t current_id(void)
     return pthread_self();
 }
 
-inline handle_t id2handle(id_t id)
-{
-    return (handle_t)id;
-}
-
 inline id_t handle2id(handle_t hd)
 {
     return (id_t)hd;
-}
-
-inline bool cancel(handle_t hd)
-{
-    return pthread_cancel(hd);
 }
 
 inline bool join(handle_t hd)
@@ -66,11 +73,6 @@ inline bool detach(handle_t hd)
     return (pthread_detach(hd) == 0);
 }
 
-inline void exit(void)
-{
-    pthread_exit(0);
-}
-
 inline void sleep(unsigned ms)
 {
     usleep(ms * 1000);
@@ -79,6 +81,15 @@ inline void sleep(unsigned ms)
 inline void yield(void)
 {
     pthread_yield();
+}
+
+inline unsigned hardware_concurrency(void)
+{
+    static unsigned cpu_count = 0;
+    if (cpu_count > 0) return cpu_count;
+    cpu_count = static_cast<unsigned>(get_nprocs());
+    if (cpu_count < 1) cpu_count = 1; // fail-safe
+    return cpu_count;
 }
 
 //////////////////////////////////////////////////////////////////////////

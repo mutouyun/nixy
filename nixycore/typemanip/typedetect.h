@@ -431,7 +431,7 @@ template <typename T>
 struct is_fundamental
     : type_if<is_numeric <T>::value ||
               is_void    <T>::value ||
-              is_sametype<T, nx::nulptr_t>::value>
+              is_same<T, nx::nulptr_t>::value>
 {};
 #endif/*NX_SP_CXX11_TYPE_TRAITS*/
 
@@ -450,7 +450,7 @@ struct is_scalar
     : type_if<is_numeric <T>::value ||
               is_enum    <T>::value ||
               is_pointer <T>::value || /* nx::is_pointer includes the member pointers */
-              is_sametype<T, nx::nulptr_t>::value>
+              is_same<T, nx::nulptr_t>::value>
 {};
 #endif/*NX_SP_CXX11_TYPE_TRAITS*/
 

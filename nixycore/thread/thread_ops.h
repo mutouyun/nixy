@@ -7,11 +7,15 @@
 
 #pragma once
 
+#include "nixycore/bugfix/assert.h"
+
 #include "nixycore/general/general.h"
 
 //////////////////////////////////////////////////////////////////////////
 
-#if defined(NX_OS_WIN)
+#ifdef NX_SP_CXX11_THREAD
+#   include "detail/thread_ops_std.hxx"
+#elif defined(NX_OS_WIN)
 #   include "detail/thread_ops_win.hxx"
 #elif defined(NX_OS_LINUX)
 #   include "detail/thread_ops_linux.hxx"
@@ -29,7 +33,7 @@ extern "C" void _mm_pause(void);
 
 #define NX_THREADOPS_PAUSE() __asm__ __volatile__ ("pause")
 
-#endif
+#endif/*defined(NX_CC_) && defined(NX_PC_)*/
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG namespace thread_ops {

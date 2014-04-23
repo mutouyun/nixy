@@ -182,20 +182,27 @@ public:
     template <typename R, class CacheT>
     R* acquire(CacheT& cache, size_t n, size_t i, size_t size, size_t init_size)
     {
-        typedef typename ModelT::template atomic<R**>::type_t pool_ptr_t;
+        typedef typename ModelT::interlocked interlocked;
         // get the current pool from cache
-        pool_ptr_t pool_ptr;
+        volatile R** pool_ptr;
         {
-            lock_guard NX_UNUSED guard(lc_cache_);
-            pool_ptr = &(cache.at(n, i)); // at() may change the cache
+            lock_guard NX_UNUSED guard(lc_cache_); // at() may change the cache
+            pool_ptr = const_cast<volatile R**>(&(cache.at(n, i)));
         }
         nx_assert(pool_ptr)(n)(i);
-        R*(& ret) = (*(pool_ptr.load(memory_order::relaxed)));
-        if (*pool_ptr) return ret;
+        R* ret = const_cast<R*>(*pool_ptr);
+        interlocked::thread_fence(memory_order::acquire);
+        if (ret) return ret;
         // alloc a new pool, and put it into cache
         {
             lock_guard NX_UNUSED guard(lc_alloc_);
-            if (!ret) (*pool_ptr) = nx::alloc<AllocT, R>(size, init_size);
+            ret = const_cast<R*>(*pool_ptr);
+            if (!ret)
+            {
+                ret = nx::alloc<AllocT, R>(size, init_size);
+                interlocked::thread_fence(memory_order::release);
+                (*pool_ptr) = ret;
+            }
         }
         return ret;
     }

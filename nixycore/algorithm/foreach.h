@@ -40,7 +40,7 @@ namespace private_foreach
                 val_t,
                 typename rm_reference<val_t>::type_t&
         >::type_t deref_t;
-        typedef typename storage<T>::type_t              storage_t;
+        typedef typename storage<T>::type_t storage_t;
 
         T set_; ite_t cur_, end_;
         bool mark_;

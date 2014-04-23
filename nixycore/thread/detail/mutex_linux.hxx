@@ -18,16 +18,7 @@ protected:
 
 public:
     detail(void)
-    {
-#   ifndef PTHREAD_MUTEX_RECURSIVE
-#       define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
-#   endif
-        pthread_mutexattr_t attr;
-        if (pthread_mutexattr_init(&attr) != 0) return;
-        pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-        pthread_mutex_init(&mx_, &attr);
-        pthread_mutexattr_destroy(&attr);
-    }
+    { pthread_mutex_init(&mx_, NULL); }
 
     ~detail(void)
     { pthread_mutex_destroy(&mx_); }
@@ -37,7 +28,7 @@ public:
     const handle_t& operator*(void) const { return mx_; }
 
 public:
-    bool trylock(void)
+    bool try_lock(void)
     {
         return (pthread_mutex_trylock(&mx_) == 0);
     }

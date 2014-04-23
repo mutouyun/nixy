@@ -26,7 +26,10 @@ struct type_wrap
 };
 
 template <int N>
-struct type_int {};
+struct type_int
+{
+    NX_STATIC_VALUE(int, N);
+};
 
 /*
     For judge bool value

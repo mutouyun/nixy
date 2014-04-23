@@ -13,6 +13,10 @@
 #include "nixycore/typemanip/typemanip.h"
 #include "nixycore/utility/utility.h"
 
+#ifdef NX_SP_CXX11_ATOMIC
+#include <atomic> // std::atomic ...
+#endif
+
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
@@ -116,8 +120,12 @@ namespace private_atomic
     template <typename T, typename ModelT>
     struct storage
     {
-        typedef typename get_storage<T, ModelT::SUPPORTED_MASK>::type_t type_t;
-        typedef typename rm_unsigned<T>::type_t value_t;
+        typedef typename get_storage<T, ModelT::SUPPORTED_MASK>::type_t scalar_type;
+#   ifdef NX_SP_CXX11_ATOMIC
+        typedef std::atomic<scalar_type> type_t;
+#   else
+        typedef scalar_type type_t;
+#   endif
     };
 }
 
@@ -136,64 +144,75 @@ namespace private_atomic
         atomic type base
     */
 
+#if defined(NX_CC_MSVC)
+#   pragma warning(push)
+#   pragma warning(disable: 4800)   // forcing value to bool 'true' or 'false' (performance warning)
+#endif
+
     template <typename T, typename ModelT>
     struct base
     {
         typedef ModelT model_t;
         typedef typename atomic_storage<T, model_t>::type_t type_t;
-        typedef typename atomic_storage<T, model_t>::value_t value_t;
+        typedef typename atomic_storage<T, model_t>::scalar_type value_t;
+        typedef typename rm_unsigned<value_t>::type_t svalue_t;
 
-        T load(void) const                              { return model_t::template load<T>(v_); }
-        T load(void) const volatile                     { return model_t::template load<T>(v_); }
+        base(value_t val) : v_(val) {}
+        T load(void) const                                { return model_t::load(v_); }
+        T load(void) const volatile                       { return model_t::load(v_); }
         template <typename M>
-        T load(M) const                                 { return model_t::template load<M, T>(v_); }
+        T load(M m) const                                 { return model_t::load(v_, m); }
         template <typename M>
-        T load(M) const volatile                        { return model_t::template load<M, T>(v_); }
+        T load(M m) const volatile                        { return model_t::load(v_, m); }
 
-        void store(value_t val)                         { model_t::store(v_, val); }
-        void store(value_t val) volatile                { model_t::store(v_, val); }
+        void store(value_t val)                           { model_t::store(v_, val); }
+        void store(value_t val) volatile                  { model_t::store(v_, val); }
         template <typename M>
-        void store(value_t val, M)                      { model_t::template store<M>(v_, val); }
+        void store(value_t val, M m)                      { model_t::store(v_, val, m); }
         template <typename M>
-        void store(value_t val, M) volatile             { model_t::template store<M>(v_, val); }
+        void store(value_t val, M m) volatile             { model_t::store(v_, val, m); }
 
-        T fetch_add(value_t val)                        { return model_t::fetch_add(v_, val); }
-        T fetch_add(value_t val) volatile               { return model_t::fetch_add(v_, val); }
+        T fetch_add(value_t val)                          { return model_t::fetch_add(v_, val); }
+        T fetch_add(value_t val) volatile                 { return model_t::fetch_add(v_, val); }
         template <typename M>
-        T fetch_add(value_t val, M)                     { return model_t::template fetch_add<M>(v_, val); }
+        T fetch_add(value_t val, M m)                     { return model_t::fetch_add(v_, val, m); }
         template <typename M>
-        T fetch_add(value_t val, M) volatile            { return model_t::template fetch_add<M>(v_, val); }
+        T fetch_add(value_t val, M m) volatile            { return model_t::fetch_add(v_, val, m); }
 
-        T fetch_sub(value_t val)                        { return model_t::fetch_add(v_, -val); }
-        T fetch_sub(value_t val) volatile               { return model_t::fetch_add(v_, -val); }
+        T fetch_sub(value_t val)                          { return model_t::fetch_add(v_, -static_cast<svalue_t>(val)); }
+        T fetch_sub(value_t val) volatile                 { return model_t::fetch_add(v_, -static_cast<svalue_t>(val)); }
         template <typename M>
-        T fetch_sub(value_t val, M)                     { return model_t::template fetch_add<M>(v_, -val); }
+        T fetch_sub(value_t val, M m)                     { return model_t::fetch_add(v_, -static_cast<svalue_t>(val), m); }
         template <typename M>
-        T fetch_sub(value_t val, M) volatile            { return model_t::template fetch_add<M>(v_, -val); }
+        T fetch_sub(value_t val, M m) volatile            { return model_t::fetch_add(v_, -static_cast<svalue_t>(val), m); }
 
-        T exchange(value_t val)                         { return model_t::exchange(v_, val); }
-        T exchange(value_t val) volatile                { return model_t::exchange(v_, val); }
+        T exchange(value_t val)                           { return model_t::exchange(v_, val); }
+        T exchange(value_t val) volatile                  { return model_t::exchange(v_, val); }
         template <typename M>
-        T exchange(value_t val, M)                      { return model_t::template exchange<M>(v_, val); }
+        T exchange(value_t val, M m)                      { return model_t::exchange(v_, val, m); }
         template <typename M>
-        T exchange(value_t val, M) volatile             { return model_t::template exchange<M>(v_, val); }
+        T exchange(value_t val, M m) volatile             { return model_t::exchange(v_, val, m); }
 
-        bool cas(value_t comp, value_t val)             { return model_t::compare_exchange(v_, val, (type_t)comp); }
-        bool cas(value_t comp, value_t val) volatile    { return model_t::compare_exchange(v_, val, (type_t)comp); }
+        bool cas(value_t comp, value_t val)               { return model_t::compare_exchange(v_, val, (value_t)comp); }
+        bool cas(value_t comp, value_t val) volatile      { return model_t::compare_exchange(v_, val, (value_t)comp); }
         template <typename M>
-        bool cas(value_t comp, value_t val, M)          { return model_t::template compare_exchange<M>(v_, val, (type_t)comp); }
+        bool cas(value_t comp, value_t val, M m)          { return model_t::compare_exchange(v_, val, (value_t)comp, m); }
         template <typename M>
-        bool cas(value_t comp, value_t val, M) volatile { return model_t::template compare_exchange<M>(v_, val, (type_t)comp); }
+        bool cas(value_t comp, value_t val, M m) volatile { return model_t::compare_exchange(v_, val, (value_t)comp, m); }
 
-        operator T(void) const                          { return load(); }
-        operator T(void) const volatile                 { return load(); }
+        operator T(void) const                            { return load(); }
+        operator T(void) const volatile                   { return load(); }
 
-        value_t operator=(value_t val)                  { store(val); return val; }
-        value_t operator=(value_t val) volatile         { store(val); return val; }
+        value_t operator=(value_t val)                    { store(val); return val; }
+        value_t operator=(value_t val) volatile           { store(val); return val; }
 
-    protected:
+    private:
         type_t v_;
     };
+
+#if defined(NX_CC_MSVC)
+#   pragma warning(pop)
+#endif
 
     /*
         atomic type detail
@@ -209,8 +228,8 @@ namespace private_atomic
         typedef base<bool, ModelT> base_t;
         typedef typename base_t::value_t value_t;
 
-        detail(void)        { base_t::operator=(0); }
-        detail(value_t val) { base_t::operator=(val); }
+        detail(void)        : base_t(false) {}
+        detail(value_t val) : base_t(val)   {}
 
         using base_t::operator=;
     };
@@ -220,24 +239,23 @@ namespace private_atomic
     {
         typedef base<T, ModelT> base_t;
         typedef typename base_t::value_t value_t;
-        typedef typename base_t::model_t model_t;
 
-        detail(void)                       { base_t::operator=(0); }
-        detail(value_t val)                { base_t::operator=(val); }
+        detail(void)        : base_t(0)   {}
+        detail(value_t val) : base_t(val) {}
 
         using base_t::operator=;
 
         T operator++(int)                  { return base_t::fetch_add(1); }
         T operator--(int)                  { return base_t::fetch_sub(1); }
-        T operator++()                     { return base_t::fetch_add(1) + 1; }
-        T operator--()                     { return base_t::fetch_sub(1) - 1; }
+        T operator++(void)                 { return base_t::fetch_add(1) + 1; }
+        T operator--(void)                 { return base_t::fetch_sub(1) - 1; }
         T operator+=(value_t val)          { return base_t::fetch_add(val) + val; }
         T operator-=(value_t val)          { return base_t::fetch_sub(val) - val; }
 
         T operator++(int)         volatile { return base_t::fetch_add(1); }
         T operator--(int)         volatile { return base_t::fetch_sub(1); }
-        T operator++()            volatile { return base_t::fetch_add(1) + 1; }
-        T operator--()            volatile { return base_t::fetch_sub(1) - 1; }
+        T operator++(void)        volatile { return base_t::fetch_add(1) + 1; }
+        T operator--(void)        volatile { return base_t::fetch_sub(1) - 1; }
         T operator+=(value_t val) volatile { return base_t::fetch_add(val) + val; }
         T operator-=(value_t val) volatile { return base_t::fetch_sub(val) - val; }
     };
@@ -245,11 +263,11 @@ namespace private_atomic
     template <typename T, typename ModelT>
     struct detail<T, ModelT, false, true> : detail<T, ModelT, true, false>
     {
-        typedef typename detail<T, ModelT, true, false>::base_t base_t;
+        typedef detail<T, ModelT, true, false> base_t;
         typedef typename base_t::value_t value_t;
 
-        detail(void)                      { base_t::operator=(0); }
-        detail(value_t val)               { base_t::operator=(val); }
+        detail(void)        : base_t(NULL) {}
+        detail(value_t val) : base_t(val)  {}
 
         using base_t::operator=;
 
@@ -277,14 +295,21 @@ public:
     typedef private_atomic::detail<T, ModelT> base_t;
     typedef typename base_t::value_t value_t;
 
-    atomic(void)        : base_t() {}
+    atomic(void)        : base_t()    {}
     atomic(value_t val) : base_t(val) {}
 
-    using base_t::operator=;
+#ifdef NX_CC_GNUC
+    /*
+        gcc need this, or will get a compile error
+        when using like this: atomic<int> xx = 10
+    */
+    atomic(const atomic&)
+        : base_t()
+        , nx::noncopyable()
+    { nx_assert(false); } // = deleted
+#endif
 
-private:
-    /* no swap */
-    void swap(atomic& r);
+    using base_t::operator=;
 };
 
 //////////////////////////////////////////////////////////////////////////

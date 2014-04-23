@@ -25,12 +25,12 @@ NX_BEG
 */
 
 template <typename T, typename U>
-struct is_sametype
+struct is_same
     : type_if<false>
 {};
 
 template <typename T>
-struct is_sametype<T, T>
+struct is_same<T, T>
     : type_if<true>
 {};
 
@@ -63,8 +63,8 @@ namespace private_is_supersub
     template <typename T, typename U>
     struct detail : 
         type_if<is_convertible<const U*, const T*>::value &&
-               !is_sametype<const T*, const void*>::value &&
-               !is_sametype<const T , const U    >::value>
+               !is_same<const T*, const void*>::value &&
+               !is_same<const T , const U    >::value>
     {};
 
     template <>

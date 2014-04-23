@@ -15,6 +15,10 @@
 #include "nixycore/general/general.h"
 #include "nixycore/utility/utility.h"
 
+#ifdef NX_SP_CXX11_ATOMIC
+#include <atomic> // std::atomic ...
+#endif
+
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
@@ -22,58 +26,76 @@ NX_BEG
 class spin_lock : nx::noncopyable
 {
 protected:
-    long rc_;
-    nx::atomic<thread_ops::id_t> id_;
+#ifdef NX_SP_CXX11_ATOMIC
+    std::atomic_flag lc_;
+#else
+    nx::atomic<bool> lc_;
+#endif
 
 public:
     typedef spin_lock lock_t;
-
-    spin_lock(void) : rc_(0), id_(0) {}
-    ~spin_lock(void) { nx_assert(rc_ <= 0); }
-
     typedef lock_t handle_t;
+
+#ifdef NX_SP_CXX11_ATOMIC
+#   ifdef NX_CC_MSVC
+    spin_lock(void)
+        : lc_()
+    {
+        lc_.clear(std::memory_order_relaxed);
+    }
+#   else
+    spin_lock(void)
+        : lc_(ATOMIC_FLAG_INIT)
+    {}
+#   endif
+    ~spin_lock(void)
+    {
+        nx_assert(try_lock());
+    }
+#else
+    ~spin_lock(void)
+    {
+        nx_assert(!lc_.load(memory_order::relaxed));
+    }
+#endif
+
     handle_t&       operator*(void)       { return (*this); }
     const handle_t& operator*(void) const { return (*this); }
 
 public:
-    bool trylock(void)
+#ifdef NX_SP_CXX11_ATOMIC
+    bool try_lock(void)
     {
-        thread_ops::id_t tid = thread_ops::current_id();
-        if (id_ == tid)
-        {
-            ++rc_;
-            return true;
-        }
-        else if (id_.cas(0, tid))
-        {
-            rc_ = 1;
-            return true;
-        }
-        return false;
+        return !lc_.test_and_set(std::memory_order_acquire);
     }
 
     void lock(void)
     {
-        thread_ops::id_t tid = thread_ops::current_id();
-        if (id_ == tid)
-            ++rc_;
-        else
-        {
-            for (unsigned k = 0; !id_.cas(0, tid); ++k)
-                thread_ops::pause(k);
-            rc_ = 1;
-        }
+        for(unsigned k = 0; lc_.test_and_set(std::memory_order_acquire); ++k)
+            thread_ops::pause(k);
     }
 
     void unlock(void)
     {
-        if (id_ == thread_ops::current_id())
-            if (--rc_ <= 0)
-            {
-                rc_ = 0;
-                id_ = 0;
-            }
+        lc_.clear(std::memory_order_release);
     }
+#else
+    bool try_lock(void)
+    {
+        return !lc_.exchange(true, memory_order::acquire);
+    }
+
+    void lock(void)
+    {
+        for(unsigned k = 0; lc_.exchange(true, memory_order::acquire); ++k)
+            thread_ops::pause(k);
+    }
+
+    void unlock(void)
+    {
+        lc_.store(false, memory_order::release);
+    }
+#endif
 };
 
 //////////////////////////////////////////////////////////////////////////

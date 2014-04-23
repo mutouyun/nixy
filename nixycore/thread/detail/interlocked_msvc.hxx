@@ -39,51 +39,56 @@ NX_STATIC_PROPERTY(int, SUPPORTED_MASK, mask_8_ | mask_16_ | mask_32_ | mask_64_
     sizeof(T) == 1
 */
 
-template <typename T, typename U>
+template <typename T, typename U, typename M>
 inline static typename nx::enable_if<sizeof(T) == 1,
-T>::type_t fetch_add(T& dest, U val)
+T>::type_t fetch_add(T& dest, U val, M m)
 {
 #if defined(NX_INTERLOCKED_NOASM)
-    return (T)NX_INTERLOCKED_EXCHANGEADD8(dest, val);
+    NX_FENCE_GUARD_(m);
+    return (T)(NX_INTERLOCKED_EXCHANGEADD8(dest, val));
 #else
-    thread_ops::cc_barrier();
+    NX_FENCE_GUARD_(m);
     __asm
     {
         mov  al , byte ptr [val]
         mov  ecx, [dest]
         lock xadd [ecx] , al
+        mov  byte ptr [val] , al
     }
-    thread_ops::cc_barrier();
+    return val;
 #endif
 }
 
-template <typename T, typename U>
+template <typename T, typename U, typename M>
 inline static typename nx::enable_if<sizeof(T) == 1,
-T>::type_t exchange(T& dest, U val)
+T>::type_t exchange(T& dest, U val, M m)
 {
 #if defined(NX_INTERLOCKED_NOASM)
-    return (T)NX_INTERLOCKED_EXCHANGE8(dest, val);
+    NX_FENCE_GUARD_(m);
+    return (T)(NX_INTERLOCKED_EXCHANGE8(dest, val));
 #else
-    thread_ops::cc_barrier();
+    NX_FENCE_GUARD_(m);
     __asm
     {
         mov  al , byte ptr [val]
         mov  ecx, [dest]
         xchg al , [ecx]
+        mov  byte ptr [val] , al
     }
-    thread_ops::cc_barrier();
+    return val;
 #endif
 }
 
-template <typename T, typename U>
+template <typename T, typename U, typename M>
 inline static typename nx::enable_if<sizeof(T) == 1,
-bool>::type_t compare_exchange(T& dest, U val, T comp)
+bool>::type_t compare_exchange(T& dest, U val, T comp, M m)
 {
 #if defined(NX_INTERLOCKED_NOASM)
-    return (comp == (T)NX_INTERLOCKED_COMPAREEXCHANGE8(dest, val, comp));
+    NX_FENCE_GUARD_(m);
+    return (comp == (T)(NX_INTERLOCKED_COMPAREEXCHANGE8(dest, val, comp)));
 #else
     bool success;
-    thread_ops::cc_barrier();
+    NX_FENCE_GUARD_(m);
     __asm
     {
         mov  dl ,    byte ptr [val]
@@ -92,7 +97,6 @@ bool>::type_t compare_exchange(T& dest, U val, T comp)
         lock cmpxchg [esi] , dl
         sete [success]
     }
-    thread_ops::cc_barrier();
     return success;
 #endif
 }
@@ -105,51 +109,56 @@ bool>::type_t compare_exchange(T& dest, U val, T comp)
     sizeof(T) == 2
 */
 
-template <typename T, typename U>
+template <typename T, typename U, typename M>
 inline static typename nx::enable_if<sizeof(T) == 2,
-T>::type_t fetch_add(T& dest, U val)
+T>::type_t fetch_add(T& dest, U val, M m)
 {
 #if defined(NX_INTERLOCKED_NOASM)
-    return (T)NX_INTERLOCKED_EXCHANGEADD16(dest, val);
+    NX_FENCE_GUARD_(m);
+    return (T)(NX_INTERLOCKED_EXCHANGEADD16(dest, val));
 #else
-    thread_ops::cc_barrier();
+    NX_FENCE_GUARD_(m);
     __asm
     {
         mov  ax , word ptr [val]
         mov  ecx, [dest]
         lock xadd [ecx] , ax
+        mov  word ptr [val] , ax
     }
-    thread_ops::cc_barrier();
+    return val;
 #endif
 }
 
-template <typename T, typename U>
+template <typename T, typename U, typename M>
 inline static typename nx::enable_if<sizeof(T) == 2,
-T>::type_t exchange(T& dest, U val)
+T>::type_t exchange(T& dest, U val, M m)
 {
 #if defined(NX_INTERLOCKED_NOASM)
-    return (T)NX_INTERLOCKED_EXCHANGE16(dest, val);
+    NX_FENCE_GUARD_(m);
+    return (T)(NX_INTERLOCKED_EXCHANGE16(dest, val));
 #else
-    thread_ops::cc_barrier();
+    NX_FENCE_GUARD_(m);
     __asm
     {
         mov  ax , word ptr [val]
         mov  ecx, [dest]
         xchg ax , [ecx]
+        mov  word ptr [val] , ax
     }
-    thread_ops::cc_barrier();
+    return val;
 #endif
 }
 
-template <typename T, typename U>
+template <typename T, typename U, typename M>
 inline static typename nx::enable_if<sizeof(T) == 2,
-bool>::type_t compare_exchange(T& dest, U val, T comp)
+bool>::type_t compare_exchange(T& dest, U val, T comp, M m)
 {
 #if defined(NX_INTERLOCKED_NOASM)
-    return (comp == (T)NX_INTERLOCKED_COMPAREEXCHANGE16(dest, val, comp));
+    NX_FENCE_GUARD_(m);
+    return (comp == (T)(NX_INTERLOCKED_COMPAREEXCHANGE16(dest, val, comp)));
 #else
     bool success;
-    thread_ops::cc_barrier();
+    NX_FENCE_GUARD_(m);
     __asm
     {
         mov  dx ,    word ptr [val]
@@ -158,7 +167,6 @@ bool>::type_t compare_exchange(T& dest, U val, T comp)
         lock cmpxchg [esi] , dx
         sete [success]
     }
-    thread_ops::cc_barrier();
     return success;
 #endif
 }
@@ -171,25 +179,28 @@ bool>::type_t compare_exchange(T& dest, U val, T comp)
     sizeof(T) == 4
 */
 
-template <typename T, typename U>
+template <typename T, typename U, typename M>
 inline static typename nx::enable_if<sizeof(T) == 4,
-T>::type_t fetch_add(T& dest, U val)
+T>::type_t fetch_add(T& dest, U val, M m)
 {
-    return (T)NX_INTERLOCKED_EXCHANGEADD(dest, val);
+    NX_FENCE_GUARD_(m);
+    return (T)(NX_INTERLOCKED_EXCHANGEADD(dest, val));
 }
 
-template <typename T, typename U>
+template <typename T, typename U, typename M>
 inline static typename nx::enable_if<sizeof(T) == 4,
-T>::type_t exchange(T& dest, U val)
+T>::type_t exchange(T& dest, U val, M m)
 {
-    return (T)NX_INTERLOCKED_EXCHANGE(dest, val);
+    NX_FENCE_GUARD_(m);
+    return (T)(NX_INTERLOCKED_EXCHANGE(dest, val));
 }
 
-template <typename T, typename U>
+template <typename T, typename U, typename M>
 inline static typename nx::enable_if<sizeof(T) == 4,
-bool>::type_t compare_exchange(T& dest, U val, T comp)
+bool>::type_t compare_exchange(T& dest, U val, T comp, M m)
 {
-    return (comp == (T)NX_INTERLOCKED_COMPAREEXCHANGE(dest, val, comp));
+    NX_FENCE_GUARD_(m);
+    return (comp == (T)(NX_INTERLOCKED_COMPAREEXCHANGE(dest, val, comp)));
 }
 
 #endif/*NX_INTERLOCKED_EXCHANGE*/
@@ -200,25 +211,28 @@ bool>::type_t compare_exchange(T& dest, U val, T comp)
     sizeof(T) == 8
 */
 
-template <typename T, typename U>
+template <typename T, typename U, typename M>
 inline static typename nx::enable_if<sizeof(T) == 8,
-T>::type_t fetch_add(T& dest, U val)
+T>::type_t fetch_add(T& dest, U val, M m)
 {
-    return (T)NX_INTERLOCKED_EXCHANGEADD64(dest, val);
+    NX_FENCE_GUARD_(m);
+    return (T)(NX_INTERLOCKED_EXCHANGEADD64(dest, val));
 }
 
-template <typename T, typename U>
+template <typename T, typename U, typename M>
 inline static typename nx::enable_if<sizeof(T) == 8,
-T>::type_t exchange(T& dest, U val)
+T>::type_t exchange(T& dest, U val, M m)
 {
-    return (T)NX_INTERLOCKED_EXCHANGE64(dest, val);
+    NX_FENCE_GUARD_(m);
+    return (T)(NX_INTERLOCKED_EXCHANGE64(dest, val));
 }
 
-template <typename T, typename U>
+template <typename T, typename U, typename M>
 inline static typename nx::enable_if<sizeof(T) == 8,
-bool>::type_t compare_exchange(T& dest, U val, T comp)
+bool>::type_t compare_exchange(T& dest, U val, T comp, M m)
 {
-    return (comp == (T)NX_INTERLOCKED_COMPAREEXCHANGE64(dest, val, comp));
+    NX_FENCE_GUARD_(m);
+    return (comp == (T)(NX_INTERLOCKED_COMPAREEXCHANGE64(dest, val, comp)));
 }
 
 #endif/*NX_INTERLOCKED_EXCHANGE64*/

@@ -18,8 +18,19 @@ inline void __cdecl onThreadExit(void);
 namespace thread_ops {
 //////////////////////////////////////////////////////////////////////////
 
-typedef DWORD   id_t;
-typedef HANDLE  handle_t;
+typedef DWORD  id_t;
+typedef HANDLE handle_t;
+typedef DWORD  native_id_t;
+
+inline void clear_id(id_t& id)
+{
+    id = 0;
+}
+
+inline void clear_hd(handle_t& hd)
+{
+    hd = NULL; /* Not INVALID_HANDLE_VALUE */
+}
 
 #define NX_THREAD_PROC(name, ...) unsigned (__stdcall name)(void* __VA_ARGS__)
 typedef NX_THREAD_PROC(*proc_t);
@@ -60,7 +71,7 @@ namespace private_
 #   endif/*NX_OS_WINCE*/
     {
         thread_data_ptr ptr(args);
-        DWORD ret = ptr->proc_(ptr->args_);
+        unsigned ret = ptr->proc_(ptr->args_);
         private_tls_ptr::onThreadExit();
         return ret;
     }
@@ -83,7 +94,7 @@ namespace private_
         if (hd == NULL) return 0;
 
 #   ifdef NX_OS_WINCE
-        if (thrd_addr) *thrd_addr = thread_id;
+        if (thrd_addr) (*thrd_addr) = thread_id;
 #   endif/*NX_OS_WINCE*/
 
         ptr.dismiss();
@@ -105,23 +116,19 @@ inline handle_t create(proc_t proc, pvoid arg = 0, id_t* thr_id = 0)
     return private_::begin_thread(NULL, 0, proc, arg, 0, (unsigned*)(thr_id));
 }
 
-inline handle_t current_handle(void)
+inline void exit(void)
 {
-    return GetCurrentThread();
+    private_::end_thread();
+}
+
+inline native_id_t native_current_id(void)
+{
+    return GetCurrentThreadId();
 }
 
 inline id_t current_id(void)
 {
     return GetCurrentThreadId();
-}
-
-inline handle_t id2handle(id_t id)
-{
-#if defined(NX_OS_WINCE)
-    return (handle_t)id; /* T.B.D */
-#else
-    return OpenThread(THREAD_ALL_ACCESS, FALSE, id);
-#endif
 }
 
 inline id_t handle2id(handle_t hd)
@@ -131,7 +138,7 @@ inline id_t handle2id(handle_t hd)
 #elif (WINVER >= 0x0502)
     return GetThreadId(hd);
 #else
-    if (hd == current_handle()) return current_id();
+    if (hd == GetCurrentThread()) return current_id();
     HANDLE hThreadSnap = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
     if (hThreadSnap == INVALID_HANDLE_VALUE) return 0;
     THREADENTRY32 te32 = THREADENTRY32();
@@ -142,7 +149,7 @@ inline id_t handle2id(handle_t hd)
     {
         if (te32.th32OwnerProcessID == dwProcessId)
         {
-            HANDLE hTempThread = id2handle(te32.th32ThreadID);
+            HANDLE hTempThread = OpenThread(THREAD_ALL_ACCESS, FALSE, te32.th32ThreadID);
             if (hTempThread == hd)
             {
                 CloseHandle(hTempThread);
@@ -157,13 +164,6 @@ inline id_t handle2id(handle_t hd)
 #endif
 }
 
-inline bool cancel(handle_t hd)
-{
-    if (TerminateThread(hd, 0))
-        return !!CloseHandle(hd);
-    return false;
-}
-
 inline bool join(handle_t hd)
 {
     if (WaitForSingleObject(hd, INFINITE) == WAIT_OBJECT_0)
@@ -174,11 +174,6 @@ inline bool join(handle_t hd)
 inline bool detach(handle_t hd)
 {
     return !!CloseHandle(hd);
-}
-
-inline void exit(void)
-{
-    private_::end_thread();
 }
 
 inline void sleep(unsigned ms)
@@ -193,6 +188,17 @@ inline void yield(void)
 #else
     SwitchToThread();
 #endif
+}
+
+inline unsigned hardware_concurrency(void)
+{
+    static unsigned cpu_count = 0;
+    if (cpu_count > 0) return cpu_count;
+    SYSTEM_INFO si;
+    GetSystemInfo(&si);
+    cpu_count = static_cast<unsigned>(si.dwNumberOfProcessors);
+    if (cpu_count < 1) cpu_count = 1; // fail-safe
+    return cpu_count;
 }
 
 //////////////////////////////////////////////////////////////////////////

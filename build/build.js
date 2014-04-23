@@ -29,7 +29,6 @@ else
     prj.type = "lib"
     prj.heads = "\
         'nixycore/general/plat_detect.h' \
-        'nixycore/general/global_functions.h' \
         'nixycore/general/general.h' \
         'nixycore/preprocessor/pp_macros.h' \
         'nixycore/preprocessor/pp_count.h' \

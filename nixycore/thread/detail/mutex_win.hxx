@@ -35,7 +35,7 @@ public:
     const handle_t& operator*(void) const { return mx_; }
 
 public:
-    bool trylock(void)
+    bool try_lock(void)
     {
         return (!!TryEnterCriticalSection(&mx_));
     }

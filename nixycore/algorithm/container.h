@@ -115,16 +115,15 @@ namespace private_begin
 
     template <typename T>
     inline typename enable_if<!is_array<T>::value && 
-                               is_pod<T>::value
-    >::type_t detail(typename container_traits<T>::ite_t& ite, T& set)
-    { ite = nx_min((T)0, set); }
-
-    template <typename T>
-    inline typename enable_if<!is_array<T>::value && 
-                              !is_pod<T>::value && 
                                is_container<T>::value
     >::type_t detail(typename container_traits<T>::ite_t& ite, T& set)
     { ite = set.begin(); }
+
+    template <typename T>
+    inline typename enable_if<!is_array<T>::value &&
+                              !is_container<T>::value
+    >::type_t detail(typename container_traits<T>::ite_t& ite, T& set)
+    { ite = nx_min((T)0, set); }
 }
 
 template <typename T>
@@ -147,17 +146,16 @@ namespace private_end
     { ite = (typename container_traits<T>::ite_t)*((&set) + 1); }
 
     template <typename T>
-    inline typename enable_if<!is_array<T>::value && 
-                               is_pod<T>::value
-    >::type_t detail(typename container_traits<T>::ite_t& ite, T& set)
-    { ite = nx_max((T)0, set); }
-
-    template <typename T>
-    inline typename enable_if<!is_array<T>::value && 
-                              !is_pod<T>::value && 
+    inline typename enable_if<!is_array<T>::value &&
                                is_container<T>::value
     >::type_t detail(typename container_traits<T>::ite_t& ite, T& set)
     { ite = set.end(); }
+
+    template <typename T>
+    inline typename enable_if<!is_array<T>::value && 
+                              !is_container<T>::value
+    >::type_t detail(typename container_traits<T>::ite_t& ite, T& set)
+    { ite = nx_max((T)0, set); }
 }
 
 template <typename T>
@@ -180,17 +178,16 @@ namespace private_insert
     { (*ite) = val; }
 
     template <typename V, typename T>
-    inline typename enable_if<!is_array<T>::value && 
-                               is_pod<T>::value
-    >::type_t detail(T& set, typename container_traits<T>::ite_t /*ite*/, const V& val)
-    { set = val; }
-
-    template <typename V, typename T>
-    inline typename enable_if<!is_array<T>::value && 
-                              !is_pod<T>::value && 
+    inline typename enable_if<!is_array<T>::value &&
                                is_container<T>::value
     >::type_t detail(T& set, typename container_traits<T>::ite_t ite, const V& val)
     { set.insert(ite, val); }
+
+    template <typename V, typename T>
+    inline typename enable_if<!is_array<T>::value && 
+                              !is_container<T>::value
+    >::type_t detail(T& set, typename container_traits<T>::ite_t /*ite*/, const V& val)
+    { set = val; }
 }
 
 template <typename V, typename T>
@@ -211,17 +208,16 @@ namespace private_erase
     { /* Do nothing */ }
 
     template <typename T>
-    inline typename enable_if<!is_array<T>::value && 
-                               is_pod<T>::value
-    >::type_t detail(T& /*set*/, typename container_traits<T>::ite_t /*ite*/)
-    { /* Do nothing */ }
-
-    template <typename T>
-    inline typename enable_if<!is_array<T>::value && 
-                              !is_pod<T>::value && 
+    inline typename enable_if<!is_array<T>::value &&
                                is_container<T>::value
     >::type_t detail(T& set, typename container_traits<T>::ite_t ite)
     { set.erase(ite); }
+
+    template <typename T>
+    inline typename enable_if<!is_array<T>::value && 
+                              !is_container<T>::value
+    >::type_t detail(T& /*set*/, typename container_traits<T>::ite_t /*ite*/)
+    { /* Do nothing */ }
 }
 
 template <typename V, typename T>

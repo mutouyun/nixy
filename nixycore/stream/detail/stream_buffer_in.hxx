@@ -83,7 +83,7 @@ typename enable_if<is_character<V>::value
 }
 
 template <typename V>
-typename enable_if<!is_sametype<V, bool>::value && 
+typename enable_if<!is_same<V, bool>::value && 
                    !is_character<V>::value && 
                     is_numeric<V>::value
 >::type_t parse_in(V& val) const

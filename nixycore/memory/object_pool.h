@@ -25,7 +25,10 @@
     fatal error C1001
     With: typename nx::traits<P>::param_t... par
 */
+#ifdef NX_SP_CXX11_TEMPLATES
+#   define NX_UNDEF_HELPER_
 #   undef NX_SP_CXX11_TEMPLATES
+#endif/*NX_SP_CXX11_TEMPLATES*/
 #endif
 
 //////////////////////////////////////////////////////////////////////////
@@ -273,6 +276,16 @@ public:
         return (storage_.size() <= min_size_);
     }
 
+    bool is_over(void) const
+    {
+        return (storage_.size() > max_size_);
+    }
+
+    bool is_lack(void) const
+    {
+        return (storage_.size() < min_size_);
+    }
+
 public:
     bool increase(void)
     {
@@ -313,6 +326,7 @@ public:
 NX_END
 //////////////////////////////////////////////////////////////////////////
 
-#if defined(NX_CC_MSVC) && (NX_CC_MSVC == 1800)
+#ifdef NX_UNDEF_HELPER_
+#   undef NX_UNDEF_HELPER_
 #   define NX_SP_CXX11_TEMPLATES
 #endif

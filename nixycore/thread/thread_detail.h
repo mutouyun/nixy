@@ -8,7 +8,7 @@
 #pragma once
 
 #include "nixycore/thread/blocking_queue.h"
-#include "nixycore/thread/mutex.h"
+#include "nixycore/thread/thread_ops.h"
 
 #include "nixycore/delegate/functor.h"
 #include "nixycore/delegate/bind.h"
@@ -34,8 +34,6 @@ public:
     typedef functor<void()> task_t;
 
 private:
-    mutable mutex lock_;
-
     handle_t handle_;
     id_t     id_;
 
@@ -46,6 +44,13 @@ private:
     };
 
     data* thr_dat_;
+
+    void init(void)
+    {
+        thread_ops::clear_hd(handle_);
+        thread_ops::clear_id(id_);
+        thr_dat_ = nx::nulptr;
+    }
 
     static NX_THREAD_PROC(onThreadProc, args)
     {
@@ -65,35 +70,36 @@ private:
 
 public:
     thread(void)
-        : handle_(0), id_(0), thr_dat_(nx::nulptr)
-    {}
+    {
+        init();
+    }
 
     thread(nx_rref(thread) r)
-        : handle_(0), id_(0), thr_dat_(nx::nulptr)
     {
+        init();
         swap(nx::moved(r));
     }
 
 #ifdef NX_SP_CXX11_TEMPLATES
     template <typename F, typename... P>
-    thread(nx_fref(F, f), nx_fref(P, ... par))
-        : handle_(0), id_(0), thr_dat_(nx::nulptr)
+    explicit thread(nx_fref(F, f), nx_fref(P, ... par))
     {
+        init();
         start(nx_forward(F, f), nx_forward(P, par)...);
     }
 #else /*NX_SP_CXX11_TEMPLATES*/
     template <typename F>
-    thread(nx_fref(F, f))
-        : handle_(0), id_(0), thr_dat_(nx::nulptr)
+    explicit thread(nx_fref(F, f))
     {
+        init();
         start(nx_forward(F, f));
     }
 
 #define NX_THREAD_CONSTRUCT_(n) \
     template <typename F, NX_PP_TYPE_1(n, typename P)> \
-    thread(nx_fref(F, f), NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
-        : handle_(0), id_(0), thr_dat_(nx::nulptr) \
+    explicit thread(nx_fref(F, f), NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
     { \
+        init(); \
         start(nx_forward(F, f), NX_PP_FORWARD(n, P, par)); \
     }
     NX_PP_MULT_MAX(NX_THREAD_CONSTRUCT_)
@@ -106,14 +112,13 @@ public:
     template <typename F>
     void start(nx_fref(F, f))
     {
-        nx_lock_scope(lock_);
         if (thr_dat_) thread_ops::join(handle_);
         nx_verify(thr_dat_ = nx::alloc<data>());
         thr_dat_->proc_ = nx_forward(F, f);
-        if (!(thr_dat_->proc_))
-            nx_verify(thr_dat_->task_queue_ = nx::alloc<blocking_queue<task_t> >());
-        else
+        if (thr_dat_->proc_)
             thr_dat_->task_queue_ = nx::nulptr;
+        else
+            nx_verify(thr_dat_->task_queue_ = nx::alloc<blocking_queue<task_t> >());
         handle_ = thread_ops::create(onThreadProc, thr_dat_, &id_);
     }
 
@@ -141,38 +146,34 @@ public:
 
     handle_t handle(void) const
     {
-        nx_lock_scope(lock_);
         return handle_;
     }
 
     id_t id(void) const
     {
-        nx_lock_scope(lock_);
         return id_;
+    }
+
+    bool joinable(void) const
+    {
+        return !!(thr_dat_);
     }
 
     void join(void)
     {
-        nx_lock_scope(lock_);
-        if (thr_dat_) join(handle_);
-        handle_ = 0;
-        id_ = 0;
-        thr_dat_ = nx::nulptr;
+        if (joinable()) join(handle_);
+        init();
     }
 
     void detach(void)
     {
-        nx_lock_scope(lock_);
-        if (thr_dat_) detach(handle_);
-        handle_ = 0;
-        id_ = 0;
-        thr_dat_ = nx::nulptr;
+        if (joinable()) detach(handle_);
+        init();
     }
 
     template <typename F>
     void post(nx_fref(F, f))
     {
-        nx_lock_scope(lock_);
         if (thr_dat_ && thr_dat_->task_queue_)
             thr_dat_->task_queue_->put(nx_forward(F, f));
     }
@@ -194,7 +195,6 @@ public:
 #undef NX_THREAD_CONSTRUCT_
 #endif/*NX_SP_CXX11_TEMPLATES*/
 
-private:
     void swap(thread& r)
     {
         nx::swap(handle_ , r.handle_);
@@ -202,6 +202,15 @@ private:
         nx::swap(thr_dat_, r.thr_dat_);
     }
 };
+
+/*
+    Special swap algorithm
+*/
+
+inline void swap(thread& x, thread& y)
+{
+    x.swap(y);
+}
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

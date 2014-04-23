@@ -381,7 +381,7 @@ public:
 
     template <typename FuncT>
     functor_base(nx_fref(FuncT, f),
-                 typename nx::enable_if<!is_sametype<FuncT, functor_base>::value, int>::type_t = 0)
+                 typename nx::enable_if<!is_same<FuncT, functor_base>::value, int>::type_t = 0)
         : invoker_(nx::nulptr), any_guard_(nx::nulptr)
     {
         nx::initialize(handler_);
@@ -514,14 +514,14 @@ public:
 
     template <typename FuncT>
     functor(nx_fref(FuncT, /*f*/),
-            typename nx::enable_if<is_sametype<FuncT, int>::value, int>::type_t = 0)
+            typename nx::enable_if<is_same<FuncT, int>::value, int>::type_t = 0)
         : base_t()
     {}
 
     template <typename FuncT>
     functor(nx_fref(FuncT, f),
-            typename nx::enable_if<!is_sametype<FuncT, int>::value &&
-                                   !is_sametype<FuncT, functor>::value, int>::type_t = 0)
+            typename nx::enable_if<!is_same<FuncT, int>::value &&
+                                   !is_same<FuncT, functor>::value, int>::type_t = 0)
         : base_t(nx_forward(FuncT, f))
     {}
 
@@ -569,14 +569,14 @@ public:
 
     template <typename FuncT>
     functor(nx_fref(FuncT, /*f*/),
-            typename nx::enable_if<is_sametype<FuncT, int>::value, int>::type_t = 0)
+            typename nx::enable_if<is_same<FuncT, int>::value, int>::type_t = 0)
         : base_t()
     {}
 
     template <typename FuncT>
     functor(nx_fref(FuncT, f),
-            typename nx::enable_if<!is_sametype<FuncT, int>::value &&
-                                   !is_sametype<FuncT, functor>::value, int>::type_t = 0)
+            typename nx::enable_if<!is_same<FuncT, int>::value &&
+                                   !is_same<FuncT, functor>::value, int>::type_t = 0)
         : base_t(nx_forward(FuncT, f))
     {}
 
@@ -633,13 +633,13 @@ public: \
     functor(nx::none_t)   : base_t() {} \
     template <typename FuncT> \
     functor(FuncT NX_PF_SYM_, \
-            typename nx::enable_if<is_sametype<FuncT, int>::value, int>::type_t = 0) \
+            typename nx::enable_if<is_same<FuncT, int>::value, int>::type_t = 0) \
         : base_t() \
     {} \
     template <typename FuncT> \
     functor(nx_fref(FuncT, f), \
-            typename nx::enable_if<!is_sametype<FuncT, int>::value && \
-                                   !is_sametype<FuncT, functor>::value, int>::type_t = 0) \
+            typename nx::enable_if<!is_same<FuncT, int>::value && \
+                                   !is_same<FuncT, functor>::value, int>::type_t = 0) \
         : base_t(nx_forward(FuncT, f)) \
     {} \
     template <typename FuncT, typename ObjT> \
