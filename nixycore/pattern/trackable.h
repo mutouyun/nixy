@@ -21,15 +21,18 @@ NX_BEG
 template <typename T, template <typename> class SingleT = Singleton>
 class trackable
 {
-    typedef SingleT<T*> single_t;
-
 public:
     T * prev_, * next_;
 
 private:
+    static T *(& get_head_ptr(void))
+    {
+        return SingleT<T*>::instance(nx::nulptr);
+    }
+
     void init(void)
     {
-        T*(& head) = single_t::instance();
+        T*(& head) = get_head_ptr();
         // check and push self to list
         if (head)
         {
@@ -41,7 +44,7 @@ private:
 
     void dest(void)
     {
-        T*(& head) = single_t::instance();
+        T*(& head) = get_head_ptr();
         // check and pop self from list
         if (!head) return;
         if (this->prev_)
@@ -72,7 +75,7 @@ public:
     trackable& operator=(const trackable&) { return (*this); }
 
 public:
-    static T* track(void) { return single_t::instance(); }
+    static T* track(void) { return get_head_ptr(); }
 };
 
 //////////////////////////////////////////////////////////////////////////

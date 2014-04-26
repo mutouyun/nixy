@@ -19,6 +19,8 @@
 #include "nixycore/algorithm/series.h"
 
 #include "nixycore/general/general.h"
+#include "nixycore/preprocessor/preprocessor.h"
+#include "nixycore/utility/utility.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -39,6 +41,16 @@ class TLSSingleton
     }
 
 public:
+#ifdef NX_SP_CXX11_TEMPLATES
+    template <typename... P>
+    static T& instance(nx_fref(P, ... par))
+    {
+        T* p = singleton<tls_t>(destroy);
+        if (p) return (*p);
+        singleton<tls_t>() = p = nx::alloc<AllocT, T>(nx_forward(P, par)...);
+        return (*p);
+    }
+#else /*NX_SP_CXX11_TEMPLATES*/
     static T& instance(void)
     {
         T* p = singleton<tls_t>(destroy);
@@ -46,6 +58,18 @@ public:
         singleton<tls_t>() = p = nx::alloc<AllocT, T>();
         return (*p);
     }
+#define NX_INSTANCE_(n) \
+    template <NX_PP_TYPE_1(n, typename P)> \
+    static T& instance(NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
+    { \
+        T* p = singleton<tls_t>(destroy); \
+        if (p) return (*p); \
+        singleton<tls_t>() = p = nx::alloc<AllocT, T>(NX_PP_FORWARD(n, P, par)); \
+        return (*p); \
+    }
+    NX_PP_MULT_MAX(NX_INSTANCE_)
+#undef NX_INSTANCE_
+#endif/*NX_SP_CXX11_TEMPLATES*/
 };
 
 /*
