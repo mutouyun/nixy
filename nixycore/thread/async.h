@@ -7,281 +7,125 @@
 
 #pragma once
 
-#include "nixycore/thread/lock_guard.h"
-#include "nixycore/thread/mutex.h"
 #include "nixycore/thread/thread_pool.h"
+#include "nixycore/thread/future.h"
+#include "nixycore/thread/promise.h"
+#include "nixycore/thread/task.h"
 
 #include "nixycore/pattern/singleton.h"
-
-#include "nixycore/delegate/bind.h"
+#include "nixycore/delegate/function_traits.h"
 
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
 #include "nixycore/preprocessor/preprocessor.h"
 #include "nixycore/utility/utility.h"
-#include "nixycore/memory/memory.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
 /*
-    Task status enum
+    Async proc
 */
 
-enum task_status_t
+namespace private_async
 {
-    task_Deferred,
-    task_Ready,
-    task_TimeOut
-};
-
-/*
-    Private definitions
-*/
-
-namespace private_task
-{
-    /*
-        Task data storage
-    */
-
-    template <typename T>
-    struct data_base
+    template <typename F>
+    class detail
     {
-        mutable mutex lock_;
-        condition     done_;
-        task_status_t status_;
+        typedef task<F> task_t;
+        typedef typename task_t::result_t r_t;
 
-        functor<T()> task_;
+        task_t task_;
 
-        data_base(void)
-            : done_(lock_)
-            , status_(task_Deferred)
-        {}
-    };
-
-    template <typename T, bool = nx::is_reference<T>::value>
-    struct data : data_base<T>
-    {
-        typedef typename rm_rvalue<T>::type_t result_t;
-        result_t result_;
-
-        data(void) : result_() {}
-
-        result_t& get(void) { return result_; }
-
-        static void onProcess(pointer<data>& d)
+        thread_pool& pool_instance(void)
         {
-            d->result_ = d->task_(); // no need lock, because result can be access only after wait
-            nx_lock_scope(d->lock_);
-            d->status_ = task_Ready;
-            d->done_.notify();
+            return nx::singleton<thread_pool>(0, (size_t)~0);
         }
-    };
 
-    template <typename T>
-    struct data<T, true> : data_base<T>
-    {
-        typedef typename rm_reference<T>::type_t* result_t;
-        result_t result_;
-
-        data(void) : result_(nx::nulptr) {}
-
-        result_t get(void) { return result_; }
-
-        static void onProcess(pointer<data>& d)
-        {
-            d->result_ = &(d->task_());
-            nx_lock_scope(d->lock_);
-            d->status_ = task_Ready;
-            d->done_.notify();
-        }
-    };
-
-    template <>
-    struct data<void, false> : data_base<void>
-    {
-        void get(void) { /* Do nothing */ }
-
-        static void onProcess(pointer<data>& d)
-        {
-            d->task_();
-            nx_lock_scope(d->lock_);
-            d->status_ = task_Ready;
-            d->done_.notify();
-        }
-    };
-
-    /*
-        Package the preparations for the task
-    */
-
-    template <typename T>
-    class prepare
-    {
     public:
-        pointer<data<T> > data_;
+        template <typename FuncT>
+        detail(nx_fref(FuncT, f))
+            : task_(nx_forward(FuncT, f))
+        {}
 
-        template <typename F>
-        prepare(nx_fref(F, f),
-                typename nx::enable_if<!is_same<F, prepare>::value, int>::type_t = 0)
-            : data_(nx::alloc<data<T> >())
+#   ifdef NX_SP_CXX11_TEMPLATES
+        template <typename... P>
+        nx_rval(future<r_t>, true) start(nx_fref(P, ... par))
         {
-            nx_assert(data_);
-            nx_verify(data_->task_ = nx_forward(F, f));
-            start();
+            future<r_t> futr = task_.get_future();
+            pool_instance().put(nx_fval(nx::move(task_)), nx_forward(P, par)...);
+            return nx::move(futr);
+        }
+#   else /*NX_SP_CXX11_TEMPLATES*/
+        nx_rval(future<r_t>, true) start(void)
+        {
+            future<r_t> futr = task_.get_future();
+            pool_instance().put(nx_fval(nx::move(task_)));
+            return nx::move(futr);
         }
 
-        prepare(const prepare& pp)
-            : data_(nx::move(pp.data_)) // always get the ownership of the data
-        {
-            nx_assert(data_);
+#   define NX_ASYNC_DETAIL_DEFINE_(n) \
+        template <NX_PP_TYPE_1(n, typename P)> \
+        nx_rval(future<r_t>, true) start(NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
+        { \
+            future<r_t> futr = task_.get_future(); \
+            pool_instance().put(nx_fval(nx::move(task_)), NX_PP_FORWARD(n, P, par)); \
+            return nx::move(futr); \
         }
-
-    private:
-        void start(void)
-        {
-            nx_assert(data_);
-            singleton<thread_pool>(0, (size_t)~0)
-                .put(bind(&data<T>::onProcess, data_));
-        }
+        NX_PP_MULT_MAX(NX_ASYNC_DETAIL_DEFINE_)
+#   undef NX_ASYNC_DETAIL_DEFINE_
+#   endif/*NX_SP_CXX11_TEMPLATES*/
     };
 }
 
 /*
-    Async task
-*/
-
-template <typename T>
-class task : nx::noncopyable
-{
-public:
-    typedef T type_t;
-
-private:
-    typedef private_task::data<type_t> data_t;
-    pointer<data_t> data_;
-
-public:
-    task(void) {}
-
-    task(const private_task::prepare<type_t>& pp)
-        : data_(nx::move(pp.data_))
-    {
-        nx_assert(data_);
-    }
-
-    task(nx_rref(task) rhs)
-    {
-        swap(moved(rhs));
-    }
-
-#ifdef NX_CC_GNUC
-    /*
-        gcc need this, or will get a compile error
-        when using like this: task<T> xx = async(F)
-    */
-    task(const task&) { nx_assert(false); } // = deleted
-#endif
-
-public:
-    bool wait(int tm_ms = -1)
-    {
-        if (!data_) return false;
-        nx_lock_scope(data_->lock_);
-        while (data_->status_ != task_Ready) // used to avoid spurious wakeups
-        {
-            bool ret = data_->done_.wait(tm_ms);
-            if (!ret)
-            {
-                data_->status_ = task_TimeOut;
-                return false;
-            }
-        }
-        return true;
-    }
-
-    task_status_t status(void) const
-    {
-        if (!data_) return task_Deferred;
-        nx_lock_scope(data_->lock_);
-        return data_->status_;
-    }
-
-    type_t result(void)
-    {
-        wait();
-        return data_->get();
-    }
-
-    void swap(task& rhs)
-    {
-        data_.swap(rhs.data_);
-    }
-};
-
-/*
-    Special swap algorithm
-*/
-
-template <typename T>
-inline void swap(task<T>& x, task<T>& y)
-{
-    x.swap(y);
-}
-
-/*
-    Async call, will return a task object for controlling asynchronous call
+    Calls fn (with args as arguments) at some point,
+    returning without waiting for the execution of fn to complete.
 */
 
 #ifdef NX_SP_CXX11_TEMPLATES
 template <typename F, typename... P>
-inline nx_rval(task<typename function_traits<F>::result_t>, true)
+inline nx_rval(future<typename result_of<F(P...)>::type_t>, true)
     async(nx_fref(F, f), nx_fref(P, ... par))
 {
-    typedef typename function_traits<F>::result_t r_t;
-    return nx::move(task<r_t>(private_task::prepare<r_t>
-        (bind(nx_forward(F, f), nx_forward(P, par)...)) ));
+    typedef typename result_of<F(P...)>::type_t r_t;
+    return private_async::detail<r_t(P...)>(nx_forward(F, f)).start(nx_forward(P, par)...);
 }
 template <typename R, typename F, typename... P>
-inline nx_rval(task<R>, true) async(nx_fref(F, f), nx_fref(P, ... par))
+inline nx_rval(future<R>, true) async(nx_fref(F, f), nx_fref(P, ... par))
 {
-    return nx::move(task<R>(private_task::prepare<R>
-        (bind<R>(nx_forward(F, f), nx_forward(P, par)...)) ));
+    return private_async::detail<R(P...)>(nx_forward(F, f)).start(nx_forward(P, par)...);
 }
 #else /*NX_SP_CXX11_TEMPLATES*/
 template <typename F>
-inline nx_rval(task<typename function_traits<F>::result_t>, true)
+inline nx_rval(future<typename result_of<F()>::type_t>, true)
     async(nx_fref(F, f))
 {
-    typedef typename function_traits<F>::result_t r_t;
-    return nx::move(task<r_t>(private_task::prepare<r_t>(nx_forward(F, f))));
+    typedef typename result_of<F()>::type_t r_t;
+    return private_async::detail<r_t()>(nx_forward(F, f)).start();
 }
-
 template <typename R, typename F>
-inline nx_rval(task<R>, true) async(nx_fref(F, f))
+inline nx_rval(future<R>, true) async(nx_fref(F, f))
 {
-    return nx::move(task<R>(private_task::prepare<R>(nx_forward(F, f))));
+    return private_async::detail<R()>(nx_forward(F, f)).start();
 }
 
-#define NX_ASYNC_(n) \
+#define NX_ASYNC_DEFINE_(n) \
 template <typename F, NX_PP_TYPE_1(n, typename P)> \
-inline nx_rval(task<typename function_traits<F>::result_t>, true) \
+inline nx_rval(future<typename result_of<F(NX_PP_TYPE_1(n, P))>::type_t>, true) \
     async(nx_fref(F, f), NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
 { \
-    typedef typename function_traits<F>::result_t r_t; \
-    return nx::move(task<r_t>(private_task::prepare<r_t> \
-        (bind(nx_forward(F, f), NX_PP_FORWARD(n, P, par))) )); \
+    typedef typename result_of<F(NX_PP_TYPE_1(n, P))>::type_t r_t; \
+    return private_async::detail<r_t(NX_PP_TYPE_1(n, P))>(nx_forward(F, f)).start(NX_PP_FORWARD(n, P, par)); \
 } \
 template <typename R, typename F, NX_PP_TYPE_1(n, typename P)> \
-inline nx_rval(task<R>, true) async(nx_fref(F, f), NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
+inline nx_rval(future<R>, true) async(nx_fref(F, f), NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
 { \
-    return nx::move(task<R>(private_task::prepare<R> \
-        (bind<R>(nx_forward(F, f), NX_PP_FORWARD(n, P, par))) )); \
+    return private_async::detail<R(NX_PP_TYPE_1(n, P))>(nx_forward(F, f)).start(NX_PP_FORWARD(n, P, par)); \
 }
-NX_PP_MULT_MAX(NX_ASYNC_)
-#undef NX_ASYNC_
+NX_PP_MULT_MAX(NX_ASYNC_DEFINE_)
+#undef NX_ASYNC_DEFINE_
 #endif/*NX_SP_CXX11_TEMPLATES*/
 
 //////////////////////////////////////////////////////////////////////////

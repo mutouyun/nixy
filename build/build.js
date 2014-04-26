@@ -5,8 +5,17 @@
 Solution.name           = "nixy_" + Make.CC
 Solution.project_path   = "../"
 Solution.include_path   = ""
-Solution.tmp_path       = "!tmp/$(Configuration)/$(CC)"
-Solution.out_path       = "!bin/$(Configuration)/$(CC)"
+
+if (Make.CC.match("vc") == "vc")
+{
+    Solution.tmp_path       = "!tmp/$(Configuration)/$(PlatformName)/$(CC)"
+    Solution.out_path       = "!bin/$(Configuration)/$(PlatformName)/$(CC)"
+}
+else
+{
+    Solution.tmp_path       = "!tmp/$(Configuration)/$(CC)"
+    Solution.out_path       = "!bin/$(Configuration)/$(CC)"
+}
 
 if (Make.PLAT == "win")
 {
@@ -52,6 +61,7 @@ else
         'nixycore/typemanip/typebehavior.h' \
         'nixycore/typemanip/typedetect.h' \
         'nixycore/typemanip/typetraits.h' \
+        'nixycore/typemanip/typedecay.h' \
         'nixycore/typemanip/typeof.h' \
         'nixycore/typemanip/typemanip.h' \
         'nixycore/utility/alignof.h' \
@@ -141,6 +151,9 @@ else
         'nixycore/thread/thread_model.h' \
         'nixycore/thread/thread_detail.h' \
         'nixycore/thread/thread_pool.h' \
+        'nixycore/thread/future.h' \
+        'nixycore/thread/promise.h' \
+        'nixycore/thread/task.h' \
         'nixycore/thread/async.h' \
         'nixycore/thread/thread.h' \
         'nixycore/string/transform.h' \

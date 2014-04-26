@@ -23,6 +23,9 @@
 #include "nixycore/thread/thread_model.h"
 #include "nixycore/thread/thread_detail.h"
 #include "nixycore/thread/thread_pool.h"
+#include "nixycore/thread/future.h"
+#include "nixycore/thread/promise.h"
+#include "nixycore/thread/task.h"
 #include "nixycore/thread/async.h"
 
 //////////////////////////////////////////////////////////////////////////

@@ -457,6 +457,74 @@ void testThreadPool(void)
 
 //////////////////////////////////////////////////////////////////////////
 
+namespace test_promise
+{
+    void print_int_1(nx::future<int>& fut)
+    {
+        int x = fut.get();
+        strout << NX__FUNCTION__ << " value: " << x << endl;
+    }
+
+    void print_int_2(nx::future<int>& fut)
+    {
+        int x = fut.get();
+        strout << NX__FUNCTION__ << " value: " << x << endl;
+    }
+}
+
+void testPromise(void)
+{
+    TEST_CASE();
+
+    using namespace test_promise;
+
+    nx::promise<int> prom;
+
+    nx::future<int> fut1 = prom.get_future();
+    nx::thread NX_UNUSED th1(print_int_1, nx::ref(fut1));
+
+    nx::future<int> fut2 = fut1.share();
+    nx::thread NX_UNUSED th2(print_int_2, nx::ref(fut2));
+
+    strout << "preparing..." << endl;
+    nx::thread::sleep(1000);
+    prom.set_value(10);
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+namespace test_task
+{
+    int countdown(int from, int to)
+    {
+        for(int i = from; i != to; --i)
+        {
+            strout << i << endl;
+            nx::thread::sleep(1000);
+        }
+        strout << "Lift off!" << endl;
+        return (from - to);
+    }
+}
+
+void testTask(void)
+{
+    TEST_CASE();
+
+    using namespace test_task;
+
+    nx::task<int(int,int)> tsk(&countdown);
+    nx::future<int> ret = tsk.get_future();
+
+    // spawn thread to count down from 10 to 0
+    nx::thread NX_UNUSED th1(nx_fval(nx::move(tsk)), 5, 0);
+
+    int value = ret.get();
+    strout << "The countdown lasted for " << value << " seconds." << endl;
+}
+
+//////////////////////////////////////////////////////////////////////////
+
 namespace test_async
 {
     int test_1(int total)
@@ -482,6 +550,15 @@ namespace test_async
             r += (i & 1) ? i : -i;
         return r;
     }
+
+    // a non-optimized way of checking for prime numbers...
+    bool is_prime(int x)
+    {
+        strout << "Calculating. Please, wait..." << endl;
+        for(int i = 2; i < x; ++i)
+            if (x % i == 0) return false;
+        return true;
+    }
 }
 
 void testAsync(void)
@@ -490,13 +567,20 @@ void testAsync(void)
 
     using namespace test_async;
 
-    nx::task<int> t1 = nx::async(&test_1, 100);
-    nx::task<int> t2 = nx::async(&test_2, 10);
+    nx::future<int> t1 = nx::async(&test_1, 100);
+    nx::future<int> t2 = nx::async(&test_2, 10);
     nx_auto(t3, nx::async(&test_3));
 
-    strout << "Check task result: " << t1.result()
-                             << " " << t2.result()
-                             << " " << t3.result() << endl;
+    strout << "Check async result: " << t1.get()
+                              << " " << t2.get()
+                              << " " << t3.get() << endl;
+
+    nx_auto(fut, nx::async(is_prime, 313222313));
+    strout << "Checking whether 313222313 is prime." << endl;
+    if (fut.get())
+        strout << "It is prime!" << endl;
+    else
+        strout << "It is not prime." << endl;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -514,5 +598,7 @@ void testThread(void)
     //testTlsPtr();
     testThreadDetail();
     testThreadPool();
+    testPromise();
+    testTask();
     testAsync();
 }
