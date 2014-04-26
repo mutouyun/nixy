@@ -8,9 +8,12 @@
 #pragma once
 
 #include "nixycore/typemanip/typebehavior.h"
-#include "nixycore/typemanip/typetraits.h"
 
 #include "nixycore/general/general.h"
+
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+#include <type_traits>
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -71,6 +74,30 @@ inline const typename refer<T>::type_t& unref(const refer<T>& r) { return (*r); 
 
 namespace private_unrefwrap
 {
+#ifdef NX_SP_CXX11_TYPE_TRAITS
+    template <typename T>
+    struct decay
+    {
+        typedef typename std::decay<T>::type type_t;
+    };
+#else /*NX_SP_CXX11_TYPE_TRAITS*/
+    template <typename T>
+    struct decay
+    {
+    private:
+        typedef typename rm_reference<T>::type_t no_ref_type;
+
+    public:
+        typedef typename select_if<is_array<no_ref_type>::value,
+                typename rm_array<no_ref_type>::type_t*,
+                typename select_if<is_function<no_ref_type>::value && !is_pointer<no_ref_type>::value,
+                    no_ref_type*,
+                    typename rm_cv<no_ref_type>::type_t
+                >::type_t
+        >::type_t type_t;
+    };
+#endif/*NX_SP_CXX11_TYPE_TRAITS*/
+
     template <typename T>
     struct detail
     {
@@ -86,7 +113,7 @@ namespace private_unrefwrap
 
 template <typename T>
 struct unrefwrap
-    : private_unrefwrap::detail<typename decay<T>::type_t>
+    : private_unrefwrap::detail<typename private_unrefwrap::decay<T>::type_t>
 {};
 
 //////////////////////////////////////////////////////////////////////////
