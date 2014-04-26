@@ -29,6 +29,9 @@ using std::endl;
 
 //////////////////////////////////////////////////////////////////////////
 
+//#define NX_NO_CXX11_ATOMIC
+//#define NX_SINGLE_THREAD
+
 #include "test_preprocessor.h"
 #include "test_bugfix.h"
 #include "test_typemanip.h"

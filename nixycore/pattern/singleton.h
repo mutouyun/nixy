@@ -56,9 +56,16 @@ class Singleton : noncopyable
 
 #else /*NX_SINGLE_THREAD*/
 
+    // Different parameters will instantiate the same singleton instance
+    static T* ip_;
+
 #   define NX_SINGLETON_(...) \
-        static T ir __VA_ARGS__; \
-        return ir
+        if (!ip_) \
+        { \
+            static T ir __VA_ARGS__; \
+            ip_ = &ir; \
+        } \
+        return (*ip_)
 
 #endif/*NX_SINGLE_THREAD*/
 
@@ -93,6 +100,8 @@ public:
 #ifndef NX_SINGLE_THREAD
 template <typename T> spin_lock  Singleton<T>::lc_;
 template <typename T> atomic<T*> Singleton<T>::ip_;
+#else /*NX_SINGLE_THREAD*/
+template <typename T> T* Singleton<T>::ip_ = nx::nulptr;
 #endif/*NX_SINGLE_THREAD*/
 
 /*

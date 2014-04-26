@@ -48,6 +48,9 @@ namespace interlocked
     {
         NX_STATIC_PROPERTY(int, SUPPORTED_MASK, 0xF);
 
+        template <typename T> struct scalar { typedef T type_t; };
+        template <typename T> struct atomic { typedef T type_t; };
+
         // memory barrier
 
         template <typename M>
@@ -115,6 +118,12 @@ namespace interlocked
         NX_STATIC_PROPERTY(int, SUPPORTED_MASK, 0x7);
 #   endif
 
+        template <typename T> struct scalar                  { typedef T type_t; };
+        template <typename T> struct scalar<std::atomic<T> > { typedef T type_t; };
+
+        template <typename T> struct atomic                  { typedef std::atomic<T> type_t; };
+        template <typename T> struct atomic<std::atomic<T> > { typedef std::atomic<T> type_t; };
+
         // memory barrier
 
         template <typename M>
@@ -131,39 +140,37 @@ namespace interlocked
 
         // relaxed, seq_cst, ...
 
-#   define NX_ATOMIC_TYPE_(T) std::atomic<T>
-
         template <typename T, typename M>
-        inline static T load(const NX_ATOMIC_TYPE_(T)& dest, M)
+        inline static typename scalar<T>::type_t load(const T& dest, M)
         {
             return std::atomic_load_explicit(&dest, static_cast<std::memory_order>(M::value));
         }
 
         template <typename T, typename U, typename M>
-        inline static void store(NX_ATOMIC_TYPE_(T)& dest, U val, M)
+        inline static void store(T& dest, U val, M)
         {
-            std::atomic_store_explicit(&dest, (T)(val)
+            std::atomic_store_explicit(&dest, (typename scalar<T>::type_t)(val)
                                             , static_cast<std::memory_order>(M::value));
         }
 
         template <typename T, typename U, typename M>
-        inline static T fetch_add(NX_ATOMIC_TYPE_(T)& dest, U val, M)
+        inline static typename scalar<T>::type_t fetch_add(T& dest, U val, M)
         {
-            return std::atomic_fetch_add_explicit(&dest, (T)(val)
+            return std::atomic_fetch_add_explicit(&dest, (typename scalar<T>::type_t)(val)
                                                        , static_cast<std::memory_order>(M::value));
         }
 
         template <typename T, typename U, typename M>
-        inline static T exchange(NX_ATOMIC_TYPE_(T)& dest, U val, M)
+        inline static typename scalar<T>::type_t exchange(T& dest, U val, M)
         {
-            return std::atomic_exchange_explicit(&dest, (T)(val)
+            return std::atomic_exchange_explicit(&dest, (typename scalar<T>::type_t)(val)
                                                       , static_cast<std::memory_order>(M::value));
         }
 
         template <typename T, typename U, typename M>
-        inline static bool compare_exchange(NX_ATOMIC_TYPE_(T)& dest, U val, T comp, M)
+        inline static bool compare_exchange(T& dest, U val, typename scalar<T>::type_t comp, M)
         {
-            return std::atomic_compare_exchange_strong_explicit(&dest, &comp, (T)(val)
+            return std::atomic_compare_exchange_strong_explicit(&dest, &comp, (typename scalar<T>::type_t)(val)
                                                                             , static_cast<std::memory_order>(M::value)
                                                                             , static_cast<std::memory_order>(M::value));
         }
@@ -247,10 +254,16 @@ namespace interlocked
         };
 
     public:
+#   ifdef NX_SP_CXX11_ALIAS
+        template <typename T> using scalar = order_freedom::scalar<T>;
+        template <typename T> using atomic = order_freedom::atomic<T>;
+#   else
+        template <typename T> struct scalar : order_freedom::scalar<T> {};
+        template <typename T> struct atomic : order_freedom::atomic<T> {};
+#   endif
 
         // relaxed, seq_cst, ...
 
-#   define NX_ATOMIC_TYPE_(T) T
 #   define NX_FENCE_GUARD_(order) \
         fence_guard<nx_typeof(order)> NX_UNUSED guard__(m)
 
@@ -266,7 +279,7 @@ namespace interlocked
 #   endif
 
         template <typename T, typename M>
-        inline static T load(const NX_ATOMIC_TYPE_(T)& dest, M m)
+        inline static T load(const T& dest, M m)
         {
             T r = const_cast<const volatile T &>(dest);
             fence_after(m);
@@ -274,13 +287,13 @@ namespace interlocked
         }
 
         template <typename T, typename U>
-        inline static void store(NX_ATOMIC_TYPE_(T)& dest, U val, memory_order::seq_cst_t m)
+        inline static void store(T& dest, U val, memory_order::seq_cst_t m)
         {
             exchange(dest, val, m);
         }
 
         template <typename T, typename U, typename M>
-        inline static void store(NX_ATOMIC_TYPE_(T)& dest, U val, M m)
+        inline static void store(T& dest, U val, M m)
         {
 #       if defined(NX_PC_X86)
             fence_before(m);
@@ -298,6 +311,14 @@ namespace interlocked
     struct model : OrderT
     {
         typedef memory_order::seq_cst_t default_order_t;
+
+#   ifdef NX_SP_CXX11_ALIAS
+        template <typename T> using scalar = typename OrderT::template scalar<T>;
+        template <typename T> using atomic = typename OrderT::template atomic<T>;
+#   else
+        template <typename T> struct scalar : OrderT::template scalar<T> {};
+        template <typename T> struct atomic : OrderT::template atomic<T> {};
+#   endif
 
         // memory barrier
 
@@ -320,7 +341,7 @@ namespace interlocked
         using OrderT::load;
 
         template <typename T>
-        inline static T load(const NX_ATOMIC_TYPE_(T)& dest)
+        inline static typename scalar<T>::type_t load(const T& dest)
         {
             return load(dest, default_order_t());
         }
@@ -330,7 +351,7 @@ namespace interlocked
         using OrderT::store;
 
         template <typename T, typename U>
-        inline static void store(NX_ATOMIC_TYPE_(T)& dest, U val)
+        inline static void store(T& dest, U val)
         {
             store(dest, val, default_order_t());
         }
@@ -340,7 +361,7 @@ namespace interlocked
         using OrderT::fetch_add;
 
         template <typename T, typename U>
-        inline static T fetch_add(NX_ATOMIC_TYPE_(T)& dest, U val)
+        inline static typename scalar<T>::type_t fetch_add(T& dest, U val)
         {
             return fetch_add(dest, val, default_order_t());
         }
@@ -350,7 +371,7 @@ namespace interlocked
         using OrderT::exchange;
 
         template <typename T, typename U>
-        inline static T exchange(NX_ATOMIC_TYPE_(T)& dest, U val)
+        inline static typename scalar<T>::type_t exchange(T& dest, U val)
         {
             return exchange(dest, val, default_order_t());
         }
@@ -360,13 +381,11 @@ namespace interlocked
         using OrderT::compare_exchange;
 
         template <typename T, typename U>
-        inline static bool compare_exchange(NX_ATOMIC_TYPE_(T)& dest, U val, T comp)
+        inline static bool compare_exchange(T& dest, U val, typename scalar<T>::type_t comp)
         {
             return compare_exchange(dest, val, comp, default_order_t());
         }
     };
-
-#undef NX_ATOMIC_TYPE_
 }
 
 namespace use

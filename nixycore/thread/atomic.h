@@ -121,11 +121,7 @@ namespace private_atomic
     struct storage
     {
         typedef typename get_storage<T, ModelT::SUPPORTED_MASK>::type_t scalar_type;
-#   ifdef NX_SP_CXX11_ATOMIC
-        typedef std::atomic<scalar_type> type_t;
-#   else
-        typedef scalar_type type_t;
-#   endif
+        typedef typename ModelT::template atomic<scalar_type>::type_t type_t;
     };
 }
 
