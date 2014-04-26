@@ -60,7 +60,7 @@ public:
 
     template <class U>
     bool operator==(const std_allocator<U, AllocT>&) const { return true; }
-    /* vs2010 need this, or may get the error C2593 in vector(609) */
+    /* <MSVC 2010> vector(609): compiler error C2593 */
     template <class U>
     bool operator!=(const std_allocator<U, AllocT>&) const { return false; }
 

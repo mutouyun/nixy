@@ -166,7 +166,7 @@ void testFunctor(void)
         Func1 f;
         nx::functor<const char*(std::string&)> fr;
         std::string s("Hello functor");
-        strout << (fr = f)(s) << endl;
+        strout << (fr = f)(nx_fval(s)) << endl;
     }
     strout << endl;
     {

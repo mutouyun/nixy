@@ -8,6 +8,7 @@
 #pragma once
 
 #include "nixycore/finalizer/scope_guard.h"
+#include "nixycore/finalizer/ref_counter.h"
 
 #include "nixycore/memory/default_alloc.h"
 #include "nixycore/pattern/trackable.h"
@@ -387,13 +388,13 @@ namespace private_gc
         template <typename U>
         const U& operator()(const U& r)
         {
-            return regist_resour(r, make_destructor(r));
+            return regist_resour(r, nx_fval(make_destructor(r)));
         }
 
         template <typename U, typename F>
         const U& operator()(const U& r, nx_fref(F, dest_fr))
         {
-            return regist_resour(r, make_destructor(r, nx_forward(F, dest_fr)));
+            return regist_resour(r, nx_fval(make_destructor(r, nx_forward(F, dest_fr))));
         }
 
         nx::nulptr_t operator()(nx::nulptr_t)
@@ -465,13 +466,13 @@ namespace private_gc
         template <typename U>
         T& operator()(const U& r)
         {
-            return assign_to(r, make_destructor(r));
+            return assign_to(r, nx_fval(make_destructor(r)));
         }
 
         template <typename U, typename F>
         T& operator()(const U& r, nx_fref(F, dest_fr))
         {
-            return assign_to(r, make_destructor(r, nx_forward(F, dest_fr)));
+            return assign_to(r, nx_fval(make_destructor(r, nx_forward(F, dest_fr))));
         }
 
         T& operator()(nx::nulptr_t)
@@ -497,7 +498,7 @@ class gc_scope : private_gc::connecter
 
 public:
 #if defined(NX_CC_MSVC)
-#   pragma warning(push)            // vs2005 need this
+#   pragma warning(push)            // <MSVC 2005>
 #   pragma warning(disable: 4355)   // 'this' : used in base member initializer list
 #endif
     gc_scope(void)

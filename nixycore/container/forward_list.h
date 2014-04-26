@@ -63,7 +63,7 @@ public:
     forward_list(nx_rref(forward_list, true) rhs)
         : base_t()
     {
-        base_t::swap(moved(rhs));
+        base_t::swap(nx::moved(rhs));
     }
 #endif/*NX_SP_CXX11_INHERITING*/
 

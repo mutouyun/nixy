@@ -15,6 +15,7 @@
     CXX11_MUTEX         - <mutex>
     CXX11_CONDITION     - <condition_variable>
     CXX11_THREAD        - <thread>
+    CXX11_RESULT_OF     - std::result_of
     CXX11_TUPLE         - std::tuple
     CXX11_STACK_SWAP    - std::stack/std::queue/std::priority_queue's swap
     CXX11_ARRAY         - std::array
@@ -61,16 +62,14 @@
     See: http://msdn.microsoft.com/en-us/library/hh567368.aspx
 */
 #   if (NX_CC_MSVC >= 1600)
+#       define NX_SP_CXX11_RESULT_OF
 #       define NX_SP_CXX11_STACK_SWAP
 #       define NX_SP_CXX11_ARRAY
 #       define NX_SP_CXX11_FORWARD_LIST
 #       define NX_SP_CXX11_UNORDERED_MAP
 #       define NX_SP_CXX11_UNORDERED_SET
 #       define NX_SP_CXX11_NULLPTR
-#       define NX_SP_CXX11_AUTO
-#       define NX_SP_CXX11_RVALUE_REF
 #       define NX_SP_CXX11_SATIC_ASSERT
-#       define NX_SP_CXX11_LAMBDA
 #   endif
 #   if (NX_CC_MSVC >= 1700)
 #       define NX_SP_CXX11_TYPE_TRAITS
@@ -78,8 +77,19 @@
 #       define NX_SP_CXX11_MUTEX
 #       define NX_SP_CXX11_CONDITION
 #       define NX_SP_CXX11_THREAD
+#       define NX_SP_CXX11_RVALUE_REF
 #       define NX_SP_CXX11_PERFECT_FWD
 #       define NX_SP_CXX11_RANGEFOR
+        /*
+            <MSVC 2010> fatal error C1001
+            When: static nx_guard_scope(onSoleExit)
+        */
+#       define NX_SP_CXX11_AUTO
+        /*
+            <MSVC 2010> compiler error C2664
+            cannot convert parameter number from 'nx::rvalue<...>' to 'const nx::rvalue<...> &'
+        */
+#       define NX_SP_CXX11_LAMBDA
 #   endif
 #   if (NX_CC_MSVC >= 1800)
 #       define NX_SP_CXX11_ALIAS
@@ -101,21 +111,16 @@
 
 #   if NX_CHECK_GNUC(4, 3, 0)
 #       define NX_SP_CXX11_TYPE_TRAITS
-#       define NX_SP_CXX11_MUTEX
-#       define NX_SP_CXX11_CONDITION
-#       define NX_SP_CXX11_THREAD
 #       define NX_SP_CXX11_STACK_SWAP
 #       define NX_SP_CXX11_ARRAY
 #       define NX_SP_CXX11_FORWARD_LIST
 #       define NX_SP_CXX11_UNORDERED_MAP
 #       define NX_SP_CXX11_UNORDERED_SET
-#       define NX_SP_CXX11_RVALUE_REF
 #       define NX_SP_CXX11_SATIC_ASSERT
 #       define NX_SP_CXX11_TEMPLATES
 #       define NX_SP_CXX11_TUPLE
 #   endif
 #   if NX_CHECK_GNUC(4, 4, 0)
-#       define NX_SP_CXX11_CHAR_TYPE
 #       define NX_SP_CXX11_AUTO
 #       define NX_SP_CXX11_TEMPLATES_EX
 #       define NX_SP_CXX11_INITIALIZER
@@ -130,6 +135,13 @@
 #       define NX_SP_CXX11_NOEXCEPT
 #   endif
 #   if NX_CHECK_GNUC(4, 7, 0)
+#       define NX_SP_CXX11_CHAR_TYPE
+#       define NX_SP_CXX11_MUTEX
+#       define NX_SP_CXX11_CONDITION
+#       define NX_SP_CXX11_THREAD
+#       define NX_SP_CXX11_RESULT_OF
+#       define NX_SP_CXX11_RVALUE_REF
+#       define NX_SP_CXX11_PERFECT_FWD
 #       define NX_SP_CXX11_ALIAS
 #       define NX_SP_CXX11_DELEGATING
 #   endif
@@ -152,6 +164,7 @@
 
 #   if NX_CHECK_CLANG(2, 9, 0)
 #       define NX_SP_CXX11_TYPE_TRAITS
+#       define NX_SP_CXX11_RESULT_OF
 #       define NX_SP_CXX11_CHAR_TYPE
 #       define NX_SP_CXX11_MUTEX
 #       define NX_SP_CXX11_CONDITION
@@ -164,6 +177,7 @@
 #       define NX_SP_CXX11_UNORDERED_SET
 #       define NX_SP_CXX11_AUTO
 #       define NX_SP_CXX11_RVALUE_REF
+#       define NX_SP_CXX11_PERFECT_FWD
 #       define NX_SP_CXX11_SATIC_ASSERT
 #       define NX_SP_CXX11_TEMPLATES
 #       define NX_SP_CXX11_TEMPLATES_EX
@@ -212,6 +226,9 @@
 #endif
 #ifdef NX_NO_CXX11_THREAD
 #undef NX_SP_CXX11_THREAD
+#endif
+#ifdef NX_NO_CXX11_RESULT_OF
+#undef NX_SP_CXX11_RESULT_OF
 #endif
 #ifdef NX_NO_CXX11_TUPLE
 #undef NX_SP_CXX11_TUPLE

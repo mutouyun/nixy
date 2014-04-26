@@ -11,13 +11,13 @@
 #include "nixycore/thread/atomic.h"
 
 #include "nixycore/general/general.h"
+#include "nixycore/preprocessor/preprocessor.h"
 #include "nixycore/typemanip/typemanip.h"
 #include "nixycore/utility/utility.h"
-#include "nixycore/preprocessor/preprocessor.h"
 
 #if defined(NX_CC_MSVC) && (NX_CC_MSVC == 1800)
 /*
-    type_traits(1509): fatal error C1001
+    <MSVC 2013> type_traits(1509): fatal error C1001
     With: NX_SINGLETON_( (nx_forward(P, par)...) );
 */
 #ifdef NX_SP_CXX11_TEMPLATES

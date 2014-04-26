@@ -65,7 +65,7 @@ public:
     set(nx_rref(set, true) rhs)
         : base_t()
     {
-        base_t::swap(moved(rhs));
+        base_t::swap(nx::moved(rhs));
     }
 #endif/*NX_SP_CXX11_INHERITING*/
 
@@ -117,7 +117,7 @@ public:
     multiset(nx_rref(multiset, true) rhs)
         : base_t()
     {
-        base_t::swap(moved(rhs));
+        base_t::swap(nx::moved(rhs));
     }
 #endif/*NX_SP_CXX11_INHERITING*/
 

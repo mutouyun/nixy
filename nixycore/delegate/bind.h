@@ -38,7 +38,7 @@ namespace private_bind
         Check result type
     */
 
-    template <typename F, typename R = nx::null_t>
+    template <typename F, typename R>
     struct check_result
     {
         typedef R type_t;
@@ -54,42 +54,84 @@ namespace private_bind
         Simple functor for saving function pointer
     */
 
-    template <typename F, typename R = nx::null_t
-                        , bool = nx::is_pointer        <typename nx::rm_reference<F>::type_t>::value
-                        , bool = nx::is_member_function<typename nx::rm_reference<F>::type_t>::value>
+    template <typename F, typename R = nx::null_t, bool = nx::is_pointer        <F>::value ||
+                                                          nx::is_function       <F>::value
+                                                 , bool = nx::is_member_function<F>::value>
     class fr;
 
-    template <typename F>
-    class fr<F, void, false, false> // for class type functor
+    // for class type
+
+    template <typename F, bool = nx::is_copyable<F>::value>
+    class fr_class_base
     {
-        typedef typename nx::decay<F>::type_t func_t;
-        func_t f_;
+    protected:
+        F f_;
+
+    public:
+        fr_class_base(const F& f)          : f_(f)      {}
+        fr_class_base(const fr_class_base& rhs) : f_(rhs.f_) {}
+        fr_class_base(nx_rref(F) f)
+            : f_(nx::move(f))
+        {}
+        fr_class_base(nx_rref(fr_class_base, true) rhs)
+            : f_(nx::move(rhs.f_))
+        {}
+    };
+
+    template <typename F>
+    class fr_class_base<F, false>
+    {
+    protected:
+        F f_;
+
+    public:
+        fr_class_base(const F& f)
+            : f_(nx::move(f))
+        {}
+        fr_class_base(const fr_class_base& rhs)
+            : f_(nx::move(const_cast<fr_class_base&>(rhs).f_))
+        {}
+        fr_class_base(nx_rref(F) f)
+            : f_(nx::move(f))
+        {}
+        fr_class_base(nx_rref(fr_class_base, true) rhs)
+            : f_(nx::move(rhs.f_))
+        {}
+    };
+
+    template <typename F>
+    class fr<F, void, false, false> : fr_class_base<F>
+    {
+        typedef fr_class_base<F> base_t;
+        using base_t::f_;
 
     public:
         typedef void result_t;
 
-        fr(const func_t& f)       : f_(f) {}
-        fr(nx_rref(func_t) f)     : f_(nx::move(f)) {}
-        fr(const fr& rhs)         : f_(rhs.f_) {}
-        fr(nx_rref(fr, true) rhs) : f_(nx::move(rhs.f_)) {}
+        fr(const F& f)    : base_t(f)            {}
+        fr(const fr& rhs) : base_t(rhs)          {}
+        fr(nx_rref(F) f)  : base_t(nx::move(f))  {}
+        fr(nx_rref(fr, true) rhs)
+            : base_t(nx::move(static_cast<base_t&>(nx::moved(rhs))))
+        {}
 
 #ifdef NX_SP_CXX11_TEMPLATES
         template <typename... P>
         result_t operator()(nx_fref(P, ... par))
         {
-            /*return*/ nx_extract(func_t, f_)(nx_forward(P, par)...);
+            /*return*/ nx_extract(F, f_)(nx_forward(P, par)...);
         }
 #else /*NX_SP_CXX11_TEMPLATES*/
         result_t operator()(void)
         {
-            /*return*/ nx_extract(func_t, f_)();
+            /*return*/ nx_extract(F, f_)();
         }
 
 #   define NX_BIND_FR_(n) \
         template <NX_PP_TYPE_1(n, typename P)> \
         result_t operator()(NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
         { \
-            /*return*/ nx_extract(func_t, f_)(NX_PP_FORWARD(n, P, par)); \
+            /*return*/ nx_extract(F, f_)(NX_PP_FORWARD(n, P, par)); \
         }
         NX_PP_MULT_MAX(NX_BIND_FR_)
 #   undef NX_BIND_FR_
@@ -97,41 +139,46 @@ namespace private_bind
     };
 
     template <typename F, typename R>
-    class fr<F, R, false, false> // for class type functor
+    class fr<F, R, false, false>
+        : fr_class_base<typename nx::extract<F>::type_t>
     {
-        typedef typename nx::decay<F>::type_t func_t;
-        func_t f_;
+        typedef fr_class_base<F> base_t;
+        using base_t::f_;
 
     public:
         typedef typename check_result<F, R>::type_t result_t;
 
-        fr(const func_t& f)       : f_(f) {}
-        fr(nx_rref(func_t) f)     : f_(nx::move(f)) {}
-        fr(const fr& rhs)         : f_(rhs.f_) {}
-        fr(nx_rref(fr, true) rhs) : f_(nx::move(rhs.f_)) {}
+        fr(const F& f)    : base_t(f)            {}
+        fr(const fr& rhs) : base_t(rhs)          {}
+        fr(nx_rref(F) f)  : base_t(nx::move(f))  {}
+        fr(nx_rref(fr, true) rhs)
+            : base_t(nx::move(static_cast<base_t&>(nx::moved(rhs))))
+        {}
 
 #ifdef NX_SP_CXX11_TEMPLATES
         template <typename... P>
         result_t operator()(nx_fref(P, ... par))
         {
-            return nx_extract(func_t, f_)(nx_forward(P, par)...);
+            return nx_extract(F, f_)(nx_forward(P, par)...);
         }
 #else /*NX_SP_CXX11_TEMPLATES*/
         result_t operator()(void)
         {
-            return nx_extract(func_t, f_)();
+            return nx_extract(F, f_)();
         }
 
 #   define NX_BIND_FR_(n) \
         template <NX_PP_TYPE_1(n, typename P)> \
         result_t operator()(NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
         { \
-            return nx_extract(func_t, f_)(NX_PP_FORWARD(n, P, par)); \
+            return nx_extract(F, f_)(NX_PP_FORWARD(n, P, par)); \
         }
         NX_PP_MULT_MAX(NX_BIND_FR_)
 #   undef NX_BIND_FR_
 #endif/*NX_SP_CXX11_TEMPLATES*/
     };
+
+    // for pointer or function type
 
     template <typename F>
     class fr<F, void, true, false>
@@ -199,6 +246,8 @@ namespace private_bind
 #endif/*NX_SP_CXX11_TEMPLATES*/
     };
 
+    // for member function pointer type
+
     template <typename F>
     class fr<F, void, true, true>
     {
@@ -264,7 +313,7 @@ namespace private_bind
     {
         mutable T t_;
 
-        storage(const T& t) : t_(t) {}
+        storage(const T& t)         : t_(t) {}
         storage(nx_rref(T, true) t) : t_(nx::move(t)) {}
         storage(const storage& rhs) : t_(rhs.t_) {}
         storage(nx_rref(storage, true) rhs) : t_(nx::move(rhs.t_)) {}
@@ -335,11 +384,11 @@ namespace private_bind
     };
 #endif/*NX_SP_CXX11_TEMPLATES*/
 
-    template <typename T = nx::tuple<> >
+    template <typename T>
     class list;
 
     template <>
-    class list<nx::tuple<> > : public storage<nx::tuple<> >
+    class list<void()> : public storage<nx::tuple<> >
     {
         typedef storage<nx::tuple<> > base_t;
 
@@ -367,9 +416,9 @@ namespace private_bind
 
 #ifdef NX_SP_CXX11_TEMPLATES
     template <typename... P>
-    class list<nx::tuple<P...> > : public storage<nx::tuple<P...> >
+    class list<void(P...)> : public storage<nx::tuple<typename nx::decay<P>::type_t...> >
     {
-        typedef storage<nx::tuple<P...> > base_t;
+        typedef storage<nx::tuple<typename nx::decay<P>::type_t...> > base_t;
 
     public:
         list(const list& l) : base_t(l.t_) {}
@@ -392,9 +441,10 @@ namespace private_bind
 #define NX_BIND_LIST_AT_(n, ...) , l[base_t::t_.template at<n - 1>()]
 #define NX_BIND_LIST_(n) \
     template <NX_PP_TYPE_1(n, typename P)> \
-    class list<nx::tuple<NX_PP_TYPE_1(n, P)> > : public storage<nx::tuple<NX_PP_TYPE_1(n, P)> > \
+    class list<void(NX_PP_TYPE_1(n, P))> : \
+        public storage<nx::tuple<NX_PP_TYPE_1(n, typename nx::decay<P, >::type_t)> > \
     { \
-        typedef storage<nx::tuple<NX_PP_TYPE_1(n, P)> > base_t; \
+        typedef storage<nx::tuple<NX_PP_TYPE_1(n, typename nx::decay<P, >::type_t)> > base_t; \
     public: \
         list(const list& l) : base_t(l.t_) {} \
         list(nx_rref(list, true) l) : base_t(nx::move(l.t_)) {} \
@@ -421,15 +471,16 @@ namespace private_bind
     template <typename F, typename L, typename R = nx::null_t>
     class detail
     {
-        typedef typename fr<F, R>::result_t result_t;
+        typedef typename nx::decay<F>::type_t func_t;
+        typedef typename fr<func_t, R>::result_t result_t;
 
-        fr<F, R> f_;
-        L        l_;
+        fr<func_t, R> f_;
+        L             l_;
 
     public:
-        detail(const F& f, const L& l)
-            : f_(f)
-            , l_(l)
+        detail(F f, nx_rref(L, true) l)
+            : f_(nx_forward(F, f))
+            , l_(nx::move(l))
         {}
 
         detail(const detail& rhs)
@@ -446,13 +497,13 @@ namespace private_bind
         template <typename... P>
         result_t operator()(nx_fref(P, ... par))
         {
-            list<nx::tuple<typename nx::decay<P>::type_t...> > l(nx::none, nx_forward(P, par)...);
+            list<void(P...)> l(nx::none, nx_forward(P, par)...);
             return l_(type_wrap<result_t>(), f_, l, typename L::indexes_t());
         }
 #else /*NX_SP_CXX11_TEMPLATES*/
         result_t operator()(void)
         {
-            list<> l;
+            list<void()> l;
             return l_(type_wrap<result_t>(), f_, l);
         }
 
@@ -460,7 +511,7 @@ namespace private_bind
         template <NX_PP_TYPE_1(n, typename P)> \
         result_t operator()(NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
         { \
-            list<nx::tuple<NX_PP_TYPE_1(n, typename nx::decay<P, >::type_t)> > l(NX_PP_FORWARD(n, P, par)); \
+            list<void(NX_PP_TYPE_1(n, P))> l(NX_PP_FORWARD(n, P, par)); \
             return l_(type_wrap<result_t>(), f_, l); \
         }
         NX_PP_MULT_MAX(NX_BIND_DETAIL_)
@@ -478,22 +529,22 @@ namespace private_bind
 
 #ifdef NX_SP_CXX11_RVALUE_REF
 template <typename R, typename F>
-inline private_bind::fr<F, R> bind(nx_fref(F, f))
+inline private_bind::fr<typename nx::decay<F>::type_t, R> bind(nx_fref(F, f))
 {
-    return nx::move(private_bind::fr<F, R>(nx_forward(F, f)));
+    return private_bind::fr<typename nx::decay<F>::type_t, R>(nx_forward(F, f));
 }
 #else /*NX_SP_CXX11_RVALUE_REF*/
 template <typename R, typename F>
-inline nx::rvalue<private_bind::fr<F, R>, true> bind(nx_fref(F, f))
+inline nx::rvalue<private_bind::fr<typename nx::decay<F>::type_t, R>, true> bind(nx_fref(F, f))
 {
-    return nx::move(private_bind::fr<F, R>(nx_forward(F, f)));
+    return private_bind::fr<typename nx::decay<F>::type_t, R>(nx_forward(F, f));
 }
 #endif/*NX_SP_CXX11_RVALUE_REF*/
 
 template <typename F>
-inline nx_rval(private_bind::fr<F>, true) bind(nx_fref(F, f))
+inline nx_rval(private_bind::fr<typename nx::decay<F>::type_t>, true) bind(nx_fref(F, f))
 {
-    return nx::move(private_bind::fr<F>(nx_forward(F, f)));
+    return private_bind::fr<typename nx::decay<F>::type_t>(nx_forward(F, f));
 }
 
 /*
@@ -503,69 +554,67 @@ inline nx_rval(private_bind::fr<F>, true) bind(nx_fref(F, f))
 #ifdef NX_SP_CXX11_TEMPLATES
 #ifdef NX_SP_CXX11_RVALUE_REF
 template <typename F, typename... P>
-inline private_bind::detail<F, private_bind::list<nx::tuple<typename nx::decay<P>::type_t...> > >
+inline private_bind::detail<F, private_bind::list<void(P...)> >
     bind(nx_fref(F, f), nx_fref(P, ... par))
 {
-    typedef private_bind::list<nx::tuple<typename nx::decay<P>::type_t...> > l_t;
-    return nx::move(private_bind::detail<F, l_t>(nx_forward(F, f), l_t(nx::none, nx_forward(P, par)...)));
+    typedef private_bind::list<void(P...)> l_t;
+    return private_bind::detail<F, l_t>(nx_forward(F, f), l_t(nx::none, nx_forward(P, par)...));
 }
 template <typename R, typename F, typename... P>
-inline private_bind::detail<F, private_bind::list<nx::tuple<typename nx::decay<P>::type_t...> >, R>
+inline private_bind::detail<F, private_bind::list<void(P...)>, R>
     bind(nx_fref(F, f), nx_fref(P, ... par))
 {
-    typedef private_bind::list<nx::tuple<typename nx::decay<P>::type_t...> > l_t;
-    return nx::move(private_bind::detail<F, l_t, R>(nx_forward(F, f), l_t(nx::none, nx_forward(P, par)...)));
+    typedef private_bind::list<void(P...)> l_t;
+    return private_bind::detail<F, l_t, R>(nx_forward(F, f), l_t(nx::none, nx_forward(P, par)...));
 }
 #else /*NX_SP_CXX11_RVALUE_REF*/
 template <typename F, typename... P>
-inline nx::rvalue<private_bind::detail<F, private_bind::list<nx::tuple<typename nx::decay<P>::type_t...> > >, true>
+inline nx::rvalue<private_bind::detail<F, private_bind::list<void(P...)> >, true>
     bind(nx_fref(F, f), nx_fref(P, ... par))
 {
-    typedef private_bind::list<nx::tuple<typename nx::decay<P>::type_t...> > l_t;
-    return nx::move(private_bind::detail<F, l_t>(nx_forward(F, f), l_t(nx::none, nx_forward(P, par)...)));
+    typedef private_bind::list<void(P...)> l_t;
+    return private_bind::detail<F, l_t>(nx_forward(F, f), l_t(nx::none, nx_forward(P, par)...));
 }
 template <typename R, typename F, typename... P>
-inline nx::rvalue<private_bind::detail<F, private_bind::list<nx::tuple<typename nx::decay<P>::type_t...> >, R>, true>
+inline nx::rvalue<private_bind::detail<F, private_bind::list<void(P...)>, R>, true>
     bind(nx_fref(F, f), nx_fref(P, ... par))
 {
-    typedef private_bind::list<nx::tuple<typename nx::decay<P>::type_t...> > l_t;
-    return nx::move(private_bind::detail<F, l_t, R>(nx_forward(F, f), l_t(nx::none, nx_forward(P, par)...)));
+    typedef private_bind::list<void(P...)> l_t;
+    return private_bind::detail<F, l_t, R>(nx_forward(F, f), l_t(nx::none, nx_forward(P, par)...));
 }
 #endif/*NX_SP_CXX11_RVALUE_REF*/
 #else /*NX_SP_CXX11_TEMPLATES*/
 #ifdef NX_SP_CXX11_RVALUE_REF
 #define NX_BIND_(n) \
 template <typename F, NX_PP_TYPE_1(n, typename P)> \
-inline private_bind::detail<F, private_bind::list<nx::tuple<NX_PP_TYPE_1(n, typename nx::decay<P, >::type_t)> > > \
+inline private_bind::detail<F, private_bind::list<void(NX_PP_TYPE_1(n, P))> > \
     bind(nx_fref(F, f), NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
 { \
-    typedef private_bind::list<nx::tuple<NX_PP_TYPE_1(n, typename nx::decay<P, >::type_t)> > l_t; \
-    return nx::move(private_bind::detail<F, l_t>(nx_forward(F, f), l_t(NX_PP_FORWARD(n, P, par)))); \
+    typedef private_bind::list<void(NX_PP_TYPE_1(n, P))> l_t; \
+    return private_bind::detail<F, l_t>(nx_forward(F, f), l_t(NX_PP_FORWARD(n, P, par))); \
 } \
 template <typename R, typename F, NX_PP_TYPE_1(n, typename P)> \
-inline private_bind::detail<F, private_bind::list<nx::tuple<NX_PP_TYPE_1(n, typename nx::decay<P, >::type_t)> >, R> \
+inline private_bind::detail<F, private_bind::list<void(NX_PP_TYPE_1(n, P))>, R> \
     bind(nx_fref(F, f), NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
 { \
-    typedef private_bind::list<nx::tuple<NX_PP_TYPE_1(n, typename nx::decay<P, >::type_t)> > l_t; \
-    return nx::move(private_bind::detail<F, l_t, R>(nx_forward(F, f), l_t(NX_PP_FORWARD(n, P, par)))); \
+    typedef private_bind::list<void(NX_PP_TYPE_1(n, P))> l_t; \
+    return private_bind::detail<F, l_t, R>(nx_forward(F, f), l_t(NX_PP_FORWARD(n, P, par))); \
 }
 #else /*NX_SP_CXX11_RVALUE_REF*/
 #define NX_BIND_(n) \
 template <typename F, NX_PP_TYPE_1(n, typename P)> \
-inline nx::rvalue<private_bind::detail<F, \
-    private_bind::list<nx::tuple<NX_PP_TYPE_1(n, typename nx::decay<P, >::type_t)> > >, true> \
+inline nx::rvalue<private_bind::detail<F, private_bind::list<void(NX_PP_TYPE_1(n, P))> >, true> \
     bind(nx_fref(F, f), NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
 { \
-    typedef private_bind::list<nx::tuple<NX_PP_TYPE_1(n, typename nx::decay<P, >::type_t)> > l_t; \
-    return nx::move(private_bind::detail<F, l_t>(nx_forward(F, f), l_t(NX_PP_FORWARD(n, P, par)))); \
+    typedef private_bind::list<void(NX_PP_TYPE_1(n, P))> l_t; \
+    return private_bind::detail<F, l_t>(nx_forward(F, f), l_t(NX_PP_FORWARD(n, P, par))); \
 } \
 template <typename R, typename F, NX_PP_TYPE_1(n, typename P)> \
-inline nx::rvalue<private_bind::detail<F, \
-    private_bind::list<nx::tuple<NX_PP_TYPE_1(n, typename nx::decay<P, >::type_t)> >, R>, true> \
+inline nx::rvalue<private_bind::detail<F, private_bind::list<void(NX_PP_TYPE_1(n, P))>, R>, true> \
     bind(nx_fref(F, f), NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
 { \
-    typedef private_bind::list<nx::tuple<NX_PP_TYPE_1(n, typename nx::decay<P, >::type_t)> > l_t; \
-    return nx::move(private_bind::detail<F, l_t, R>(nx_forward(F, f), l_t(NX_PP_FORWARD(n, P, par)))); \
+    typedef private_bind::list<void(NX_PP_TYPE_1(n, P))> l_t; \
+    return private_bind::detail<F, l_t, R>(nx_forward(F, f), l_t(NX_PP_FORWARD(n, P, par))); \
 }
 #endif/*NX_SP_CXX11_RVALUE_REF*/
 NX_PP_MULT_MAX(NX_BIND_)

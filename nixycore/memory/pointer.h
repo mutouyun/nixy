@@ -73,7 +73,7 @@ namespace private_pointer
         opt(nx_fref(U, r), size_t size)
             : base_t()
         {
-            base_t::assign_to(nx_forward(U, r), nx::make_destructor(r, size));
+            base_t::assign_to(nx_forward(U, r), nx_fval(nx::make_destructor(r, size)));
         }
 
         template <typename U, typename F>
@@ -85,7 +85,7 @@ namespace private_pointer
         template <typename U>
         void set(nx_fref(U, r), size_t size)
         {
-            base_t::assign_to(nx_forward(U, r), nx::make_destructor(r, size));
+            base_t::assign_to(nx_forward(U, r), nx_fval(nx::make_destructor(r, size)));
         }
     };
 }
@@ -123,7 +123,7 @@ public:
     {}
     pointer(nx_rref(pointer) r)
         : opt_t()
-    { swap(moved(r)); }
+    { swap(nx::moved(r)); }
 
     pointer& operator=(pointer rhs)
     {

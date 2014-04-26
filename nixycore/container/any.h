@@ -74,7 +74,7 @@ public:
     any(nx_rref(any) rhs)
         : content_(nx::nulptr)
     {
-        swap(moved(rhs));
+        swap(nx::moved(rhs));
     }
 
     ~any(void)

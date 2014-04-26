@@ -37,7 +37,7 @@ namespace private_thread_pool
         mutex wait_;
 
 #   if defined(NX_CC_MSVC)
-#       pragma warning(push)            // vs2005 need this
+#       pragma warning(push)            // <MSVC 2005>
 #       pragma warning(disable: 4355)   // 'this' : used in base member initializer list
 #   endif
         template <typename F, typename C>
@@ -237,6 +237,14 @@ private:
         remove(tp);
     }
 
+    template <typename F>
+    void put_task(nx_fref(F, f))
+    {
+        task_queue_.put(nx_forward(F, f));
+        if (task_queue_.size() > idle_count())
+            base_t::increase(); // try to expansion storage
+    }
+
     void shock(size_t size)
     {
         for(size_t i = 0; i < size; ++i)
@@ -245,7 +253,7 @@ private:
 
 public:
 #if defined(NX_CC_MSVC)
-#   pragma warning(push)            // vs2005 need this
+#   pragma warning(push)            // <MSVC 2005>
 #   pragma warning(disable: 4355)   // 'this' : used in base member initializer list
 #endif
     thread_pool(size_t min_sz = 0, size_t max_sz = 0)
@@ -274,26 +282,24 @@ public:
         base_t::limit(min_sz, max_sz);
     }
 
-    template <typename F>
-    void put(nx_fref(F, f))
-    {
-        task_queue_.put(nx_forward(F, f));
-        if (task_queue_.size() > idle_count())
-            base_t::increase(); // try to expansion storage
-    }
-
 #ifdef NX_SP_CXX11_TEMPLATES
     template <typename F, typename... P>
     void put(nx_fref(F, f), nx_fref(P, ... par))
     {
-        put(bind<void>(nx_forward(F, f), nx_forward(P, par)...));
+        put_task(bind<void>(nx_forward(F, f), nx_forward(P, par)...));
     }
 #else /*NX_SP_CXX11_TEMPLATES*/
+    template <typename F>
+    void put(nx_fref(F, f))
+    {
+        put_task(bind<void>(nx_forward(F, f)));
+    }
+
 #define NX_THREAD_POOL_PUT_(n) \
     template <typename F, NX_PP_TYPE_1(n, typename P)> \
     void put(nx_fref(F, f), NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
     { \
-        put(bind<void>(nx_forward(F, f), NX_PP_FORWARD(n, P, par))); \
+        put_task(bind<void>(nx_forward(F, f), NX_PP_FORWARD(n, P, par))); \
     }
     NX_PP_MULT_MAX(NX_THREAD_POOL_PUT_)
 #undef NX_THREAD_POOL_PUT_

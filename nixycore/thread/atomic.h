@@ -145,7 +145,7 @@ namespace private_atomic
     */
 
 #if defined(NX_CC_MSVC)
-#   pragma warning(push)
+#   pragma warning(push)            // <MSVC 2005>
 #   pragma warning(disable: 4800)   // forcing value to bool 'true' or 'false' (performance warning)
 #endif
 
@@ -211,7 +211,7 @@ namespace private_atomic
     };
 
 #if defined(NX_CC_MSVC)
-#   pragma warning(pop)
+#   pragma warning(pop) // <MSVC 2005>
 #endif
 
     /*
@@ -300,8 +300,11 @@ public:
 
 #ifdef NX_CC_GNUC
     /*
-        gcc need this, or will get a compile error
-        when using like this: atomic<int> xx = 10
+        <GNUC> compiler error:
+            'nx::noncopyable::noncopyable(const nx::noncopyable&)' is private
+        or
+            use of deleted function 'nx::atomic<T>::atomic(nx::atomic<T>&&)'
+        When using like this: atomic<int> xx = 10
     */
     atomic(const atomic&)
         : base_t()

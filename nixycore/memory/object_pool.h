@@ -20,17 +20,6 @@
 #include "nixycore/typemanip/typemanip.h"
 #include "nixycore/utility/utility.h"
 
-#if defined(NX_CC_MSVC) && (NX_CC_MSVC == 1800)
-/*
-    fatal error C1001
-    With: typename nx::traits<P>::param_t... par
-*/
-#ifdef NX_SP_CXX11_TEMPLATES
-#   define NX_UNDEF_HELPER_
-#   undef NX_SP_CXX11_TEMPLATES
-#endif/*NX_SP_CXX11_TEMPLATES*/
-#endif
-
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
@@ -132,9 +121,9 @@ namespace private_object_pool
     template <typename T, typename... P>
     struct invoker
     {
-        static T* construct(pvoid p, typename nx::traits<P>::param_t... par)
+        static T* invoke(pvoid p, P... par)
         {
-            return nx_construct(p, T, (par...));
+            return nx_construct(p, T, (nx_forward(P, par)...));
         }
     };
 #else /*NX_SP_CXX11_TEMPLATES*/
@@ -144,7 +133,7 @@ namespace private_object_pool
     template <typename T>
     struct invoker<T, void()>
     {
-        static T* construct(pvoid p)
+        static T* invoke(pvoid p)
         {
             return nx_construct(p, T);
         }
@@ -154,9 +143,9 @@ namespace private_object_pool
     template <typename T, NX_PP_TYPE_1(n, typename P)> \
     struct invoker<T, void(NX_PP_TYPE_1(n, P))> \
     { \
-        static T* construct(pvoid p, NX_PP_TYPE_2(n, typename nx::traits<P, >::param_t par)) \
+        static T* invoke(pvoid p, NX_PP_TYPE_2(n, P, par)) \
         { \
-            return nx_construct(p, T, (NX_PP_TYPE_1(n, par))); \
+            return nx_construct(p, T, (NX_PP_FORWARD(n, P, par))); \
         } \
     };
     NX_PP_MULT_MAX(NX_OBJECT_POOL_HELPER_)
@@ -192,7 +181,7 @@ public:
 #ifdef NX_SP_CXX11_TEMPLATES
     template <typename... P>
     object_pool(nx_fref(P, ... par))
-        : storage_(bind(&private_object_pool::invoker<type_t, P...>::construct,
+        : storage_(bind(&private_object_pool::invoker<type_t, P...>::invoke,
                          nx::_1, nx_forward(P, par)...))
         , min_size_(0)
         , max_size_(0)
@@ -201,7 +190,7 @@ public:
     }
 #else /*NX_SP_CXX11_TEMPLATES*/
     object_pool(void)
-        : storage_(&private_object_pool::invoker<type_t, void()>::construct)
+        : storage_(&private_object_pool::invoker<type_t, void()>::invoke)
         , min_size_(0)
         , max_size_(0)
     {
@@ -211,7 +200,7 @@ public:
 #define NX_OBJECT_POOL_(n) \
     template <NX_PP_TYPE_1(n, typename P)> \
     object_pool(NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
-        : storage_(bind(&private_object_pool::invoker<type_t, void(NX_PP_TYPE_1(n, P))>::construct, \
+        : storage_(bind(&private_object_pool::invoker<type_t, void(NX_PP_TYPE_1(n, P))>::invoke, \
                          nx::_1, NX_PP_FORWARD(n, P, par))) \
         , min_size_(0) \
         , max_size_(0) \
@@ -325,8 +314,3 @@ public:
 //////////////////////////////////////////////////////////////////////////
 NX_END
 //////////////////////////////////////////////////////////////////////////
-
-#ifdef NX_UNDEF_HELPER_
-#   undef NX_UNDEF_HELPER_
-#   define NX_SP_CXX11_TEMPLATES
-#endif

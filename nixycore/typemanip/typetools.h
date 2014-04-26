@@ -71,7 +71,10 @@ struct select_if<false, T, U>
 */
 
 template <bool, typename T = void>
-struct enable_if;
+struct enable_if
+{
+    // Nothing
+};
 
 template <typename T>
 struct enable_if<true, T> 

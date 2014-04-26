@@ -14,6 +14,7 @@
 #include "nixycore/general/general.h"
 #include "nixycore/typemanip/typemanip.h"
 #include "nixycore/utility/utility.h"
+#include "nixycore/algorithm/algorithm.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -42,9 +43,9 @@ public:
 
     scope_guard(nx_rref(scope_guard, true) rhs)
         : destructor_(nx::move(rhs.destructor_))
-        , dismiss_(rhs.dismiss_)
+        , dismiss_(true) // dismiss rhs
     {
-        rhs.dismiss();
+        nx::swap(dismiss_, rhs.dismiss_);
     }
 
     ~scope_guard(void)
@@ -71,7 +72,8 @@ public:
 
     nx_rval(functor<void()>, true) get(void) const
     {
-        return destructor_;
+        functor<void()> tmp(destructor_);
+        return nx::move(tmp);
     }
 
     void swap(scope_guard& rhs)
@@ -95,7 +97,7 @@ template <typename F>
 inline nx_rval(scope_guard<typename nx::decay<F>::type_t>, true)
     make_scope_guard(nx_fref(F, f))
 {
-    return nx::move(scope_guard<typename nx::decay<F>::type_t>(nx_forward(F, f)));
+    return scope_guard<typename nx::decay<F>::type_t>(nx_forward(F, f));
 }
 
 #define NX_GUARD_SCOPE_NAM_(nn) scope_guard_##nn##__

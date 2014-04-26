@@ -68,6 +68,19 @@ private:
         return 0;
     }
 
+    template <typename F>
+    void create_start(nx_fref(F, f))
+    {
+        if (thr_dat_) thread_ops::join(handle_);
+        nx_verify(thr_dat_ = nx::alloc<data>());
+        thr_dat_->proc_ = nx_forward(F, f);
+        if (thr_dat_->proc_)
+            thr_dat_->task_queue_ = nx::nulptr;
+        else
+            nx_verify(thr_dat_->task_queue_ = nx::alloc<blocking_queue<task_t> >());
+        handle_ = thread_ops::create(onThreadProc, thr_dat_, &id_);
+    }
+
 public:
     thread(void)
     {
@@ -109,31 +122,24 @@ public:
     ~thread(void) { join(); }
 
 public:
-    template <typename F>
-    void start(nx_fref(F, f))
-    {
-        if (thr_dat_) thread_ops::join(handle_);
-        nx_verify(thr_dat_ = nx::alloc<data>());
-        thr_dat_->proc_ = nx_forward(F, f);
-        if (thr_dat_->proc_)
-            thr_dat_->task_queue_ = nx::nulptr;
-        else
-            nx_verify(thr_dat_->task_queue_ = nx::alloc<blocking_queue<task_t> >());
-        handle_ = thread_ops::create(onThreadProc, thr_dat_, &id_);
-    }
-
 #ifdef NX_SP_CXX11_TEMPLATES
     template <typename F, typename... P>
     void start(nx_fref(F, f), nx_fref(P, ... par))
     {
-        start(bind<void>(nx_forward(F, f), nx_forward(P, par)...));
+        create_start(bind<void>(nx_forward(F, f), nx_forward(P, par)...));
     }
 #else /*NX_SP_CXX11_TEMPLATES*/
+    template <typename F>
+    void start(nx_fref(F, f))
+    {
+        create_start(bind<void>(nx_forward(F, f)));
+    }
+
 #define NX_THREAD_CONSTRUCT_(n) \
     template <typename F, NX_PP_TYPE_1(n, typename P)> \
     void start(nx_fref(F, f), NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
     { \
-        start(bind<void>(nx_forward(F, f), NX_PP_FORWARD(n, P, par))); \
+        create_start(bind<void>(nx_forward(F, f), NX_PP_FORWARD(n, P, par))); \
     }
     NX_PP_MULT_MAX(NX_THREAD_CONSTRUCT_)
 #undef NX_THREAD_CONSTRUCT_
@@ -141,7 +147,7 @@ public:
 
     void start(void)
     {
-        start(nx::none);
+        create_start(nx::none);
     }
 
     handle_t handle(void) const

@@ -28,7 +28,7 @@ NX_BEG
 namespace private_assert
 {
 #if defined(NX_CC_MSVC)
-#   pragma warning(push)            // vs2005 need this
+#   pragma warning(push)            // <MSVC 2005>
 #   pragma warning(disable: 4355)   // 'this' : used in base member initializer list
 #endif
 

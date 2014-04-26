@@ -18,6 +18,7 @@
 #include "nixycore/typemanip/typebehavior.h"
 #include "nixycore/typemanip/typedetect.h"
 #include "nixycore/typemanip/typetraits.h"
+#include "nixycore/typemanip/typedecay.h"
 #include "nixycore/typemanip/typeof.h"
 
 //////////////////////////////////////////////////////////////////////////

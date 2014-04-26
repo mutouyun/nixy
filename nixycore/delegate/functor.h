@@ -68,19 +68,19 @@ namespace private_functor
 
     union handler
     {
-        void(*fun_ptr)();
-        void* obj_ptr;
+        void(*fun_ptr_)();
+        void* obj_ptr_;
         struct
         {
-            void* this_ptr;
-            void (class_t::*func_ptr)();
-        } mem_ptr;
+            void* this_ptr_;
+            void (class_t::*func_ptr_)();
+        } mem_ptr_;
 
         template <typename FuncT>
         static FuncT* cast(pvoid& p)
         {
             /*
-                this cast is for disable the gcc warning:
+                <GNUC> compiler warning:
                 dereferencing type-punned pointer will break strict-aliasing rules
             */
             return reinterpret_cast<FuncT*>(&(p));
@@ -99,37 +99,37 @@ namespace private_functor
     template <typename R, typename... P, typename FuncT>
     struct invoker<R(P...), FuncT, nx::null_t, true, true>
     {
-        static R invoke(handler& hd, typename nx::traits<P>::param_t... par)
+        static R invoke(handler& hd, P... par)
         {
-            return (*(reinterpret_cast<FuncT>(hd.fun_ptr)))(par...);
+            return (*(reinterpret_cast<FuncT>(hd.fun_ptr_)))(nx_forward(P, par)...);
         }
     };
 
     template <typename R, typename... P, typename FuncT>
     struct invoker<R(P...), FuncT, nx::null_t, false, true>
     {
-        static R invoke(handler& hd, typename nx::traits<P>::param_t... par)
+        static R invoke(handler& hd, P... par)
         {
-            return (*(reinterpret_cast<FuncT>(hd.obj_ptr)))(par...);
+            return (*(reinterpret_cast<FuncT>(hd.obj_ptr_)))(nx_forward(P, par)...);
         }
     };
 
     template <typename R, typename... P, typename FuncT>
     struct invoker<R(P...), FuncT, nx::null_t, false, false>
     {
-        static R invoke(handler& hd, typename nx::traits<P>::param_t... par)
+        static R invoke(handler& hd, P... par)
         {
-            return (*(handler::cast<FuncT>(hd.obj_ptr)))(par...);
+            return (*(handler::cast<FuncT>(hd.obj_ptr_)))(nx_forward(P, par)...);
         }
     };
 
     template <typename R, typename... P, typename FuncT, typename ThisT>
     struct invoker<R(P...), FuncT, ThisT, true, true>
     {
-        static R invoke(handler& hd, typename nx::traits<P>::param_t... par)
+        static R invoke(handler& hd, P... par)
         {
-            return (reinterpret_cast<ThisT>(hd.mem_ptr.this_ptr)->*
-                    reinterpret_cast<FuncT>(hd.mem_ptr.func_ptr))(par...);
+            return (reinterpret_cast<ThisT>(hd.mem_ptr_.this_ptr_)->*
+                    reinterpret_cast<FuncT>(hd.mem_ptr_.func_ptr_))(nx_forward(P, par)...);
         }
     };
 
@@ -138,37 +138,37 @@ namespace private_functor
     template <typename... P, typename FuncT>
     struct invoker<void(P...), FuncT, nx::null_t, true, true>
     {
-        static void invoke(handler& hd, typename nx::traits<P>::param_t... par)
+        static void invoke(handler& hd, P... par)
         {
-            /*return*/ (*(reinterpret_cast<FuncT>(hd.fun_ptr)))(par...);
+            /*return*/ (*(reinterpret_cast<FuncT>(hd.fun_ptr_)))(nx_forward(P, par)...);
         }
     };
 
     template <typename... P, typename FuncT>
     struct invoker<void(P...), FuncT, nx::null_t, false, true>
     {
-        static void invoke(handler& hd, typename nx::traits<P>::param_t... par)
+        static void invoke(handler& hd, P... par)
         {
-            /*return*/ (*(reinterpret_cast<FuncT>(hd.obj_ptr)))(par...);
+            /*return*/ (*(reinterpret_cast<FuncT>(hd.obj_ptr_)))(nx_forward(P, par)...);
         }
     };
 
     template <typename... P, typename FuncT>
     struct invoker<void(P...), FuncT, nx::null_t, false, false>
     {
-        static void invoke(handler& hd, typename nx::traits<P>::param_t... par)
+        static void invoke(handler& hd, P... par)
         {
-            /*return*/ (*(handler::cast<FuncT>(hd.obj_ptr)))(par...);
+            /*return*/ (*(handler::cast<FuncT>(hd.obj_ptr_)))(nx_forward(P, par)...);
         }
     };
 
     template <typename... P, typename FuncT, typename ThisT>
     struct invoker<void(P...), FuncT, ThisT, true, true>
     {
-        static void invoke(handler& hd, typename nx::traits<P>::param_t... par)
+        static void invoke(handler& hd, P... par)
         {
-            /*return*/ (reinterpret_cast<ThisT>(hd.mem_ptr.this_ptr)->*
-                        reinterpret_cast<FuncT>(hd.mem_ptr.func_ptr))(par...);
+            /*return*/ (reinterpret_cast<ThisT>(hd.mem_ptr_.this_ptr_)->*
+                        reinterpret_cast<FuncT>(hd.mem_ptr_.func_ptr_))(nx_forward(P, par)...);
         }
     };
 #else /*NX_SP_CXX11_TEMPLATES*/
@@ -177,7 +177,7 @@ namespace private_functor
     {
         static R invoke(handler& hd)
         {
-            return (*(reinterpret_cast<FuncT>(hd.fun_ptr)))();
+            return (*(reinterpret_cast<FuncT>(hd.fun_ptr_)))();
         }
     };
 
@@ -186,7 +186,7 @@ namespace private_functor
     {
         static R invoke(handler& hd)
         {
-            return (*(reinterpret_cast<FuncT>(hd.obj_ptr)))();
+            return (*(reinterpret_cast<FuncT>(hd.obj_ptr_)))();
         }
     };
 
@@ -195,7 +195,7 @@ namespace private_functor
     {
         static R invoke(handler& hd)
         {
-            return (*(handler::cast<FuncT>(hd.obj_ptr)))(); // hd.obj_ptr is not a pointer
+            return (*(handler::cast<FuncT>(hd.obj_ptr_)))(); // hd.obj_ptr_ is not a pointer
         }
     };
 
@@ -204,8 +204,8 @@ namespace private_functor
     {
         static R invoke(handler& hd)
         {
-            return (reinterpret_cast<ThisT>(hd.mem_ptr.this_ptr)->*
-                    reinterpret_cast<FuncT>(hd.mem_ptr.func_ptr))();
+            return (reinterpret_cast<ThisT>(hd.mem_ptr_.this_ptr_)->*
+                    reinterpret_cast<FuncT>(hd.mem_ptr_.func_ptr_))();
         }
     };
 
@@ -216,7 +216,7 @@ namespace private_functor
     {
         static void invoke(handler& hd)
         {
-            /*return*/ (*(reinterpret_cast<FuncT>(hd.fun_ptr)))();
+            /*return*/ (*(reinterpret_cast<FuncT>(hd.fun_ptr_)))();
         }
     };
 
@@ -225,7 +225,7 @@ namespace private_functor
     {
         static void invoke(handler& hd)
         {
-            /*return*/ (*(reinterpret_cast<FuncT>(hd.obj_ptr)))();
+            /*return*/ (*(reinterpret_cast<FuncT>(hd.obj_ptr_)))();
         }
     };
 
@@ -234,7 +234,7 @@ namespace private_functor
     {
         static void invoke(handler& hd)
         {
-            /*return*/ (*(handler::cast<FuncT>(hd.obj_ptr)))();
+            /*return*/ (*(handler::cast<FuncT>(hd.obj_ptr_)))();
         }
     };
 
@@ -243,8 +243,8 @@ namespace private_functor
     {
         static void invoke(handler& hd)
         {
-            /*return*/ (reinterpret_cast<ThisT>(hd.mem_ptr.this_ptr)->*
-                        reinterpret_cast<FuncT>(hd.mem_ptr.func_ptr))();
+            /*return*/ (reinterpret_cast<ThisT>(hd.mem_ptr_.this_ptr_)->*
+                        reinterpret_cast<FuncT>(hd.mem_ptr_.func_ptr_))();
         }
     };
 
@@ -252,67 +252,67 @@ namespace private_functor
     template <typename R, NX_PP_TYPE_1(n, typename P), typename FuncT> \
     struct invoker<R(NX_PP_TYPE_1(n, P)), FuncT, nx::null_t, true, true> \
     { \
-        static R invoke(handler& hd, NX_PP_TYPE_2(n, typename nx::traits<P, >::param_t par)) \
+        static R invoke(handler& hd, NX_PP_TYPE_2(n, P, par)) \
         { \
-            return (*(reinterpret_cast<FuncT>(hd.fun_ptr)))(NX_PP_TYPE_1(n, par)); \
+            return (*(reinterpret_cast<FuncT>(hd.fun_ptr_)))(NX_PP_FORWARD(n, P, par)); \
         } \
     }; \
     template <typename R, NX_PP_TYPE_1(n, typename P), typename FuncT> \
     struct invoker<R(NX_PP_TYPE_1(n, P)), FuncT, nx::null_t, false, true> \
     { \
-        static R invoke(handler& hd, NX_PP_TYPE_2(n, typename nx::traits<P, >::param_t par)) \
+        static R invoke(handler& hd, NX_PP_TYPE_2(n, P, par)) \
         { \
-            return (*(reinterpret_cast<FuncT>(hd.obj_ptr)))(NX_PP_TYPE_1(n, par)); \
+            return (*(reinterpret_cast<FuncT>(hd.obj_ptr_)))(NX_PP_FORWARD(n, P, par)); \
         } \
     }; \
     template <typename R, NX_PP_TYPE_1(n, typename P), typename FuncT> \
     struct invoker<R(NX_PP_TYPE_1(n, P)), FuncT, nx::null_t, false, false> \
     { \
-        static R invoke(handler& hd, NX_PP_TYPE_2(n, typename nx::traits<P, >::param_t par)) \
+        static R invoke(handler& hd, NX_PP_TYPE_2(n, P, par)) \
         { \
-            return (*(handler::cast<FuncT>(hd.obj_ptr)))(NX_PP_TYPE_1(n, par)); \
+            return (*(handler::cast<FuncT>(hd.obj_ptr_)))(NX_PP_FORWARD(n, P, par)); \
         } \
     }; \
     template <typename R, NX_PP_TYPE_1(n, typename P), typename FuncT, typename ThisT> \
     struct invoker<R(NX_PP_TYPE_1(n, P)), FuncT, ThisT, true, true> \
     { \
-        static R invoke(handler& hd, NX_PP_TYPE_2(n, typename nx::traits<P, >::param_t par)) \
+        static R invoke(handler& hd, NX_PP_TYPE_2(n, P, par)) \
         { \
-            return (reinterpret_cast<ThisT>(hd.mem_ptr.this_ptr)->* \
-                    reinterpret_cast<FuncT>(hd.mem_ptr.func_ptr))(NX_PP_TYPE_1(n, par)); \
+            return (reinterpret_cast<ThisT>(hd.mem_ptr_.this_ptr_)->* \
+                    reinterpret_cast<FuncT>(hd.mem_ptr_.func_ptr_))(NX_PP_FORWARD(n, P, par)); \
         } \
     }; \
     template <NX_PP_TYPE_1(n, typename P), typename FuncT> \
     struct invoker<void(NX_PP_TYPE_1(n, P)), FuncT, nx::null_t, true, true> \
     { \
-        static void invoke(handler& hd, NX_PP_TYPE_2(n, typename nx::traits<P, >::param_t par)) \
+        static void invoke(handler& hd, NX_PP_TYPE_2(n, P, par)) \
         { \
-            /*return*/ (*(reinterpret_cast<FuncT>(hd.fun_ptr)))(NX_PP_TYPE_1(n, par)); \
+            /*return*/ (*(reinterpret_cast<FuncT>(hd.fun_ptr_)))(NX_PP_FORWARD(n, P, par)); \
         } \
     }; \
     template <NX_PP_TYPE_1(n, typename P), typename FuncT> \
     struct invoker<void(NX_PP_TYPE_1(n, P)), FuncT, nx::null_t, false, true> \
     { \
-        static void invoke(handler& hd, NX_PP_TYPE_2(n, typename nx::traits<P, >::param_t par)) \
+        static void invoke(handler& hd, NX_PP_TYPE_2(n, P, par)) \
         { \
-            /*return*/ (*(reinterpret_cast<FuncT>(hd.obj_ptr)))(NX_PP_TYPE_1(n, par)); \
+            /*return*/ (*(reinterpret_cast<FuncT>(hd.obj_ptr_)))(NX_PP_FORWARD(n, P, par)); \
         } \
     }; \
     template <NX_PP_TYPE_1(n, typename P), typename FuncT> \
     struct invoker<void(NX_PP_TYPE_1(n, P)), FuncT, nx::null_t, false, false> \
     { \
-        static void invoke(handler& hd, NX_PP_TYPE_2(n, typename nx::traits<P, >::param_t par)) \
+        static void invoke(handler& hd, NX_PP_TYPE_2(n, P, par)) \
         { \
-            /*return*/ (*(handler::cast<FuncT>(hd.obj_ptr)))(NX_PP_TYPE_1(n, par)); \
+            /*return*/ (*(handler::cast<FuncT>(hd.obj_ptr_)))(NX_PP_FORWARD(n, P, par)); \
         } \
     }; \
     template <NX_PP_TYPE_1(n, typename P), typename FuncT, typename ThisT> \
     struct invoker<void(NX_PP_TYPE_1(n, P)), FuncT, ThisT, true, true> \
     { \
-        static void invoke(handler& hd, NX_PP_TYPE_2(n, typename nx::traits<P, >::param_t par)) \
+        static void invoke(handler& hd, NX_PP_TYPE_2(n, P, par)) \
         { \
-            /*return*/ (reinterpret_cast<ThisT>(hd.mem_ptr.this_ptr)->* \
-                        reinterpret_cast<FuncT>(hd.mem_ptr.func_ptr))(NX_PP_TYPE_1(n, par)); \
+            /*return*/ (reinterpret_cast<ThisT>(hd.mem_ptr_.this_ptr_)->* \
+                        reinterpret_cast<FuncT>(hd.mem_ptr_.func_ptr_))(NX_PP_FORWARD(n, P, par)); \
         } \
     };
     NX_PP_MULT_MAX(NX_FUNCTOR_INVOKER_)
@@ -381,7 +381,7 @@ public:
 
     template <typename FuncT>
     functor_base(nx_fref(FuncT, f),
-                 typename nx::enable_if<!is_same<FuncT, functor_base>::value, int>::type_t = 0)
+                 typename enable_if_diff<FuncT, functor_base, int>::type_t = 0)
         : invoker_(nx::nulptr), any_guard_(nx::nulptr)
     {
         nx::initialize(handler_);
@@ -404,7 +404,7 @@ public:
         {
             any_guard_ = nx::clone(fr.any_guard_);
             // only obj_ptr_tag may make a guard
-            handler_.obj_ptr = any_guard_->handler();
+            handler_.obj_ptr_ = any_guard_->handler();
         }
         else
             handler_ = fr.handler_;
@@ -437,22 +437,22 @@ protected:
     template <typename FuncT>
     void assign_to(FuncT f, nx::true_t)
     {
-        handler_.fun_ptr = reinterpret_cast<void(*)()>(f);
+        handler_.fun_ptr_ = reinterpret_cast<void(*)()>(f);
         invoker_ = &private_functor::invoker<style_type, FuncT>::invoke;
     }
 
     template <typename FuncT>
     void assign_to(FuncT f, nx::false_t)
     {
-        memcpy(&(handler_.obj_ptr), &f, sizeof(pvoid)); // f may be not a pointer
+        memcpy(&(handler_.obj_ptr_), &f, sizeof(pvoid)); // f may be not a pointer
         invoker_ = &private_functor::invoker<style_type, FuncT>::invoke;
     }
 
     template <typename FuncT, typename ObjT>
     void assign_to(FuncT f, ObjT* o)
     {
-        handler_.mem_ptr.this_ptr = reinterpret_cast<void*>(o);
-        handler_.mem_ptr.func_ptr = reinterpret_cast<void(private_functor::class_t::*)()>(f);
+        handler_.mem_ptr_.this_ptr_ = reinterpret_cast<void*>(o);
+        handler_.mem_ptr_.func_ptr_ = reinterpret_cast<void(private_functor::class_t::*)()>(f);
         invoker_ = &private_functor::invoker<style_type, FuncT, ObjT*>::invoke;
     }
 
@@ -484,7 +484,10 @@ public:
 };
 
 /*
-    The functor for saving function and functor
+    Class that can wrap any kind of callable element
+    (such as functions and function objects) into a copyable object,
+    and whose type depends solely on its call signature
+    (and not on the callable element type itself).
 */
 
 template <typename F>
@@ -493,19 +496,9 @@ class functor;
 #ifdef NX_SP_CXX11_TEMPLATES
 template <typename R, typename... P>
 class functor<R(P...)>
-    : public functor_base
-    <
-        R(P...),
-        functor<R(P...)>,
-        R(*)(private_functor::handler&, typename nx::traits<P>::param_t...)
-    >
+    : public functor_base<R(P...), functor<R(P...)>, R(*)(private_functor::handler&, P...)>
 {
-    typedef functor_base
-    <
-        R(P...),
-        functor<R(P...)>,
-        R(*)(private_functor::handler&, typename nx::traits<P>::param_t...)
-    > base_t;
+    typedef functor_base<R(P...), functor<R(P...)>, R(*)(private_functor::handler&, P...)> base_t;
 
 public:
     functor(void)         : base_t() {}
@@ -514,14 +507,14 @@ public:
 
     template <typename FuncT>
     functor(nx_fref(FuncT, /*f*/),
-            typename nx::enable_if<is_same<FuncT, int>::value, int>::type_t = 0)
+            typename enable_if_same<FuncT, int, int>::type_t = 0)
         : base_t()
     {}
 
     template <typename FuncT>
     functor(nx_fref(FuncT, f),
-            typename nx::enable_if<!is_same<FuncT, int>::value &&
-                                   !is_same<FuncT, functor>::value, int>::type_t = 0)
+            typename enable_if_diff<FuncT, int, int>::type_t = 0,
+            typename enable_if_diff<FuncT, functor, int>::type_t = 0)
         : base_t(nx_forward(FuncT, f))
     {}
 
@@ -537,7 +530,7 @@ public:
     functor(nx_rref(functor, true) fr)
         : base_t()
     {
-        swap(moved(fr));
+        swap(nx::moved(fr));
     }
 
 public:
@@ -550,9 +543,10 @@ public:
     }
 
 public:
-    R operator()(typename nx::traits<P>::param_t... par) const
+    template <typename... P_>
+    R operator()(nx_fref(P_, ... par)) const
     {
-        return (*base_t::invoker_)(base_t::handler_, par...);
+        return (*base_t::invoker_)(base_t::handler_, nx_forward(P_, par)...);
     }
 };
 #else /*NX_SP_CXX11_TEMPLATES*/
@@ -569,14 +563,14 @@ public:
 
     template <typename FuncT>
     functor(nx_fref(FuncT, /*f*/),
-            typename nx::enable_if<is_same<FuncT, int>::value, int>::type_t = 0)
+            typename enable_if_same<FuncT, int, int>::type_t = 0)
         : base_t()
     {}
 
     template <typename FuncT>
     functor(nx_fref(FuncT, f),
-            typename nx::enable_if<!is_same<FuncT, int>::value &&
-                                   !is_same<FuncT, functor>::value, int>::type_t = 0)
+            typename enable_if_diff<FuncT, int, int>::type_t = 0,
+            typename enable_if_diff<FuncT, functor, int>::type_t = 0)
         : base_t(nx_forward(FuncT, f))
     {}
 
@@ -592,7 +586,7 @@ public:
     functor(nx_rref(functor, true) fr)
         : base_t()
     {
-        swap(moved(fr));
+        swap(nx::moved(fr));
     }
 
 public:
@@ -611,21 +605,19 @@ public:
     }
 };
 
-#define NX_FUNCTOR_(n) \
+#define NX_FUNCTOR_DEFINE_(n) \
 template <typename R, NX_PP_TYPE_1(n, typename P)> \
 class functor<R(NX_PP_TYPE_1(n, P))> \
     : public functor_base \
     < \
-        R(NX_PP_TYPE_1(n, P)), \
-        functor<R(NX_PP_TYPE_1(n, P))>, \
-        R(*)(private_functor::handler&, NX_PP_TYPE_1(n, typename nx::traits<P, >::param_t)) \
+        R(NX_PP_TYPE_1(n, P)), functor<R(NX_PP_TYPE_1(n, P))>, \
+        R (*)(private_functor::handler&, NX_PP_TYPE_1(n, P)) \
     > \
 { \
     typedef functor_base \
     < \
-        R(NX_PP_TYPE_1(n, P)), \
-        functor<R(NX_PP_TYPE_1(n, P))>, \
-        R(*)(private_functor::handler&, NX_PP_TYPE_1(n, typename nx::traits<P, >::param_t)) \
+        R(NX_PP_TYPE_1(n, P)), functor<R(NX_PP_TYPE_1(n, P))>, \
+        R (*)(private_functor::handler&, NX_PP_TYPE_1(n, P)) \
     > base_t; \
 public: \
     functor(void)         : base_t() {} \
@@ -633,13 +625,13 @@ public: \
     functor(nx::none_t)   : base_t() {} \
     template <typename FuncT> \
     functor(FuncT NX_PF_SYM_, \
-            typename nx::enable_if<is_same<FuncT, int>::value, int>::type_t = 0) \
+            typename enable_if_same<FuncT, int, int>::type_t = 0) \
         : base_t() \
     {} \
     template <typename FuncT> \
     functor(nx_fref(FuncT, f), \
-            typename nx::enable_if<!is_same<FuncT, int>::value && \
-                                   !is_same<FuncT, functor>::value, int>::type_t = 0) \
+            typename enable_if_diff<FuncT, int, int>::type_t = 0, \
+            typename enable_if_diff<FuncT, functor, int>::type_t = 0) \
         : base_t(nx_forward(FuncT, f)) \
     {} \
     template <typename FuncT, typename ObjT> \
@@ -652,7 +644,7 @@ public: \
     functor(nx_rref(functor, true) fr) \
         : base_t() \
     { \
-        swap(moved(fr)); \
+        swap(nx::moved(fr)); \
     } \
 public: \
     using base_t::swap; \
@@ -662,13 +654,14 @@ public: \
         return (*this); \
     } \
 public: \
-    R operator()(NX_PP_TYPE_2(n, typename nx::traits<P, >::param_t par)) const \
+    template <NX_PP_TYPE_1(n, typename P_)> \
+    R operator()(NX_PP_TYPE_2(n, P_, NX_PP_FREF(par))) const \
     { \
-        return (*base_t::invoker_)(base_t::handler_, NX_PP_TYPE_1(n, par)); \
+        return (*base_t::invoker_)(base_t::handler_, NX_PP_FORWARD(n, P_, par)); \
     } \
 };
-NX_PP_MULT_MAX(NX_FUNCTOR_)
-#undef NX_FUNCTOR_
+NX_PP_MULT_MAX(NX_FUNCTOR_DEFINE_)
+#undef NX_FUNCTOR_DEFINE_
 #endif/*NX_SP_CXX11_TEMPLATES*/
 
 /*
@@ -689,7 +682,7 @@ template <typename T, typename C, typename P>
 inline nx_rval(functor<typename function_traits<T C::*>::type_t>, true)
     bind(T C::* f, P p)
 {
-    return nx::move(functor<typename function_traits<T C::*>::type_t>(f, p));
+    return functor<typename function_traits<T C::*>::type_t>(f, p);
 }
 
 //////////////////////////////////////////////////////////////////////////

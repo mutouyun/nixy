@@ -35,11 +35,7 @@ namespace private_foreach
         typedef typename traits<T>::type_t               type_t;
         typedef typename container_traits<type_t>::ite_t ite_t;
         typedef typename container_traits<type_t>::val_t val_t;
-        typedef typename select_if<
-                is_scalar<val_t>::value || is_reference<val_t>::value,
-                val_t,
-                typename rm_reference<val_t>::type_t&
-        >::type_t deref_t;
+        typedef typename traits<val_t>::forward_t        deref_t;
         typedef typename storage<T>::type_t storage_t;
 
         T set_; ite_t cur_, end_;

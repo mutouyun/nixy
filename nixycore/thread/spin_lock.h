@@ -37,7 +37,11 @@ public:
     typedef lock_t handle_t;
 
 #ifdef NX_SP_CXX11_ATOMIC
-#   ifdef NX_CC_MSVC
+#   if defined(NX_CC_MSVC) && (NX_CC_MSVC <= 1800)
+    /*
+        <MSVC 2013> Atomic flag cannot be initialized in a constructor initializer.
+        See: http://connect.microsoft.com/VisualStudio/feedback/details/800243/
+    */
     spin_lock(void)
         : lc_()
     {

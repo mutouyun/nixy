@@ -109,7 +109,7 @@ public:
 
     template <typename U>
     ref_counter(nx_fref(U, r), 
-                typename nx::enable_if<!nx::is_same<U, ref_counter>::value, int>::type_t = 0)
+                typename enable_if_diff<U, ref_counter, int>::type_t = 0)
     {
         P::set(nx_forward(U, r));
     }
@@ -130,20 +130,12 @@ public:
     The destructor maker
 */
 
-#ifdef NX_SP_CXX11_RVALUE_REF
-template <typename T, typename F>
-inline functor<void()> make_destructor(nx_fref(T, r), nx_fref(F, dest_fr))
-{
-    return bind<void>(nx_forward(F, dest_fr), nx_forward(T, r));
-}
-#else /*NX_SP_CXX11_RVALUE_REF*/
 template <typename T, typename F>
 inline nx_rval(functor<void()>, true)
     make_destructor(nx_fref(T, r), nx_fref(F, dest_fr))
 {
-    return nx::move(functor<void()>(bind<void>(nx_forward(F, dest_fr), nx_forward(T, r))));
+    return functor<void()>(bind<void>(nx_forward(F, dest_fr), nx_forward(T, r)));
 }
-#endif/*NX_SP_CXX11_RVALUE_REF*/
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

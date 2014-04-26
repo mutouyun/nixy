@@ -73,7 +73,7 @@ void parse_out(pvoid val)
 }
 
 template <typename V>
-typename enable_if<!is_character<V>::value && /* vs2005 need this */
+typename enable_if<!is_character<V>::value && /* <MSVC 2005> */
                     is_class<V>::value
 >::type_t parse_out(const V& val)
 {

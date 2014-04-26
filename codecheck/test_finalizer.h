@@ -127,6 +127,6 @@ void testFinalizer(void)
 {
     TEST_FUNCTION();
 
-    testScopeGuard();
-    //testGC();
+    //testScopeGuard();
+    testGC();
 }

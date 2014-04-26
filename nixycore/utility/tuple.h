@@ -77,7 +77,7 @@ namespace private_tuple
 #else /*NX_SP_CXX11_RVALUE_REF*/
         template <typename T_, typename U_>
         detail(const nx::rvalue<detail<T_, U_>, true>& r)
-            : head_(r.head_)
+            : head_(nx::move(r.head_))
             , tail_(nx::move(r.tail_))
         {}
 #endif/*NX_SP_CXX11_RVALUE_REF*/
@@ -137,7 +137,7 @@ namespace private_tuple
 #else /*NX_SP_CXX11_RVALUE_REF*/
         template <typename T_>
         detail(const nx::rvalue<detail<T_, nx::null_t>, true>& r)
-            : head_(r.head_)
+            : head_(nx::move(r.head_))
         {}
 #endif/*NX_SP_CXX11_RVALUE_REF*/
 
@@ -256,8 +256,8 @@ public:
     {}
 #endif/*NX_SP_CXX11_TUPLE*/
 
-    tuple(typename traits<T1>::param_t par1, typename traits<TypesT>::param_t... args)
-        : base_t(nx::none, nx_fval(par1), nx_fval(args)...)
+    tuple(T1 par1, TypesT... args)
+        : base_t(nx::none, nx_forward(T1, par1), nx_forward(TypesT, args)...)
     {}
 
     template<typename... U>
@@ -292,13 +292,13 @@ public:
 #define NX_TUPLE_PAR_1_(n, par) std::get<n>(par)
 #define NX_TUPLE_PAR_2_(n, par) , NX_TUPLE_PAR_1_(n, par)
 
-#define NX_TUPLE_(n) \
+#define NX_TUPLE_DEFINE_(n) \
     template <NX_PP_TYPE_1(n, typename P)> \
     tuple(const std::tuple<NX_PP_TYPE_1(n, P)>& tp) \
         : base_t(NX_PP_REPEATEX(n, NX_TUPLE_PAR_1_, NX_TUPLE_PAR_2_, tp), NX_PP_CLONE(NX_PP_REM(n), nx::none, , )) \
     {}
-    NX_PP_MULT(NX_PP_DEC(NX_PP_MAX), NX_TUPLE_)
-#undef NX_TUPLE_
+    NX_PP_MULT(NX_PP_DEC(NX_PP_MAX), NX_TUPLE_DEFINE_)
+#undef NX_TUPLE_DEFINE_
 
     template <NX_PP_TYPE_MAX_1(typename P)>
     tuple(const std::tuple<NX_PP_TYPE_MAX_1(P)>& tp)
@@ -310,18 +310,18 @@ public:
 
 #endif/*NX_SP_CXX11_TUPLE*/
 
-#define NX_TUPLE_PAR_1_(n, par) nx_fval(NX_PP_JOIN(par, n))
-#define NX_TUPLE_PAR_2_(n, par) , NX_TUPLE_PAR_1_(n, par)
+#define NX_TUPLE_PAR_1_(n, ...) nx_forward(NX_PP_JOIN(T, n), NX_PP_JOIN(par, n))
+#define NX_TUPLE_PAR_2_(n, ...) , NX_TUPLE_PAR_1_(n)
 
-#define NX_TUPLE_(n) \
-    tuple(NX_PP_TYPE_2(n, typename traits<T, >::param_t par)) \
-        : base_t(NX_PP_REPEATEX(n, NX_TUPLE_PAR_1_, NX_TUPLE_PAR_2_, par), NX_PP_CLONE(NX_PP_REM(n), nx::none, ,)) \
+#define NX_TUPLE_DEFINE_(n) \
+    tuple(NX_PP_TYPE_2(n, T, par)) \
+        : base_t(NX_PP_REPEATEX(n, NX_TUPLE_PAR_1_, NX_TUPLE_PAR_2_), NX_PP_CLONE(NX_PP_REM(n), nx::none, ,)) \
     {}
-    NX_PP_MULT(NX_PP_DEC(NX_PP_MAX), NX_TUPLE_)
-#undef NX_TUPLE_
+    NX_PP_MULT(NX_PP_DEC(NX_PP_MAX), NX_TUPLE_DEFINE_)
+#undef NX_TUPLE_DEFINE_
 
-    tuple(NX_PP_TYPE_MAX_2(typename traits<T, >::param_t par))
-        : base_t(NX_PP_REPEATEX_MAX(NX_TUPLE_PAR_1_, NX_TUPLE_PAR_2_, par))
+    tuple(NX_PP_TYPE_MAX_2(T, par))
+        : base_t(NX_PP_REPEATEX_MAX(NX_TUPLE_PAR_1_, NX_TUPLE_PAR_2_))
     {}
 
 #undef NX_TUPLE_PAR_1_

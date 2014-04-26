@@ -50,7 +50,9 @@ inline private_mem_guard::free_fr<T*> make_destructor(T* r)
     return private_mem_guard::free_fr<T*>(r);
 }
 
-inline private_mem_guard::free_fr<pvoid> make_destructor(pvoid r, size_t s)
+template <typename SizeT>
+inline typename nx::enable_if<nx::is_integral<SizeT>::value,
+private_mem_guard::free_fr<pvoid> >::type_t make_destructor(pvoid r, SizeT s)
 {
     return private_mem_guard::free_fr<pvoid>(r, s);
 }

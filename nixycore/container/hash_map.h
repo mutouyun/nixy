@@ -81,7 +81,7 @@ public:
     hash_map(nx_rref(hash_map, true) rhs)
         : base_t()
     {
-        base_t::swap(moved(rhs));
+        base_t::swap(nx::moved(rhs));
     }
 #endif/*NX_SP_CXX11_INHERITING*/
 
@@ -141,7 +141,7 @@ public:
     hash_multimap(nx_rref(hash_multimap, true) rhs)
         : base_t()
     {
-        base_t::swap(moved(rhs));
+        base_t::swap(nx::moved(rhs));
     }
 #endif/*NX_SP_CXX11_INHERITING*/
 

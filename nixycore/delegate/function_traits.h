@@ -11,6 +11,18 @@
 #include "nixycore/typemanip/typemanip.h"
 #include "nixycore/preprocessor/preprocessor.h"
 
+#ifdef NX_SP_CXX11_RESULT_OF
+#ifdef NX_CC_MSVC
+/*
+    <MSVC> The result_of class is in <functional>
+    See: http://msdn.microsoft.com/en-us/library/bb982028(v=vs.120).aspx
+*/
+#include <functional>
+#else /*NX_CC_MSVC*/
+#include <type_traits>
+#endif/*NX_CC_MSVC*/
+#endif
+
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
@@ -125,6 +137,35 @@ template <typename T>
 struct function_traits
     : private_function_traits::detail<typename private_function_traits::adjust<T>::type_t>
 {};
+
+/*
+    Obtains the result type of a call
+*/
+
+#ifdef NX_SP_CXX11_RESULT_OF
+template <typename F>
+struct result_of
+{
+    typedef typename std::result_of<F>::type type_t;
+};
+#else /*NX_SP_CXX11_RESULT_OF*/
+template <typename F>
+struct result_of;
+
+template <typename F>
+struct result_of<F()>
+{
+    typedef typename function_traits<F>::result_t type_t;
+};
+#define NX_FUNC_TRAITS_(n) \
+template <typename F, NX_PP_TYPE_1(n, typename P)> \
+struct result_of<F(NX_PP_TYPE_1(n, P))> \
+{ \
+    typedef typename function_traits<F>::result_t type_t; \
+};
+NX_PP_MULT_MAX(NX_FUNC_TRAITS_)
+#undef NX_FUNC_TRAITS_
+#endif/*NX_SP_CXX11_RESULT_OF*/
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

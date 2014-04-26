@@ -52,13 +52,13 @@ namespace private_holder
     public:
         void set(const type_t& r)
         {
-            assign_to(r, make_destructor(r));
+            assign_to(r, nx_fval(make_destructor(r)));
         }
 
         template <typename F>
         void set(const type_t& r, nx_fref(F, dest_fr))
         {
-            assign_to(r, make_destructor(r, nx_forward(F, dest_fr)));
+            assign_to(r, nx_fval(make_destructor(r, nx_forward(F, dest_fr))));
         }
 
         template <typename U>
@@ -112,7 +112,7 @@ public:
 
     holder(nx_rref(holder) r)
         : base_t()
-    { swap(moved(r)); }
+    { swap(nx::moved(r)); }
 
     holder& operator=(holder rhs)
     {

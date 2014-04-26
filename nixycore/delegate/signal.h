@@ -13,19 +13,7 @@
 
 #include "nixycore/general/general.h"
 #include "nixycore/preprocessor/preprocessor.h"
-#include "nixycore/typemanip/typemanip.h"
 #include "nixycore/utility/utility.h"
-
-#if defined(NX_CC_MSVC) && (NX_CC_MSVC == 1800)
-/*
-    fatal error C1001
-    With: typename nx::traits<P>::param_t... par
-*/
-#ifdef NX_SP_CXX11_TEMPLATES
-#   define NX_UNDEF_HELPER_
-#   undef NX_SP_CXX11_TEMPLATES
-#endif/*NX_SP_CXX11_TEMPLATES*/
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -57,10 +45,11 @@ public:
         queue_.push_back(nx::move(functor_t(nx_forward(FuncT, f), o)));
     }
 
-    void operator()(typename nx::traits<P>::param_t... par) const
+    template <typename... P_>
+    void operator()(nx_fref(P_, ... par)) const
     {
         typename deque<functor_t>::const_iterator ite = queue_.begin();
-        for(; ite != queue_.end(); ++ite) (*ite)(par...);
+        for(; ite != queue_.end(); ++ite) (*ite)(nx_forward(P_, par)...);
     }
 
     void clear(void)
@@ -103,7 +92,7 @@ public:
     }
 };
 
-#define NX_SIGNAL_(n) \
+#define NX_SIGNAL_DEFINE_(n) \
 template <typename R, NX_PP_TYPE_1(n, typename P)> \
 class signal<R(NX_PP_TYPE_1(n, P))> \
 { \
@@ -122,25 +111,21 @@ public: \
     { \
         queue_.push_back(nx::move(functor_t(nx_forward(FuncT, f), o))); \
     } \
-    void operator()(NX_PP_TYPE_2(n, typename nx::traits<P, >::param_t par)) const \
+    template <NX_PP_TYPE_1(n, typename P_)> \
+    void operator()(NX_PP_TYPE_2(n, P_, NX_PP_FREF(par))) const \
     { \
         typename deque<functor_t>::const_iterator ite = queue_.begin(); \
-        for(; ite != queue_.end(); ++ite) (*ite)(NX_PP_TYPE_1(n, par)); \
+        for(; ite != queue_.end(); ++ite) (*ite)(NX_PP_FORWARD(n, P_, par)); \
     } \
     void clear(void) \
     { \
         queue_.clear(); \
     } \
 };
-NX_PP_MULT_MAX(NX_SIGNAL_)
-#undef NX_SIGNAL_
+NX_PP_MULT_MAX(NX_SIGNAL_DEFINE_)
+#undef NX_SIGNAL_DEFINE_
 #endif/*NX_SP_CXX11_TEMPLATES*/
 
 //////////////////////////////////////////////////////////////////////////
 NX_END
 //////////////////////////////////////////////////////////////////////////
-
-#ifdef NX_UNDEF_HELPER_
-#   undef NX_UNDEF_HELPER_
-#   define NX_SP_CXX11_TEMPLATES
-#endif

@@ -65,7 +65,7 @@ public:
     local_string(nx_rref(local_string) rhs)
         : base_t()
     {
-        base_t::swap(moved(rhs));
+        base_t::swap(nx::moved(rhs));
     }
 
     local_string& operator =(local_string rhs)
@@ -132,7 +132,7 @@ public:
     string(nx_rref(string) rhs)
         : base_t()
     {
-        swap(moved(rhs));
+        swap(nx::moved(rhs));
     }
 
 public:
