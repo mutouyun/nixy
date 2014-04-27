@@ -270,7 +270,7 @@ public:
 #ifdef NX_SP_CXX11_RVALUE_REF
         : base_t(nx::move(r))
 #else /*NX_SP_CXX11_RVALUE_REF*/
-        : base_t(nx::move(static_cast<typename tuple<U...>::base_t>(nx::moved(r))))
+        : base_t(nx::move_cast<typename tuple<U...>::base_t>(r))
 #endif/*NX_SP_CXX11_RVALUE_REF*/
     {}
 
@@ -338,7 +338,7 @@ public:
         : base_t(nx::move(r))
 #else /*NX_SP_CXX11_RVALUE_REF*/
     tuple(const nx::rvalue<tuple<NX_PP_TYPE_MAX_1(U)>, true>& r)
-        : base_t(nx::move(static_cast<typename tuple<NX_PP_TYPE_MAX_1(U)>::base_t>(nx::moved(r))))
+        : base_t(nx::move_cast<typename tuple<NX_PP_TYPE_MAX_1(U)>::base_t>(r))
 #endif/*NX_SP_CXX11_RVALUE_REF*/
     {}
 

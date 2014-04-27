@@ -101,16 +101,18 @@ namespace private_assert
 #define NX_ASSERT_OP_(x, next) \
         NX_ASSERT_1_.add(#x, (x)).NX_ASSERT_##next
 
+#define NX_ENSURE_DETAIL_(cond, ...) \
+        const nx::assert_detail& NX_UNUSED dummy_ = \
+        nx::private_assert::detail<cond>(#__VA_ARGS__).context(__FILE__, __LINE__).NX_ASSERT_1_
+
 #define nx_ensure(...) \
         if (!!(__VA_ARGS__)) ; \
-        else const nx::assert_detail& NX_UNUSED dummy_ = \
-        nx::private_assert::detail<true>(#__VA_ARGS__).context(__FILE__, __LINE__).NX_ASSERT_1_
+        else NX_ENSURE_DETAIL_(true, __VA_ARGS__)
 
 #ifdef NDEBUG
 #   define nx_assert(...) \
         if (true) ; \
-        else const nx::assert_detail& NX_UNUSED dummy_ = \
-        nx::private_assert::detail<false>(#__VA_ARGS__).context(__FILE__, __LINE__).NX_ASSERT_1_
+        else NX_ENSURE_DETAIL_(false, __VA_ARGS__)
 #else /*NDEBUG*/
 #   define nx_assert(...) nx_ensure(__VA_ARGS__)
 #endif/*NDEBUG*/
@@ -118,8 +120,7 @@ namespace private_assert
 #ifdef NDEBUG
 #   define nx_verify(...) \
         if (!!(__VA_ARGS__) || true) ; \
-        else const nx::assert_detail& NX_UNUSED dummy_ = \
-        nx::private_assert::detail<false>(#__VA_ARGS__).context(__FILE__, __LINE__).NX_ASSERT_1_
+        else NX_ENSURE_DETAIL_(false, __VA_ARGS__)
 #else
 #   define nx_verify(...) nx_assert(__VA_ARGS__)
 #endif/*NDEBUG*/

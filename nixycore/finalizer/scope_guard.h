@@ -45,7 +45,7 @@ public:
         : destructor_(nx::move(rhs.destructor_))
         , dismiss_(true) // dismiss rhs
     {
-        nx::swap(dismiss_, rhs.dismiss_);
+        nx::swap(dismiss_, nx::moved(rhs).dismiss_);
     }
 
     ~scope_guard(void)

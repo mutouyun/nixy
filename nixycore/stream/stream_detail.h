@@ -42,13 +42,13 @@ public:
 template <class T, typename S>
 stream<T> format(T* tp, const S& fs)
 {
-    return nx::move(stream<T>(tp, fs));
+    return stream<T>(tp, fs);
 }
 
 template <class T>
 stream<T> io(T* tp)
 {
-    return nx::move(stream<T>(tp));
+    return stream<T>(tp);
 }
 
 //////////////////////////////////////////////////////////////////////////

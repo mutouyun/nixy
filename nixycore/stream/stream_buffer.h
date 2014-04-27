@@ -112,7 +112,7 @@ public:
         , mode_     (r.mode_)
     {}
 
-    stream_buffer(nx_rref(stream_buffer) r)
+    stream_buffer(nx_rref(stream_buffer, true) r)
         : ref_      (nx::nulptr)
         , index_    (0)
         , ref_index_(0)
@@ -126,7 +126,7 @@ public:
         flush();
     }
 
-    void swap(stream_buffer &r)
+    void swap(stream_buffer& r)
     {
         nx::swap(ref_       , r.ref_);
         nx::swap(fmt_       , r.fmt_);
@@ -137,11 +137,16 @@ public:
     }
 
 public:
-    template <typename S>
-    void set_format(T* tp, const S& fs)
+    void set_refer(T* tp)
     {
         nx_assert(tp);
         ref_ = tp;
+    }
+
+    template <typename S>
+    void set_format(T* tp, const S& fs)
+    {
+        set_refer(tp);
         fmt_ = fs;
         buf_.clear();
     }

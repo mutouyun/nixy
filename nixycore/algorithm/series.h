@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include "nixycore/algorithm/foreach.h"
-
 #include "nixycore/general/general.h"
 
 //////////////////////////////////////////////////////////////////////////

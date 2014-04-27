@@ -29,8 +29,9 @@ using std::endl;
 
 //////////////////////////////////////////////////////////////////////////
 
-//#define NX_NO_CXX11_ATOMIC
 //#define NX_SINGLE_THREAD
+//#define NX_NO_CXX11_ATOMIC
+//#define NX_NO_CXX11_RVALUE_REF
 
 #include "test_preprocessor.h"
 #include "test_bugfix.h"
@@ -51,18 +52,18 @@ using std::endl;
 void testAll(void)
 {
     //testPreprocessor();
-    //testBugFix();
+    testBugFix();
     //testTypeManip();
     //testAlgorithm();
-    //testUtility();
+    testUtility();
     //testTime();
     //testRandom();
-    //testDelegate();
+    testDelegate();
     //testFinalizer();
-    testThread();
+    //testThread();
     //testMemory();
     //testString();
-    //testStream();
+    testStream();
 
     TEST_FUNCTION(<< "Finished ");
 }

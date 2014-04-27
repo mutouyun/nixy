@@ -47,6 +47,6 @@ void testBugFix(void)
 {
     TEST_FUNCTION();
 
-//    testAssert();
+    testAssert();
     testTrace();
 }

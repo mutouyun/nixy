@@ -68,7 +68,7 @@ namespace private_bind
         F f_;
 
     public:
-        fr_class_base(const F& f)          : f_(f)      {}
+        fr_class_base(const F& f)               : f_(f)      {}
         fr_class_base(const fr_class_base& rhs) : f_(rhs.f_) {}
         fr_class_base(nx_rref(F) f)
             : f_(nx::move(f))
@@ -100,7 +100,7 @@ namespace private_bind
     };
 
     template <typename F>
-    class fr<F, void, false, false> : fr_class_base<F>
+    class fr<F, void, false, false> : public fr_class_base<F>
     {
         typedef fr_class_base<F> base_t;
         using base_t::f_;
@@ -112,7 +112,7 @@ namespace private_bind
         fr(const fr& rhs) : base_t(rhs)          {}
         fr(nx_rref(F) f)  : base_t(nx::move(f))  {}
         fr(nx_rref(fr, true) rhs)
-            : base_t(nx::move(static_cast<base_t&>(nx::moved(rhs))))
+            : base_t(nx::move_cast<base_t>(rhs))
         {}
 
 #ifdef NX_SP_CXX11_TEMPLATES
@@ -139,8 +139,7 @@ namespace private_bind
     };
 
     template <typename F, typename R>
-    class fr<F, R, false, false>
-        : fr_class_base<typename nx::extract<F>::type_t>
+    class fr<F, R, false, false> : public fr_class_base<F>
     {
         typedef fr_class_base<F> base_t;
         using base_t::f_;
@@ -152,7 +151,7 @@ namespace private_bind
         fr(const fr& rhs) : base_t(rhs)          {}
         fr(nx_rref(F) f)  : base_t(nx::move(f))  {}
         fr(nx_rref(fr, true) rhs)
-            : base_t(nx::move(static_cast<base_t&>(nx::moved(rhs))))
+            : base_t(nx::move_cast<base_t>(rhs))
         {}
 
 #ifdef NX_SP_CXX11_TEMPLATES
@@ -361,6 +360,7 @@ namespace private_bind
     /*
         List for binding parameters
     */
+
 #ifdef NX_SP_CXX11_TEMPLATES
     template <size_t... N>
     struct indexes
@@ -386,6 +386,8 @@ namespace private_bind
 
     template <typename T>
     class list;
+
+    /* void(P...) is portable to older compilers, just like P... */
 
     template <>
     class list<void()> : public storage<nx::tuple<> >
@@ -527,6 +529,12 @@ namespace private_bind
     for using the function with the number of parameters by default
 */
 
+template <typename F>
+inline nx_rval(private_bind::fr<typename nx::decay<F>::type_t>, true) bind(nx_fref(F, f))
+{
+    return private_bind::fr<typename nx::decay<F>::type_t>(nx_forward(F, f));
+}
+
 #ifdef NX_SP_CXX11_RVALUE_REF
 template <typename R, typename F>
 inline private_bind::fr<typename nx::decay<F>::type_t, R> bind(nx_fref(F, f))
@@ -540,12 +548,6 @@ inline nx::rvalue<private_bind::fr<typename nx::decay<F>::type_t, R>, true> bind
     return private_bind::fr<typename nx::decay<F>::type_t, R>(nx_forward(F, f));
 }
 #endif/*NX_SP_CXX11_RVALUE_REF*/
-
-template <typename F>
-inline nx_rval(private_bind::fr<typename nx::decay<F>::type_t>, true) bind(nx_fref(F, f))
-{
-    return private_bind::fr<typename nx::decay<F>::type_t>(nx_forward(F, f));
-}
 
 /*
     Bind function and parameters to a functor

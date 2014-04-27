@@ -30,7 +30,15 @@ NX_BEG
 #define nx_rval(T, ...) T
 #define nx_rref(T, ...) T &&
 
+/*
+    Move
+*/
+
 using std::move;
+
+/*
+    Moved
+*/
 
 template <typename T>
 inline T& moved(nx_rref(T) rv) nx_noexcept
@@ -43,6 +51,20 @@ inline const T& moved(const T& rv) nx_noexcept
 {
     return rv;
 }
+
+/*
+    move_cast
+*/
+
+template <typename T, typename U>
+inline nx_rref(T) move_cast(nx_rref(U) rv) nx_noexcept
+{
+    return nx::move(static_cast<T&>(nx::moved(rv)));
+}
+
+/*
+    type detected
+*/
 
 template <typename T>             struct is_rvalue : type_if<false> {};
 template <typename T>             struct rm_rvalue { typedef T type_t; };
@@ -160,6 +182,38 @@ template <typename T>
 inline T& moved(T& rv) nx_noexcept
 {
     return rv;
+}
+
+/*
+    move_cast
+*/
+
+template <typename T, typename U>
+inline typename enable_if<is_class<U>::value,
+nx_rref(T)>::type_t move_cast(nx_rref(U) rv) nx_noexcept
+{
+    return nx::move(static_cast<T&>(nx::moved(rv)));
+}
+
+template <typename T, typename U>
+inline typename enable_if<!is_class<U>::value,
+T>::type_t move_cast(nx_rref(U) rv) nx_noexcept
+{
+    return nx::moved(rv);
+}
+
+template <typename T, typename U>
+inline typename enable_if<is_class<T>::value,
+nx_rref(T)>::type_t move_cast(const U& rv) nx_noexcept
+{
+    return nx::move(static_cast<const T&>(rv));
+}
+
+template <typename T, typename U>
+inline typename enable_if<!is_class<T>::value,
+const T&>::type_t move_cast(const U& rv) nx_noexcept
+{
+    return nx::move(static_cast<const T&>(rv));
 }
 
 /*

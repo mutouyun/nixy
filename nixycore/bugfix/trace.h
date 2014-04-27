@@ -72,11 +72,9 @@ namespace private_trace
 
 #ifdef NX_ENABLE_TRACE
 #   define nx_trace(...) \
-        (nx::private_trace::maker(L"%x\n%x, L: %x ->: ")(__VA_ARGS__) \
-        << __FILE__ << NX__FUNCTION__ << __LINE__)
+        (nx::private_trace::maker(L"%x\n%x, L: %x ->: ")(__VA_ARGS__) << __FILE__ << NX__FUNCTION__ << __LINE__)
 #else /*NX_ENABLE_TRACE*/
-#   define nx_trace(...) \
-        if (true) ; else nx::trace()
+#   define nx_trace(...) if (true) ; else nx::trace()
 #endif/*NX_ENABLE_TRACE*/
 
 //////////////////////////////////////////////////////////////////////////
