@@ -531,9 +531,9 @@ void testUtility(void)
     //testCountOf();
     //testLimitOf();
     //testSafeBool();
-    testRefer();
-    testRvalue();
-    testValid();
-    testTuple();
+    //testRefer();
+    //testRvalue();
+    //testValid();
+    //testTuple();
     testAlignOf();
 }

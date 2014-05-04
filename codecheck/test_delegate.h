@@ -91,6 +91,24 @@ namespace test_delegate
             return 0;
         }
     };
+
+    class UncopyableFunc : public nx::noncopyable
+    {
+        void* dummy1_;
+        void* dummy2_;
+
+    public:
+        UncopyableFunc(void) {}
+        UncopyableFunc(nx_rref(UncopyableFunc)) {}
+
+        //UncopyableFunc(const UncopyableFunc&) {}
+
+        int operator()(void)
+        {
+            strout << NX__FUNCTION__ << " ->: ";
+            return 0;
+        }
+    };
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -175,6 +193,11 @@ void testFunctor(void)
         nx::functor<int(long, int, int, int)> fr;
         strout << fr.bind(&A::func, pa)(4, 3, 2, 1) << endl;
     }
+    strout << endl;
+    {
+        UncopyableFunc ff;
+        strout << nx::functor<int(void)>(nx::move(ff))() << endl;
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -257,5 +280,5 @@ void testDelegate(void)
 
     testFunctor();
     testBind();
-    testSignal();
+    //testSignal();
 }

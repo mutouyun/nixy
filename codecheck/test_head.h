@@ -52,10 +52,10 @@ using std::endl;
 void testAll(void)
 {
     //testPreprocessor();
-    testBugFix();
+    //testBugFix();
     //testTypeManip();
     //testAlgorithm();
-    testUtility();
+    //testUtility();
     //testTime();
     //testRandom();
     testDelegate();
@@ -63,7 +63,7 @@ void testAll(void)
     //testThread();
     //testMemory();
     //testString();
-    testStream();
+    //testStream();
 
     TEST_FUNCTION(<< "Finished ");
 }

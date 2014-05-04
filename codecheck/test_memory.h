@@ -438,10 +438,10 @@ void testMemory(void)
 {
     TEST_FUNCTION();
 
-//    testMemPool();
-//    testThreadAlloc();
+    testMemPool();
+    testThreadAlloc();
     //testMemGuard();
-    testPointer();
+    //testPointer();
     //testObjectPool();
-    testMemLeak();
+    //testMemLeak();
 }

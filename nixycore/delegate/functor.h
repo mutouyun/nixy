@@ -13,10 +13,10 @@
 #include "nixycore/pattern/prototype.h"
 
 #include "nixycore/general/general.h"
+#include "nixycore/preprocessor/preprocessor.h"
 #include "nixycore/typemanip/typemanip.h"
 #include "nixycore/utility/utility.h"
 #include "nixycore/algorithm/algorithm.h"
-#include "nixycore/preprocessor/preprocessor.h"
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
@@ -28,37 +28,15 @@ namespace private_functor
         Some helper templates
     */
 
-    template <typename T, bool = is_function<T>::value>
-    struct check_type;
+    template <typename T>
+    struct check_type
+        : type_if<is_function<typename nx::decay<T>::type_t>::value>
+    {};
 
     template <typename T>
-    struct check_type<T, true>
-    {
-        typedef nx::true_t type_t;
-    };
-
-    template <typename T>
-    struct check_type<T, false>
-    {
-        typedef nx::false_t type_t;
-    };
-
-    template <typename T, bool = is_function<T>::value>
-    struct check_size;
-
-    template <typename T>
-    struct check_size<T, true>
-    {
-        typedef typename nx::rm_pointer<T>::type_t* type_t;
-        NX_STATIC_VALUE(size_t, sizeof(type_t));
-    };
-
-    template <typename T>
-    struct check_size<T, false>
-    {
-        typedef T type_t;
-        NX_STATIC_VALUE(size_t, sizeof(type_t));
-    };
+    struct check_size
+        : type_if<sizeof(typename nx::decay<T>::type_t) <= sizeof(pvoid)>
+    {};
 
     /*
         The handler for storing a function
@@ -349,14 +327,42 @@ private:
         virtual size_t size_of(void) const = 0;
     } * any_guard_;
 
-    template <typename T>
-    class Holder : public PlaceHolder
+    template <typename T, bool = nx::is_copyable<T>::value>
+    class HolderBase : public PlaceHolder
     {
-    public:
+    protected:
         T held_;
 
     public:
-        Holder(const T& v): held_(v) {}
+        template <typename U>
+        HolderBase(nx_fref(U, v))
+            : held_(nx::unref(nx_extract(U, v)))
+        {}
+    };
+
+    template <typename T>
+    class HolderBase<T, false> : public PlaceHolder
+    {
+    protected:
+        T held_;
+
+    public:
+        template <typename U>
+        HolderBase(nx_fref(U, v))
+            : held_(nx::move(nx::unref(nx_extract(U, v))))
+        {}
+    };
+
+    template <typename T>
+    class Holder : public HolderBase<T>
+    {
+        using HolderBase<T>::held_;
+
+    public:
+        template <typename U>
+        Holder(nx_fref(U, v))
+            : HolderBase<T>(nx_forward(U, v))
+        {}
 
     public:
         pvoid handler(void) const  { return (pvoid)nx::addressof(held_); }
@@ -365,11 +371,12 @@ private:
     };
 
 protected:
-    template <typename T>
-    T* guard(const T& f)
+    template <typename FuncT>
+    typename nx::decay<FuncT>::type_t* guard(nx_fref(FuncT, f))
     {
-        any_guard_ = nx::alloc<Holder<T> >(nx::ref(f));
-        return (T*)(any_guard_->handler());
+        typedef typename nx::decay<FuncT>::type_t func_t;
+        any_guard_ = nx::alloc<Holder<func_t> >(nx_forward(FuncT, f));
+        return (func_t*)(any_guard_->handler());
     }
 
 public:
@@ -385,7 +392,7 @@ public:
         : invoker_(nx::nulptr), any_guard_(nx::nulptr)
     {
         nx::initialize(handler_);
-        bind(nx_extract(FuncT, f));
+        bind(nx_forward(FuncT, f));
     }
 
     template <typename FuncT, typename ObjT>
@@ -393,7 +400,7 @@ public:
         : invoker_(nx::nulptr), any_guard_(nx::nulptr)
     {
         nx::initialize(handler_);
-        bind(nx_extract(FuncT, f), o);
+        bind(nx_forward(FuncT, f), o);
     }
 
     functor_base(const functor_base& fr)
@@ -433,52 +440,69 @@ public:
         return nx::equal(f1.handler_, f2.handler_);
     }
 
-protected:
+private:
+    // function
+
     template <typename FuncT>
-    void assign_to(FuncT f, nx::true_t)
+    void assign_to(nx_fref(FuncT, f), nx::true_t)
     {
-        handler_.fun_ptr_ = reinterpret_cast<void(*)()>(f);
-        invoker_ = &private_functor::invoker<style_type, FuncT>::invoke;
+        typedef typename nx::decay<FuncT>::type_t func_t;
+        handler_.fun_ptr_ = reinterpret_cast<void(*)()>(nx_extract(FuncT, f));
+        invoker_ = &private_functor::invoker<style_type, func_t>::invoke;
+    }
+
+    // pointer, or function object ( small than sizeof(void*) )
+
+    template <typename FuncT>
+    void assign_to(nx_fref(FuncT, f), nx::false_t,
+                   typename enable_if<nx::is_copyable<typename nx::decay<FuncT>::type_t>::value, int>::type_t = 0)
+    {
+        typedef typename nx::decay<FuncT>::type_t func_t;
+        nx_construct( reinterpret_cast<func_t*>(&(handler_.obj_ptr_)), func_t, (nx_extract(FuncT, f)) );
+        invoker_ = &private_functor::invoker<style_type, func_t>::invoke;
     }
 
     template <typename FuncT>
-    void assign_to(FuncT f, nx::false_t)
+    void assign_to(nx_fref(FuncT, f), nx::false_t,
+                   typename enable_if<!nx::is_copyable<typename nx::decay<FuncT>::type_t>::value, int>::type_t = 0)
     {
-        memcpy(&(handler_.obj_ptr_), &f, sizeof(pvoid)); // f may be not a pointer
-        invoker_ = &private_functor::invoker<style_type, FuncT>::invoke;
+        typedef typename nx::decay<FuncT>::type_t func_t;
+        nx_construct( reinterpret_cast<func_t*>(&(handler_.obj_ptr_)), func_t, (nx::move(nx_extract(FuncT, f))) );
+        invoker_ = &private_functor::invoker<style_type, func_t>::invoke;
     }
+
+    // member function
 
     template <typename FuncT, typename ObjT>
-    void assign_to(FuncT f, ObjT* o)
+    void assign_to(nx_fref(FuncT, f), ObjT* o)
     {
+        typedef typename nx::decay<FuncT>::type_t func_t;
         handler_.mem_ptr_.this_ptr_ = reinterpret_cast<void*>(o);
-        handler_.mem_ptr_.func_ptr_ = reinterpret_cast<void(private_functor::class_t::*)()>(f);
-        invoker_ = &private_functor::invoker<style_type, FuncT, ObjT*>::invoke;
+        handler_.mem_ptr_.func_ptr_ = reinterpret_cast<void(private_functor::class_t::*)()>(nx_extract(FuncT, f));
+        invoker_ = &private_functor::invoker<style_type, func_t, ObjT*>::invoke;
     }
 
 public:
     template <typename FuncT>
-    typename nx::enable_if<is_pointer<FuncT>::value || is_function<FuncT>::value || 
-                           (private_functor::check_size<FuncT>::value <= sizeof(pvoid)),
-    functor_type&>::type_t bind(FuncT f)
+    typename nx::enable_if<private_functor::check_size<FuncT>::value,
+    functor_type&>::type_t bind(nx_fref(FuncT, f))
     {
-        assign_to(f, typename private_functor::check_type<FuncT>::type_t());
+        assign_to(nx_forward(FuncT, f), typename private_functor::check_type<FuncT>::type_t());
         return (*reinterpret_cast<functor_type*>(this));
     }
 
     template <typename FuncT>
-    typename nx::enable_if<!is_pointer<FuncT>::value && !is_function<FuncT>::value && 
-                           (private_functor::check_size<FuncT>::value > sizeof(pvoid)),
-    functor_type&>::type_t bind(const FuncT& f)
+    typename nx::enable_if<!private_functor::check_size<FuncT>::value,
+    functor_type&>::type_t bind(nx_fref(FuncT, f))
     {
-        assign_to(guard(f), nx::false_t());
+        assign_to(guard(nx_forward(FuncT, f)), nx::false_t());
         return (*reinterpret_cast<functor_type*>(this));
     }
 
     template <typename FuncT, typename ObjT>
-    functor_type& bind(FuncT f, ObjT* o)
+    functor_type& bind(nx_fref(FuncT, f), ObjT* o)
     {
-        assign_to(f, o);
+        assign_to(nx_forward(FuncT, f), o);
         return (*reinterpret_cast<functor_type*>(this));
     }
 };
