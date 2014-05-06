@@ -238,7 +238,7 @@ private:
     }
 
     template <typename F>
-    void put_task(nx_fref(F, f))
+    void put_task(nx_fref(F) f)
     {
         task_queue_.put(nx_forward(F, f));
         if (task_queue_.size() > idle_count())
@@ -284,20 +284,20 @@ public:
 
 #ifdef NX_SP_CXX11_TEMPLATES
     template <typename F, typename... P>
-    void put(nx_fref(F, f), nx_fref(P, ... par))
+    void put(nx_fref(F) f, nx_fref(P)... par)
     {
         put_task(bind<void>(nx_forward(F, f), nx_forward(P, par)...));
     }
 #else /*NX_SP_CXX11_TEMPLATES*/
     template <typename F>
-    void put(nx_fref(F, f))
+    void put(nx_fref(F) f)
     {
         put_task(bind<void>(nx_forward(F, f)));
     }
 
 #define NX_THREAD_POOL_PUT_(n) \
     template <typename F, NX_PP_TYPE_1(n, typename P)> \
-    void put(nx_fref(F, f), NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
+    void put(nx_fref(F) f, NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
     { \
         put_task(bind<void>(nx_forward(F, f), NX_PP_FORWARD(n, P, par))); \
     }

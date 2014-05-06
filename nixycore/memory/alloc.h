@@ -29,7 +29,7 @@ namespace private_alloc
     {
 #ifdef NX_SP_CXX11_TEMPLATES
         template <typename... P>
-        static T* alloc(nx_fref(P, ... par))
+        static T* alloc(nx_fref(P)... par)
         {
             return nx_construct(AllocT::alloc(sizeof(T)), T, (nx_forward(P, par)...));
         }
@@ -57,7 +57,7 @@ namespace private_alloc
         typedef T_ T[N];
 #ifdef NX_SP_CXX11_TEMPLATES
         template <typename... P>
-        static T* alloc(nx_fref(P, ... par))
+        static T* alloc(nx_fref(P)... par)
         {
             T* p = (T*)AllocT::alloc(sizeof(T));
             nx_construct_arr(*p, T_, N, (nx_forward(P, par)...));
@@ -102,7 +102,7 @@ inline pvoid alloc(size_t size)
 
 #ifdef NX_SP_CXX11_TEMPLATES
 template <class AllocT, typename T, typename... P>
-inline T* alloc(nx_fref(P, ... par))
+inline T* alloc(nx_fref(P)... par)
 {
     return private_alloc::detail<AllocT, T>::alloc(nx_forward(P, par)...);
 }

@@ -36,14 +36,14 @@ public:
         : content_(&r)
     {}
 
-    operator value_t& () const { return *content_; }
+    operator value_t& () const           { return *content_; }
 
     value_t&      operator* (void)       { return *content_; }
     const type_t& operator* (void) const { return *content_; }
-    value_t*      operator& (void)       { return content_; }
-    const type_t* operator& (void) const { return content_; }
-    value_t*      operator->(void)       { return content_; }
-    const type_t* operator->(void) const { return content_; }
+    value_t*      operator& (void)       { return  content_; }
+    const type_t* operator& (void) const { return  content_; }
+    value_t*      operator->(void)       { return  content_; }
+    const type_t* operator->(void) const { return  content_; }
 };
 
 /*

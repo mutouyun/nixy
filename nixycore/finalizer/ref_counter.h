@@ -45,7 +45,7 @@ public:
     }
 
     template <typename F>
-    void init(nx_fref(F, dest_fr))
+    void init(nx_fref(F) dest_fr)
     {
         dec();
         nx_verify(ref_   = nx::alloc<AllocT, ref_t>(1));
@@ -108,14 +108,14 @@ public:
     }
 
     template <typename U>
-    ref_counter(nx_fref(U, r), 
+    ref_counter(nx_fref(U) r, 
                 typename enable_if_diff<U, ref_counter, int>::type_t = 0)
     {
         P::set(nx_forward(U, r));
     }
 
     template <typename U, typename F>
-    ref_counter(nx_fref(U, r), nx_fref(F, dest_fr))
+    ref_counter(nx_fref(U) r, nx_fref(F) dest_fr)
     {
         P::set(nx_forward(U, r), nx_forward(F, dest_fr));
     }
@@ -132,7 +132,7 @@ public:
 
 template <typename T, typename F>
 inline nx_rval(functor<void()>, true)
-    make_destructor(nx_fref(T, r), nx_fref(F, dest_fr))
+    make_destructor(nx_fref(T) r, nx_fref(F) dest_fr)
 {
     return functor<void()>(bind<void>(nx_forward(F, dest_fr), nx_forward(T, r)));
 }

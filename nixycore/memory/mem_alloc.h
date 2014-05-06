@@ -43,7 +43,7 @@ class TLSSingleton
 public:
 #ifdef NX_SP_CXX11_TEMPLATES
     template <typename... P>
-    static T& instance(nx_fref(P, ... par))
+    static T& instance(nx_fref(P)... par)
     {
         T* p = singleton<tls_t>(destroy);
         if (p) return (*p);

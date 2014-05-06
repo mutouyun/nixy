@@ -9,7 +9,7 @@
 
 #include "nixycore/typemanip/typetraits.h"
 
-#include "nixycore/utility/rvalue.h"
+#include "nixycore/utility/forward.h"
 
 #include "nixycore/general/general.h"
 

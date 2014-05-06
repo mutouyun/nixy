@@ -34,19 +34,19 @@ private:
 
 public:
     template <typename FuncT>
-    void connect(nx_fref(FuncT, f))
+    void connect(nx_fref(FuncT) f)
     {
         queue_.push_back(nx_forward(FuncT, f));
     }
 
     template <typename FuncT, typename ObjT>
-    void connect(ObjT* o, nx_fref(FuncT, f))
+    void connect(ObjT* o, nx_fref(FuncT) f)
     {
         queue_.push_back(nx::move(functor_t(nx_forward(FuncT, f), o)));
     }
 
     template <typename... P_>
-    void operator()(nx_fref(P_, ... par)) const
+    void operator()(nx_fref(P_)... par) const
     {
         typename deque<functor_t>::const_iterator ite = queue_.begin();
         for(; ite != queue_.end(); ++ite) (*ite)(nx_forward(P_, par)...);
@@ -69,13 +69,13 @@ private:
 
 public:
     template <typename FuncT>
-    void connect(nx_fref(FuncT, f))
+    void connect(nx_fref(FuncT) f)
     {
         queue_.push_back(nx_forward(FuncT, f));
     }
 
     template <typename FuncT, typename ObjT>
-    void connect(ObjT* o, nx_fref(FuncT, f)) // object pointer is the first parameter
+    void connect(ObjT* o, nx_fref(FuncT) f) // object pointer is the first parameter
     {
         queue_.push_back(nx::move(functor_t(nx_forward(FuncT, f), o)));
     }
@@ -102,12 +102,12 @@ private: \
     deque<functor_t> queue_; \
 public: \
     template <typename FuncT> \
-    void connect(nx_fref(FuncT, f)) \
+    void connect(nx_fref(FuncT) f) \
     { \
         queue_.push_back(nx_forward(FuncT, f)); \
     } \
     template <typename FuncT, typename ObjT> \
-    void connect(ObjT* o, nx_fref(FuncT, f)) \
+    void connect(ObjT* o, nx_fref(FuncT) f) \
     { \
         queue_.push_back(nx::move(functor_t(nx_forward(FuncT, f), o))); \
     } \

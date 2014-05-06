@@ -335,7 +335,7 @@ private:
 
     public:
         template <typename U>
-        HolderBase(nx_fref(U, v))
+        HolderBase(nx_fref(U) v)
             : held_(nx::unref(nx_extract(U, v)))
         {}
     };
@@ -348,7 +348,7 @@ private:
 
     public:
         template <typename U>
-        HolderBase(nx_fref(U, v))
+        HolderBase(nx_fref(U) v)
             : held_(nx::move(nx::unref(nx_extract(U, v))))
         {}
     };
@@ -360,7 +360,7 @@ private:
 
     public:
         template <typename U>
-        Holder(nx_fref(U, v))
+        Holder(nx_fref(U) v)
             : HolderBase<T>(nx_forward(U, v))
         {}
 
@@ -372,7 +372,7 @@ private:
 
 protected:
     template <typename FuncT>
-    typename nx::decay<FuncT>::type_t* guard(nx_fref(FuncT, f))
+    typename nx::decay<FuncT>::type_t* guard(nx_fref(FuncT) f)
     {
         typedef typename nx::decay<FuncT>::type_t func_t;
         any_guard_ = nx::alloc<Holder<func_t> >(nx_forward(FuncT, f));
@@ -387,7 +387,7 @@ public:
     }
 
     template <typename FuncT>
-    functor_base(nx_fref(FuncT, f),
+    functor_base(nx_fref(FuncT) f,
                  typename enable_if_diff<FuncT, functor_base, int>::type_t = 0)
         : invoker_(nx::nulptr), any_guard_(nx::nulptr)
     {
@@ -396,7 +396,7 @@ public:
     }
 
     template <typename FuncT, typename ObjT>
-    functor_base(nx_fref(FuncT, f), ObjT* o)
+    functor_base(nx_fref(FuncT) f, ObjT* o)
         : invoker_(nx::nulptr), any_guard_(nx::nulptr)
     {
         nx::initialize(handler_);
@@ -444,7 +444,7 @@ private:
     // function
 
     template <typename FuncT>
-    void assign_to(nx_fref(FuncT, f), nx::true_t)
+    void assign_to(nx_fref(FuncT) f, nx::true_t)
     {
         typedef typename nx::decay<FuncT>::type_t func_t;
         handler_.fun_ptr_ = reinterpret_cast<void(*)()>(nx_extract(FuncT, f));
@@ -454,7 +454,7 @@ private:
     // pointer, or function object ( small than sizeof(void*) )
 
     template <typename FuncT>
-    void assign_to(nx_fref(FuncT, f), nx::false_t,
+    void assign_to(nx_fref(FuncT) f, nx::false_t,
                    typename enable_if<nx::is_copyable<typename nx::decay<FuncT>::type_t>::value, int>::type_t = 0)
     {
         typedef typename nx::decay<FuncT>::type_t func_t;
@@ -463,7 +463,7 @@ private:
     }
 
     template <typename FuncT>
-    void assign_to(nx_fref(FuncT, f), nx::false_t,
+    void assign_to(nx_fref(FuncT) f, nx::false_t,
                    typename enable_if<!nx::is_copyable<typename nx::decay<FuncT>::type_t>::value, int>::type_t = 0)
     {
         typedef typename nx::decay<FuncT>::type_t func_t;
@@ -474,7 +474,7 @@ private:
     // member function
 
     template <typename FuncT, typename ObjT>
-    void assign_to(nx_fref(FuncT, f), ObjT* o)
+    void assign_to(nx_fref(FuncT) f, ObjT* o)
     {
         typedef typename nx::decay<FuncT>::type_t func_t;
         handler_.mem_ptr_.this_ptr_ = reinterpret_cast<void*>(o);
@@ -485,7 +485,7 @@ private:
 public:
     template <typename FuncT>
     typename nx::enable_if<private_functor::check_size<FuncT>::value,
-    functor_type&>::type_t bind(nx_fref(FuncT, f))
+    functor_type&>::type_t bind(nx_fref(FuncT) f)
     {
         assign_to(nx_forward(FuncT, f), typename private_functor::check_type<FuncT>::type_t());
         return (*reinterpret_cast<functor_type*>(this));
@@ -493,14 +493,14 @@ public:
 
     template <typename FuncT>
     typename nx::enable_if<!private_functor::check_size<FuncT>::value,
-    functor_type&>::type_t bind(nx_fref(FuncT, f))
+    functor_type&>::type_t bind(nx_fref(FuncT) f)
     {
         assign_to(guard(nx_forward(FuncT, f)), nx::false_t());
         return (*reinterpret_cast<functor_type*>(this));
     }
 
     template <typename FuncT, typename ObjT>
-    functor_type& bind(nx_fref(FuncT, f), ObjT* o)
+    functor_type& bind(nx_fref(FuncT) f, ObjT* o)
     {
         assign_to(nx_forward(FuncT, f), o);
         return (*reinterpret_cast<functor_type*>(this));
@@ -530,20 +530,20 @@ public:
     functor(nx::none_t)   : base_t() {}
 
     template <typename FuncT>
-    functor(nx_fref(FuncT, /*f*/),
+    functor(nx_fref(FuncT) /*f*/,
             typename enable_if_same<FuncT, int, int>::type_t = 0)
         : base_t()
     {}
 
     template <typename FuncT>
-    functor(nx_fref(FuncT, f),
+    functor(nx_fref(FuncT) f,
             typename enable_if_diff<FuncT, int, int>::type_t = 0,
             typename enable_if_diff<FuncT, functor, int>::type_t = 0)
         : base_t(nx_forward(FuncT, f))
     {}
 
     template <typename FuncT, typename ObjT>
-    functor(nx_fref(FuncT, f), ObjT* o)
+    functor(nx_fref(FuncT) f, ObjT* o)
         : base_t(nx_forward(FuncT, f), o)
     {}
 
@@ -568,7 +568,7 @@ public:
 
 public:
     template <typename... P_>
-    R operator()(nx_fref(P_, ... par)) const
+    R operator()(nx_fref(P_)... par) const
     {
         return (*base_t::invoker_)(base_t::handler_, nx_forward(P_, par)...);
     }
@@ -586,20 +586,20 @@ public:
     functor(nx::none_t)   : base_t() {}
 
     template <typename FuncT>
-    functor(nx_fref(FuncT, /*f*/),
+    functor(nx_fref(FuncT) /*f*/,
             typename enable_if_same<FuncT, int, int>::type_t = 0)
         : base_t()
     {}
 
     template <typename FuncT>
-    functor(nx_fref(FuncT, f),
+    functor(nx_fref(FuncT) f,
             typename enable_if_diff<FuncT, int, int>::type_t = 0,
             typename enable_if_diff<FuncT, functor, int>::type_t = 0)
         : base_t(nx_forward(FuncT, f))
     {}
 
     template <typename FuncT, typename ObjT>
-    functor(nx_fref(FuncT, f), ObjT* o)
+    functor(nx_fref(FuncT) f, ObjT* o)
         : base_t(nx_forward(FuncT, f), o)
     {}
 
@@ -653,13 +653,13 @@ public: \
         : base_t() \
     {} \
     template <typename FuncT> \
-    functor(nx_fref(FuncT, f), \
+    functor(nx_fref(FuncT) f, \
             typename enable_if_diff<FuncT, int, int>::type_t = 0, \
             typename enable_if_diff<FuncT, functor, int>::type_t = 0) \
         : base_t(nx_forward(FuncT, f)) \
     {} \
     template <typename FuncT, typename ObjT> \
-    functor(nx_fref(FuncT, f), ObjT* o) \
+    functor(nx_fref(FuncT) f, ObjT* o) \
         : base_t(nx_forward(FuncT, f), o) \
     {} \
     functor(const functor& fr) \
@@ -704,7 +704,7 @@ inline void swap(functor<F>& x, functor<F>& y)
 
 template <typename T, typename C, typename P>
 inline nx_rval(functor<typename function_traits<T C::*>::type_t>, true)
-    bind(T C::* f, P p)
+    bind(T C::* f, P* p)
 {
     return functor<typename function_traits<T C::*>::type_t>(f, p);
 }

@@ -233,7 +233,7 @@ namespace mem_leak
 
 #ifdef NX_SP_CXX11_TEMPLATES
         template <class AllocT, typename T, typename... P>
-        T* alloc(nx_fref(P, ... par))
+        T* alloc(nx_fref(P)... par)
         {
             return tls_recorder::instance().regist
                 (nx::alloc<AllocT, T>(nx_forward(P, par)...), file_, line_, sizeof(T));
@@ -241,7 +241,7 @@ namespace mem_leak
 
         template <typename T, typename... P>
         typename nx::enable_if<!nx::is_alloc<T>::value,
-        T*>::type_t alloc(nx_fref(P, ... par))
+        T*>::type_t alloc(nx_fref(P)... par)
         {
             return alloc<NX_DEFAULT_ALLOC, T>(nx_forward(P, par)...);
         }

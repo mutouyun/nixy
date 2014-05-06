@@ -47,7 +47,7 @@ public:
     }
 
     template <typename FuncT>
-    task(nx_fref(FuncT, f),
+    task(nx_fref(FuncT) f,
          typename enable_if_diff<FuncT, task, int>::type_t = 0)
         : func_(nx_forward(FuncT, f))
     {}
@@ -76,7 +76,7 @@ public:
     }
 
     template <typename... P_>
-    void operator()(nx_fref(P_, ... par))
+    void operator()(nx_fref(P_)... par)
     {
         nx_assert(func_);
         prom_.set_value(func_(nx_forward(P_, par)...));
@@ -100,7 +100,7 @@ public:
     }
 
     template <typename FuncT>
-    task(nx_fref(FuncT, f),
+    task(nx_fref(FuncT) f,
          typename enable_if_diff<FuncT, task, int>::type_t = 0)
         : func_(nx_forward(FuncT, f))
     {}
@@ -149,7 +149,7 @@ public: \
         swap(nx::moved(rhs)); \
     } \
     template <typename FuncT> \
-    task(nx_fref(FuncT, f), \
+    task(nx_fref(FuncT) f, \
          typename enable_if_diff<FuncT, task, int>::type_t = 0) \
         : func_(nx_forward(FuncT, f)) \
     {} \

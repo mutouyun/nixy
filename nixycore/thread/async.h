@@ -45,23 +45,23 @@ namespace private_async
 
     public:
         template <typename FuncT>
-        detail(nx_fref(FuncT, f))
+        detail(nx_fref(FuncT) f)
             : task_(nx_forward(FuncT, f))
         {}
 
 #   ifdef NX_SP_CXX11_TEMPLATES
         template <typename... P>
-        nx_rval(future<r_t>, true) start(nx_fref(P, ... par))
+        nx_rval(future<r_t>, true) start(nx_fref(P)... par)
         {
             future<r_t> futr = task_.get_future();
-            pool_instance().put(nx_fval(nx::move(task_)), nx_forward(P, par)...);
+            pool_instance().put(nx_pass(nx::move(task_)), nx_forward(P, par)...);
             return nx::move(futr);
         }
 #   else /*NX_SP_CXX11_TEMPLATES*/
         nx_rval(future<r_t>, true) start(void)
         {
             future<r_t> futr = task_.get_future();
-            pool_instance().put(nx_fval(nx::move(task_)));
+            pool_instance().put(nx_pass(nx::move(task_)));
             return nx::move(futr);
         }
 
@@ -70,7 +70,7 @@ namespace private_async
         nx_rval(future<r_t>, true) start(NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
         { \
             future<r_t> futr = task_.get_future(); \
-            pool_instance().put(nx_fval(nx::move(task_)), NX_PP_FORWARD(n, P, par)); \
+            pool_instance().put(nx_pass(nx::move(task_)), NX_PP_FORWARD(n, P, par)); \
             return nx::move(futr); \
         }
         NX_PP_MULT_MAX(NX_ASYNC_DETAIL_DEFINE_)
@@ -87,26 +87,26 @@ namespace private_async
 #ifdef NX_SP_CXX11_TEMPLATES
 template <typename F, typename... P>
 inline nx_rval(future<typename result_of<F(P...)>::type_t>, true)
-    async(nx_fref(F, f), nx_fref(P, ... par))
+    async(nx_fref(F) f, nx_fref(P)... par)
 {
     typedef typename result_of<F(P...)>::type_t r_t;
     return private_async::detail<r_t(P...)>(nx_forward(F, f)).start(nx_forward(P, par)...);
 }
 template <typename R, typename F, typename... P>
-inline nx_rval(future<R>, true) async(nx_fref(F, f), nx_fref(P, ... par))
+inline nx_rval(future<R>, true) async(nx_fref(F) f, nx_fref(P)... par)
 {
     return private_async::detail<R(P...)>(nx_forward(F, f)).start(nx_forward(P, par)...);
 }
 #else /*NX_SP_CXX11_TEMPLATES*/
 template <typename F>
 inline nx_rval(future<typename result_of<F()>::type_t>, true)
-    async(nx_fref(F, f))
+    async(nx_fref(F) f)
 {
     typedef typename result_of<F()>::type_t r_t;
     return private_async::detail<r_t()>(nx_forward(F, f)).start();
 }
 template <typename R, typename F>
-inline nx_rval(future<R>, true) async(nx_fref(F, f))
+inline nx_rval(future<R>, true) async(nx_fref(F) f)
 {
     return private_async::detail<R()>(nx_forward(F, f)).start();
 }
@@ -114,13 +114,13 @@ inline nx_rval(future<R>, true) async(nx_fref(F, f))
 #define NX_ASYNC_DEFINE_(n) \
 template <typename F, NX_PP_TYPE_1(n, typename P)> \
 inline nx_rval(future<typename result_of<F(NX_PP_TYPE_1(n, P))>::type_t>, true) \
-    async(nx_fref(F, f), NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
+    async(nx_fref(F) f, NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
 { \
     typedef typename result_of<F(NX_PP_TYPE_1(n, P))>::type_t r_t; \
     return private_async::detail<r_t(NX_PP_TYPE_1(n, P))>(nx_forward(F, f)).start(NX_PP_FORWARD(n, P, par)); \
 } \
 template <typename R, typename F, NX_PP_TYPE_1(n, typename P)> \
-inline nx_rval(future<R>, true) async(nx_fref(F, f), NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
+inline nx_rval(future<R>, true) async(nx_fref(F) f, NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
 { \
     return private_async::detail<R(NX_PP_TYPE_1(n, P))>(nx_forward(F, f)).start(NX_PP_FORWARD(n, P, par)); \
 }

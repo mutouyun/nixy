@@ -80,7 +80,7 @@ public:
 
 #ifdef NX_SP_CXX11_TEMPLATES
     template <typename... P>
-    static T& instance(nx_fref(P, ... par))
+    static T& instance(nx_fref(P)... par)
     {
         NX_SINGLETON_( (nx_forward(P, par)...) );
     }
@@ -110,7 +110,7 @@ template <typename T> T* Singleton<T>::ip_ = nx::nulptr;
 
 #ifdef NX_SP_CXX11_TEMPLATES
 template <typename T, typename... P>
-inline T& singleton(nx_fref(P, ... par))
+inline T& singleton(nx_fref(P)... par)
 {
     return Singleton<T>::instance(nx_forward(P, par)...);
 }
@@ -140,7 +140,7 @@ class SingletonProxy : public Singleton<T> {};
 
 #ifdef NX_SP_CXX11_TEMPLATES
 template <typename TypeT, typename T, typename... P>
-inline T& singleton(nx_fref(P, ... par))
+inline T& singleton(nx_fref(P)... par)
 {
     return SingletonProxy<TypeT, T>::instance(nx_forward(P, par)...);
 }

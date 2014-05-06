@@ -222,22 +222,6 @@ namespace test_refer
         ~B(void)
         { strout << "dest B " << a_ << endl; a_ = 0; }
     };
-
-    void processValue(int& /*val*/)
-    {
-        strout << "processValue() ->: int&" << endl;
-    }
-
-    void processValue(const int& /*val*/)
-    {
-        strout << "processValue() ->: const int&" << endl;
-    }
-
-    template <typename T>
-    void forwardValue(nx_fref(T, val))
-    {
-        processValue(nx_forward(T, val));
-    }
 }
 
 void testRefer(void)
@@ -249,15 +233,6 @@ void testRefer(void)
         A a; B b(1);
         nx_auto(NX_UNUSED ra, nx::ref(a));
         nx_auto(NX_UNUSED rb, nx::ref(b));
-    }
-    strout << endl;
-    {
-        int a = 0;
-        const int &b = 1;
-
-        forwardValue(nx_fval(a)); // int
-        forwardValue(nx_fval(b)); // const int
-        forwardValue(nx_fval(2)); // const int
     }
 }
 
@@ -406,6 +381,44 @@ void testRvalue(void)
 
 //////////////////////////////////////////////////////////////////////////
 
+namespace test_forward
+{
+    class Foo {};
+
+    void processValue(Foo&)         { strout << "Foo&"        << endl; }
+    void processValue(const Foo&)   { strout << "const Foo&"  << endl; }
+    void processValue(nx_rref(Foo)) { strout << "Foo&&" << endl; }
+
+    Foo&         lvalue(void)       { static       Foo xx; return xx; }
+    const Foo&  clvalue(void)       { static const Foo xx; return xx; }
+    nx_rval(Foo) rvalue(void)       { return Foo(); }
+
+    template <typename T>
+    void forwardValue(nx_fref(T) val)
+    {
+        processValue(nx_forward(T, val));
+    }
+}
+
+void testForward(void)
+{
+    TEST_CASE();
+
+    using namespace test_forward;
+
+    forwardValue(lvalue());
+    forwardValue(clvalue());
+    forwardValue(rvalue());
+
+    strout << endl;
+
+    forwardValue(nx_pass(lvalue()));
+    forwardValue(nx_pass(clvalue()));
+    forwardValue(nx_pass(rvalue()));
+}
+
+//////////////////////////////////////////////////////////////////////////
+
 namespace test_valid
 {
     class A
@@ -533,7 +546,8 @@ void testUtility(void)
     //testSafeBool();
     //testRefer();
     //testRvalue();
+    testForward();
     //testValid();
     //testTuple();
-    testAlignOf();
+    //testAlignOf();
 }

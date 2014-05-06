@@ -69,7 +69,7 @@ private:
     }
 
     template <typename F>
-    void create_start(nx_fref(F, f))
+    void create_start(nx_fref(F) f)
     {
         if (thr_dat_) thread_ops::join(handle_);
         nx_verify(thr_dat_ = nx::alloc<data>());
@@ -95,14 +95,14 @@ public:
 
 #ifdef NX_SP_CXX11_TEMPLATES
     template <typename F, typename... P>
-    explicit thread(nx_fref(F, f), nx_fref(P, ... par))
+    explicit thread(nx_fref(F) f, nx_fref(P)... par)
     {
         init();
         start(nx_forward(F, f), nx_forward(P, par)...);
     }
 #else /*NX_SP_CXX11_TEMPLATES*/
     template <typename F>
-    explicit thread(nx_fref(F, f))
+    explicit thread(nx_fref(F) f)
     {
         init();
         start(nx_forward(F, f));
@@ -110,7 +110,7 @@ public:
 
 #define NX_THREAD_CONSTRUCT_(n) \
     template <typename F, NX_PP_TYPE_1(n, typename P)> \
-    explicit thread(nx_fref(F, f), NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
+    explicit thread(nx_fref(F) f, NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
     { \
         init(); \
         start(nx_forward(F, f), NX_PP_FORWARD(n, P, par)); \
@@ -124,20 +124,20 @@ public:
 public:
 #ifdef NX_SP_CXX11_TEMPLATES
     template <typename F, typename... P>
-    void start(nx_fref(F, f), nx_fref(P, ... par))
+    void start(nx_fref(F) f, nx_fref(P)... par)
     {
         create_start(bind<void>(nx_forward(F, f), nx_forward(P, par)...));
     }
 #else /*NX_SP_CXX11_TEMPLATES*/
     template <typename F>
-    void start(nx_fref(F, f))
+    void start(nx_fref(F) f)
     {
         create_start(bind<void>(nx_forward(F, f)));
     }
 
 #define NX_THREAD_CONSTRUCT_(n) \
     template <typename F, NX_PP_TYPE_1(n, typename P)> \
-    void start(nx_fref(F, f), NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
+    void start(nx_fref(F) f, NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
     { \
         create_start(bind<void>(nx_forward(F, f), NX_PP_FORWARD(n, P, par))); \
     }
@@ -178,7 +178,7 @@ public:
     }
 
     template <typename F>
-    void post(nx_fref(F, f))
+    void post(nx_fref(F) f)
     {
         if (thr_dat_ && thr_dat_->task_queue_)
             thr_dat_->task_queue_->put(nx_forward(F, f));
@@ -186,14 +186,14 @@ public:
 
 #ifdef NX_SP_CXX11_TEMPLATES
     template <typename F, typename... P>
-    void put(nx_fref(F, f), nx_fref(P, ... par))
+    void put(nx_fref(F) f, nx_fref(P)... par)
     {
         put(bind<void>(nx_forward(F, f), nx_forward(P, par)...));
     }
 #else /*NX_SP_CXX11_TEMPLATES*/
 #define NX_THREAD_CONSTRUCT_(n) \
     template <typename F, NX_PP_TYPE_1(n, typename P)> \
-    void post(nx_fref(F, f), NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
+    void post(nx_fref(F) f, NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
     { \
         post(bind<void>(nx_forward(F, f), NX_PP_FORWARD(n, P, par))); \
     }

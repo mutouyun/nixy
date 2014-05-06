@@ -301,6 +301,8 @@ public:
         or
             use of deleted function 'nx::atomic<T>::atomic(nx::atomic<T>&&)'
         When using like this: atomic<int> xx = 10
+        Cause "assignment initialization" possibly copy construction
+        See: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1890.pdf
     */
     atomic(const atomic&)
         : base_t()

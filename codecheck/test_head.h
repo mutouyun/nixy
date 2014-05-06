@@ -32,6 +32,7 @@ using std::endl;
 //#define NX_SINGLE_THREAD
 //#define NX_NO_CXX11_ATOMIC
 //#define NX_NO_CXX11_RVALUE_REF
+//#define NX_NO_CXX11_PERFECT_FWD
 
 #include "test_preprocessor.h"
 #include "test_bugfix.h"
@@ -55,7 +56,7 @@ void testAll(void)
     //testBugFix();
     //testTypeManip();
     //testAlgorithm();
-    //testUtility();
+    testUtility();
     //testTime();
     //testRandom();
     testDelegate();

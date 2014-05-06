@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include "nixycore/utility/refer.h"
-
 #include "nixycore/typemanip/typetools.h"
 #include "nixycore/typemanip/typedetect.h"
 #include "nixycore/typemanip/typetraits.h"
@@ -17,28 +15,30 @@
 
 #include "nixycore/general/general.h"
 
-#if defined(NX_SP_CXX11_RVALUE_REF) || defined(NX_SP_CXX11_PERFECT_FWD)
-#include <utility> // std::move, std::forward
+#if defined(NX_SP_CXX11_RVALUE_REF)
+#include <utility> // std::move
 #endif
 
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
 
+/*
+    Rvalue && rvalue references
+*/
+
 #ifdef NX_SP_CXX11_RVALUE_REF
+
+// Helper
 
 #define nx_rval(T, ...) T
 #define nx_rref(T, ...) T &&
 
-/*
-    Move
-*/
+// Move
 
 using std::move;
 
-/*
-    Moved
-*/
+// Moved
 
 template <typename T>
 inline T& moved(nx_rref(T) rv) nx_noexcept
@@ -52,9 +52,7 @@ inline const T& moved(const T& rv) nx_noexcept
     return rv;
 }
 
-/*
-    move_cast
-*/
+// Type cast
 
 template <typename T, typename U>
 inline nx_rref(T) move_cast(nx_rref(U) rv) nx_noexcept
@@ -62,9 +60,7 @@ inline nx_rref(T) move_cast(nx_rref(U) rv) nx_noexcept
     return nx::move(static_cast<T&>(nx::moved(rv)));
 }
 
-/*
-    type detected
-*/
+// Type manipulation
 
 template <typename T>             struct is_rvalue : type_if<false> {};
 template <typename T>             struct rm_rvalue { typedef T type_t; };
@@ -72,12 +68,7 @@ template <typename T, typename R> struct cp_rvalue { typedef R type_t; };
 
 #else /*NX_SP_CXX11_RVALUE_REF*/
 
-/*
-    rvalue
-    -->
-    MyClass::MyClass(const nx::rvalue<MyClass>& rv);
-    MyClass& MyClass::operator=(const nx::rvalue<MyClass>& rv);
-*/
+// Helper
 
 template <typename T, bool = is_class<T>::value>
 class rvalue : public nx::rm_cv_ref<T>::type_t
@@ -124,9 +115,7 @@ public:
 #define nx_rval(T, ...) nx::rvalue<T,##__VA_ARGS__>
 #define nx_rref(T, ...) const nx::rvalue<T,##__VA_ARGS__>&
 
-/*
-    Move
-*/
+// Move
 
 template <typename T>
 inline typename enable_if<is_class<T>::value,
@@ -154,9 +143,7 @@ inline nx_rref(T) move(nx_rval(T)& rv) nx_noexcept
     return const_cast<nx_rref(T)>(rv);
 }
 
-/*
-    Moved
-*/
+// Moved
 
 template <typename T>
 inline typename enable_if<is_class<T>::value,
@@ -184,9 +171,7 @@ inline T& moved(T& rv) nx_noexcept
     return rv;
 }
 
-/*
-    move_cast
-*/
+// Type cast
 
 template <typename T, typename U>
 inline typename enable_if<is_class<U>::value,
@@ -216,9 +201,7 @@ const T&>::type_t move_cast(const U& rv) nx_noexcept
     return nx::move(static_cast<const T&>(rv));
 }
 
-/*
-    type detected
-*/
+// Type manipulation
 
 template <typename T>             struct is_rvalue_reference<nx_rref(T)>    : type_if<true> {};
 template <typename T>             struct rm_rvalue_reference<nx_rref(T)>    { typedef T type_t; };
@@ -232,97 +215,6 @@ template <typename T, typename R> struct cp_rvalue                          { ty
 template <typename T, typename R> struct cp_rvalue<nx_rval(T), R>           { typedef nx_rval(R) type_t; };
 
 #endif/*NX_SP_CXX11_RVALUE_REF*/
-
-//////////////////////////////////////////////////////////////////////////
-
-/*
-    Perfect Forwarding
-*/
-
-#ifdef NX_SP_CXX11_PERFECT_FWD
-#define NX_PF_SYM_          &&
-#define nx_fval(...)        __VA_ARGS__
-#define nx_forward(T, ...)  std::forward<T>(__VA_ARGS__)
-#define nx_extract(T, ...)  nx::moved(std::forward<T>(__VA_ARGS__))
-
-template <typename T>
-struct extract
-{
-    typedef typename nx::rm_rvalue<
-            typename nx::rm_cv_ref<T>::type_t
-                                    >::type_t type_t;
-};
-#else /*NX_SP_CXX11_PERFECT_FWD*/
-template <typename T>
-class fvalue : public refer<T>
-{
-    typedef refer<T> base_t;
-
-public:
-    fvalue(typename base_t::value_t& r)
-        : base_t(r)
-    {}
-};
-
-#ifdef NX_SP_CXX11_RVALUE_REF
-template <typename T>
-inline fvalue<T>        make_fvalue(T&& r)              { return fvalue<T>(r); }
-#else /*NX_SP_CXX11_RVALUE_REF*/
-template <typename T>
-inline fvalue<T>        make_fvalue(T& r)               { return fvalue<T>(r); }
-#endif/*NX_SP_CXX11_RVALUE_REF*/
-template <typename T>
-inline fvalue<const T>  make_fvalue(const T& r)         { return fvalue<const T>(r); }
-template <typename T>
-inline fvalue<T>&       make_fvalue(fvalue<T>& r)       { return r; }
-template <typename T>
-inline const fvalue<T>& make_fvalue(const fvalue<T>& r) { return r; }
-
-template <typename T>
-inline T&                                clear_fvalue(T& r)               { return r; }
-template <typename T>
-inline const T&                          clear_fvalue(const T& r)         { return r; }
-template <typename T>
-inline typename fvalue<T>::value_t&      clear_fvalue(fvalue<T>& r)       { return (*r); }
-template <typename T>
-inline const typename fvalue<T>::type_t& clear_fvalue(const fvalue<T>& r) { return (*r); }
-
-template <typename T> struct rm_fvalue             { typedef T type_t; };
-template <typename T> struct rm_fvalue<fvalue<T> > { typedef T type_t; };
-
-template <typename T>
-struct extract
-{
-    typedef typename nx::rm_rvalue<typename nx::rm_cv_ref<
-            typename nx::rm_fvalue<typename nx::rm_cv_ref<T
-    >::type_t>::type_t
-    >::type_t>::type_t type_t;
-};
-
-#define NX_PF_SYM_
-#define nx_fval(...)        nx::make_fvalue(__VA_ARGS__)
-#define nx_forward(T, ...)  __VA_ARGS__
-#define nx_extract(T, ...)  nx::moved(nx::clear_fvalue(__VA_ARGS__))
-#endif/*NX_SP_CXX11_PERFECT_FWD*/
-#define nx_fref(T, ...)     T NX_PF_SYM_ __VA_ARGS__
-
-/*
-    NX_PP_FORWARD(3, P, par)
-    C++98 -->
-    par1 , par2 , par3
-    C++11 -->
-    std::forward<P1>(par1) , std::forward<P2>(par2) , std::forward<P3>(par3)
-*/
-
-#define NX_PP_FREF(...)                 NX_PF_SYM_ __VA_ARGS__
-#ifdef NX_SP_CXX11_PERFECT_FWD
-#define NX_PP_FORWARD_1_(n, P, ...)     nx_forward(NX_PP_JOIN(P, n), NX_PP_JOIN(__VA_ARGS__, n))
-#define NX_PP_FORWARD_2_(n, P, ...)     , NX_PP_FORWARD_1_(n, P, __VA_ARGS__)
-#define NX_PP_FORWARD(n, P, ...)        NX_PP_REPEATEX(n, NX_PP_FORWARD_1_, NX_PP_FORWARD_2_, P, __VA_ARGS__)
-#else /*NX_SP_CXX11_PERFECT_FWD*/
-#define NX_PP_FORWARD(n, P, ...)        NX_PP_TYPE_1(n, __VA_ARGS__)
-#endif/*NX_SP_CXX11_PERFECT_FWD*/
-#define NX_PP_FORWARD_MAX(P, ...)       NX_PP_FORWARD(NX_PP_MAX, P, __VA_ARGS__)
 
 //////////////////////////////////////////////////////////////////////////
 NX_END

@@ -517,7 +517,7 @@ void testTask(void)
     nx::future<int> ret = tsk.get_future();
 
     // spawn thread to count down from 10 to 0
-    nx::thread NX_UNUSED th1(nx_fval(nx::move(tsk)), 5, 0);
+    nx::thread NX_UNUSED th1(nx_pass(nx::move(tsk)), 5, 0);
 
     int value = ret.get();
     strout << "The countdown lasted for " << value << " seconds." << endl;

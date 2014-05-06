@@ -35,7 +35,7 @@ inline pvoid alloc(size_t size)
 #ifdef NX_SP_CXX11_TEMPLATES
 template <typename T, typename... P>
 inline typename nx::enable_if<!nx::is_alloc<T>::value,
-T*>::type_t alloc(nx_fref(P, ... par))
+T*>::type_t alloc(nx_fref(P)... par)
 {
     return nx::alloc<NX_DEFAULT_ALLOC, T>(nx_forward(P, par)...);
 }

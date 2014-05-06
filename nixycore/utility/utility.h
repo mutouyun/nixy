@@ -22,6 +22,7 @@
 #include "nixycore/utility/safe_bool.h"
 #include "nixycore/utility/refer.h"
 #include "nixycore/utility/rvalue.h"
+#include "nixycore/utility/forward.h"
 #include "nixycore/utility/valid.h"
 #include "nixycore/utility/tuple.h"
 

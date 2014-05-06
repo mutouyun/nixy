@@ -184,7 +184,7 @@ void testFunctor(void)
         Func1 f;
         nx::functor<const char*(std::string&)> fr;
         std::string s("Hello functor");
-        strout << (fr = f)(nx_fval(s)) << endl;
+        strout << (fr = f)(nx_pass(s)) << endl;
     }
     strout << endl;
     {
@@ -224,7 +224,7 @@ void testBind(void)
         strout << nx::bind(&func2, nx::_2, nx::_2)(1, 2) << endl;
         strout << nx::bind(&A::func, &a, nx::_4, nx::_3, nx::_2, nx::_1)(4, 3, 2, 1) << endl;
         std::string s("Hello bind");
-        strout << nx::bind<const char*>(&f1, nx_fval(s))() << endl;
+        strout << nx::bind<const char*>(&f1, nx_pass(s))() << endl;
     }
     strout << endl;
     {
@@ -235,6 +235,11 @@ void testBind(void)
     {
         nx::functor<int(void)> fr = nx::bind<int>(f2);
         strout << fr() << endl;
+    }
+    strout << endl;
+    {
+        strout << nx::bind(&Func::operator(), nx::_1)(&f) << endl;
+        strout << nx::bind(&A::func, nx::_1, nx::_2, nx::_3, nx::_4, nx::_5)(&a, 4, 3, 2, 1) << endl;
     }
 }
 

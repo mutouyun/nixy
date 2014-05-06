@@ -56,7 +56,7 @@ namespace private_tuple
 #   endif/*NX_SP_CXX11_TUPLE*/
 
         template <typename P1, typename... ArgsT>
-        detail(nx::none_t, nx_fref(P1, par1), nx_fref(ArgsT, ... args))
+        detail(nx::none_t, nx_fref(P1) par1, nx_fref(ArgsT)... args)
             : head_(nx_extract(P1, par1))
             , tail_(nx::none, nx_forward(ArgsT, args)...)
         {}
@@ -114,12 +114,12 @@ namespace private_tuple
 #   endif/*NX_SP_CXX11_TUPLE*/
 
         template <typename P1>
-        detail(nx::none_t, nx_fref(P1, par1))
+        detail(nx::none_t, nx_fref(P1) par1)
             : head_(nx_extract(P1, par1))
         {}
 #else /*NX_SP_CXX11_TEMPLATES*/
         template <NX_PP_TYPE_MAX_1(typename P)>
-        detail(nx_fref(P1, par1), NX_PP_B1(NX_PP_TYPE_MAX_1(P, NX_PP_FREF())))
+        detail(nx_fref(P1) par1, NX_PP_B1(NX_PP_TYPE_MAX_1(P, NX_PP_FREF())))
             : head_(nx_extract(P1, par1))
         {}
 #endif/*NX_SP_CXX11_TEMPLATES*/
@@ -440,7 +440,7 @@ NX_PP_MULT_MAX(NX_TIE_)
 
 #ifdef NX_SP_CXX11_TEMPLATES
 template <typename... T>
-inline tuple<typename unrefwrap<T>::type_t...> make_tuple(nx_fref(T, ... args))
+inline tuple<typename unrefwrap<T>::type_t...> make_tuple(nx_fref(T)... args)
 {
     return tuple<typename unrefwrap<T>::type_t...>(nx_forward(T, args)...);
 }

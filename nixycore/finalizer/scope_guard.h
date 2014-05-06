@@ -95,7 +95,7 @@ public:
 
 template <typename F>
 inline nx_rval(scope_guard<typename nx::decay<F>::type_t>, true)
-    make_scope_guard(nx_fref(F, f))
+    make_scope_guard(nx_fref(F) f)
 {
     return scope_guard<typename nx::decay<F>::type_t>(nx_forward(F, f));
 }

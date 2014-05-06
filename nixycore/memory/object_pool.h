@@ -180,7 +180,7 @@ protected:
 public:
 #ifdef NX_SP_CXX11_TEMPLATES
     template <typename... P>
-    object_pool(nx_fref(P, ... par))
+    object_pool(nx_fref(P)... par)
         : storage_(bind(&private_object_pool::invoker<type_t, P...>::invoke,
                          nx::_1, nx_forward(P, par)...))
         , min_size_(0)

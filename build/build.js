@@ -77,6 +77,7 @@ else
         'nixycore/utility/safe_bool.h' \
         'nixycore/utility/refer.h' \
         'nixycore/utility/rvalue.h' \
+        'nixycore/utility/forward.h' \
         'nixycore/utility/valid.h' \
         'nixycore/utility/tuple.h' \
         'nixycore/utility/utility.h' \

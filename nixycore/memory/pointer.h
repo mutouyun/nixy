@@ -23,7 +23,7 @@ namespace use
 {
     struct dest_memory // destructor policy for memory
     {
-        template <typename T> bool is_valid(nx_fref(T, r)) const
+        template <typename T> bool is_valid(nx_fref(T) r) const
         { return !!nx_extract(T, r); }
         template <typename T> void reset(T& r)
         { r = nx::nulptr; }
@@ -42,12 +42,12 @@ namespace private_pointer
         {}
 
         template <typename U>
-        opt(nx_fref(U, r))
+        opt(nx_fref(U) r)
             : base_t(nx_forward(U, r))
         {}
 
         template <typename U, typename F>
-        opt(nx_fref(U, r), nx_fref(F, dest_fr))
+        opt(nx_fref(U) r, nx_fref(F) dest_fr)
             : base_t(nx_forward(U, r), nx_forward(F, dest_fr))
         {}
 
@@ -65,27 +65,27 @@ namespace private_pointer
         {}
 
         template <typename U>
-        opt(nx_fref(U, r))
+        opt(nx_fref(U) r)
             : base_t(nx_forward(U, r))
         {}
 
         template <typename U>
-        opt(nx_fref(U, r), size_t size)
+        opt(nx_fref(U) r, size_t size)
             : base_t()
         {
-            base_t::assign_to(nx_forward(U, r), nx_fval(nx::make_destructor(r, size)));
+            base_t::assign_to(nx_forward(U, r), nx_pass(nx::make_destructor(r, size)));
         }
 
         template <typename U, typename F>
-        opt(nx_fref(U, r), nx_fref(F, dest_fr), 
+        opt(nx_fref(U) r, nx_fref(F) dest_fr,
             typename nx::enable_if<!nx::is_scalar<F>::value, int>::type_t = 0)
             : base_t(nx_forward(U, r), nx_forward(F, dest_fr))
         {}
 
         template <typename U>
-        void set(nx_fref(U, r), size_t size)
+        void set(nx_fref(U) r, size_t size)
         {
-            base_t::assign_to(nx_forward(U, r), nx_fval(nx::make_destructor(r, size)));
+            base_t::assign_to(nx_forward(U, r), nx_pass(nx::make_destructor(r, size)));
         }
     };
 }
@@ -111,11 +111,11 @@ public:
         : opt_t()
     {}
     template <typename U>
-    pointer(nx_fref(U, r))
+    pointer(nx_fref(U) r)
         : opt_t(nx_forward(U, r))
     {}
     template <typename U, typename F>
-    pointer(nx_fref(U, r), nx_fref(F, dest_fr))
+    pointer(nx_fref(U) r, nx_fref(F) dest_fr)
         : opt_t(nx_forward(U, r), nx_forward(F, dest_fr))
     {}
     pointer(const pointer& r)

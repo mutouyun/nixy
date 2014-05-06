@@ -34,7 +34,7 @@ namespace private_holder
         type_t res_;
 
         template <typename F>
-        void assign_to(const type_t& r, nx_fref(F, dest_fr))
+        void assign_to(const type_t& r, nx_fref(F) dest_fr)
         {
             if (policy_t::is_valid(r))
             {
@@ -52,13 +52,13 @@ namespace private_holder
     public:
         void set(const type_t& r)
         {
-            assign_to(r, nx_fval(make_destructor(r)));
+            assign_to(r, nx_pass(make_destructor(r)));
         }
 
         template <typename F>
-        void set(const type_t& r, nx_fref(F, dest_fr))
+        void set(const type_t& r, nx_fref(F) dest_fr)
         {
-            assign_to(r, nx_fval(make_destructor(r, nx_forward(F, dest_fr))));
+            assign_to(r, nx_pass(make_destructor(r, nx_forward(F, dest_fr))));
         }
 
         template <typename U>
@@ -97,12 +97,12 @@ public:
     {}
 
     template <typename U>
-    holder(nx_fref(U, r))
+    holder(nx_fref(U) r)
         : base_t(nx_forward(U, r))
     {}
 
     template <typename U, typename F>
-    holder(nx_fref(U, r), nx_fref(F, dest_fr))
+    holder(nx_fref(U) r, nx_fref(F) dest_fr)
         : base_t(nx_forward(U, r), nx_forward(F, dest_fr))
     {}
 
