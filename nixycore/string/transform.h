@@ -311,7 +311,7 @@ namespace transform
 
     static inline size_t local_to_utf(const char* src, wchar_t* des = 0, size_t len = 0)
     {
-    #if defined(NX_CC_MSVC)
+#   if defined(NX_CC_MSVC)
         int n = 0;
         if (des)
         {
@@ -323,18 +323,18 @@ namespace transform
         else
             n = MultiByteToWideChar(CP_OEMCP, 0, src, -1, NULL, 0);
         return static_cast<size_t>(n);
-    #elif defined(NX_CC_GNUC)
+#   elif defined(NX_CC_GNUC)
         (void)len;
         return utf(src, des);
-    #else
+#   else
         (void)src; (void)des; (void)len;
         return 0;
-    #endif
+#   endif
     }
 
     static inline size_t utf_to_local(const wchar_t* src, char* des = 0, size_t len = 0)
     {
-    #if defined(NX_CC_MSVC) || defined(NX_OS_WIN)
+#   if defined(NX_CC_MSVC) || defined(NX_OS_WIN)
         int n = 0;
         if (des)
         {
@@ -346,13 +346,13 @@ namespace transform
         else
             n = WideCharToMultiByte(CP_OEMCP, 0, src, -1, NULL, 0, NULL, NULL);
         return static_cast<size_t>(n);
-    #elif defined(NX_CC_GNUC)
+#   elif defined(NX_CC_GNUC)
         (void)len;
         return utf(src, des);
-    #else
+#   else
         (void)src; (void)des; (void)len;
         return 0;
-    #endif
+#   endif
     }
 }
 

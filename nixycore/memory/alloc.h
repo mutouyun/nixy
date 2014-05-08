@@ -135,8 +135,8 @@ inline void free(pvoid p, size_t size)
 
 // make a concept to check size_of function
 
-NX_CONCEPT(size_of_normal, size_t, size_of, )
-NX_CONCEPT(size_of_const , size_t, size_of, const)
+NX_CONCEPT(size_of_normal, size_of, size_t(C::*)(void))
+NX_CONCEPT(size_of_const , size_of, size_t(C::*)(void) const)
 
 // has no virtual-destructor or size_of function
 

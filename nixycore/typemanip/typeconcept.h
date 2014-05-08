@@ -36,11 +36,11 @@ NX_BEG
     Check has member function
 */
 
-#define NX_HAS_MEMBERFUNC_(name, R, InnerFunc, qf, ...) \
+#define NX_HAS_MEMBERFUNC_(name, InnerFunc, FuncTypePtr) \
     template <class T> \
     struct has_##name \
     { \
-        template <class U, NX_PP_VA(R (U::*)(__VA_ARGS__) qf)> \
+        template <class C, FuncTypePtr> \
         struct FuncTest; \
         template <class U> \
         static nx::yes_t check(FuncTest<U, &U::InnerFunc>*); \
