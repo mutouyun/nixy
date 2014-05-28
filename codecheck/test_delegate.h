@@ -214,7 +214,7 @@ void testBind(void)
     B a;
 
     {
-        strout << nx::bind(&func1)(1) << endl;
+        strout << nx::bind(&func1/*, nx::_1*/)(1) << endl;
         strout << nx::bind<int>(&f)() << endl;
         strout << nx::bind(&A::func, &a)(4, 3, 2, 1) << endl;
     }
@@ -222,7 +222,7 @@ void testBind(void)
     {
         strout << nx::bind(&func1, 2)() << endl;
         strout << nx::bind(&func2, nx::_2, nx::_2)(1, 2) << endl;
-        strout << nx::bind(&A::func, &a, nx::_4, nx::_3, nx::_2, nx::_1)(4, 3, 2, 1) << endl;
+        strout << nx::bind(&A::func, &a, nx::_3, 3, nx::_2, nx::_1)(4, 2, 1) << endl;
         std::string s("Hello bind");
         strout << nx::bind<const char*>(&f1, nx_pass(s))() << endl;
     }
@@ -240,6 +240,11 @@ void testBind(void)
     {
         strout << nx::bind(&Func::operator(), nx::_1)(&f) << endl;
         strout << nx::bind(&A::func, nx::_1, nx::_2, nx::_3, nx::_4, nx::_5)(&a, 4, 3, 2, 1) << endl;
+    }
+    strout << endl;
+    {
+        UncopyableFunc ff;
+        strout << nx::bind(nx::move(ff))() << endl;
     }
 }
 

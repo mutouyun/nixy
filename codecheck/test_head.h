@@ -33,6 +33,7 @@ using std::endl;
 //#define NX_NO_CXX11_ATOMIC
 //#define NX_NO_CXX11_RVALUE_REF
 //#define NX_NO_CXX11_PERFECT_FWD
+//#define NX_NO_CXX11_AUTO
 
 #include "test_preprocessor.h"
 #include "test_bugfix.h"
@@ -56,12 +57,12 @@ void testAll(void)
     //testBugFix();
     //testTypeManip();
     //testAlgorithm();
-    testUtility();
+    //testUtility();
     //testTime();
     //testRandom();
     testDelegate();
     //testFinalizer();
-    //testThread();
+    testThread();
     //testMemory();
     //testString();
     //testStream();

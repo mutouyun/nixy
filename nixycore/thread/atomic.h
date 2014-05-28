@@ -294,22 +294,6 @@ public:
     atomic(void)        : base_t()    {}
     atomic(value_t val) : base_t(val) {}
 
-#ifdef NX_CC_GNUC
-    /*
-        <GNUC> compiler error:
-            'nx::noncopyable::noncopyable(const nx::noncopyable&)' is private
-        or
-            use of deleted function 'nx::atomic<T>::atomic(nx::atomic<T>&&)'
-        When using like this: atomic<int> xx = 10
-        Cause "assignment initialization" possibly copy construction
-        See: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1890.pdf
-    */
-    atomic(const atomic&)
-        : base_t()
-        , nx::noncopyable()
-    { nx_assert(false); } // = deleted
-#endif
-
     using base_t::operator=;
 };
 

@@ -15,17 +15,6 @@
 #include "nixycore/typemanip/typemanip.h"
 #include "nixycore/utility/utility.h"
 
-#if defined(NX_CC_MSVC) && (NX_CC_MSVC == 1800)
-/*
-    <MSVC 2013> type_traits(1509): fatal error C1001
-    With: NX_SINGLETON_( (nx_forward(P, par)...) );
-*/
-#ifdef NX_SP_CXX11_TEMPLATES
-#   define NX_UNDEF_HELPER_
-#   undef NX_SP_CXX11_TEMPLATES
-#endif/*NX_SP_CXX11_TEMPLATES*/
-#endif
-
 //////////////////////////////////////////////////////////////////////////
 NX_BEG
 //////////////////////////////////////////////////////////////////////////
@@ -82,7 +71,11 @@ public:
     template <typename... P>
     static T& instance(nx_fref(P)... par)
     {
-        NX_SINGLETON_( (nx_forward(P, par)...) );
+        /*
+            <MSVC 2013> type_traits(1509): fatal error C1001
+            With: NX_SINGLETON_( (nx_forward(P, par)...) );
+        */
+        NX_SINGLETON_( (static_cast<nx_fref(P)>(par)...) );
     }
 #else /*NX_SP_CXX11_TEMPLATES*/
 #define NX_INSTANCE_(n) \
@@ -164,8 +157,3 @@ NX_PP_MULT_MAX(NX_SINGLETON_)
 //////////////////////////////////////////////////////////////////////////
 NX_END
 //////////////////////////////////////////////////////////////////////////
-
-#ifdef NX_UNDEF_HELPER_
-#   undef NX_UNDEF_HELPER_
-#   define NX_SP_CXX11_TEMPLATES
-#endif

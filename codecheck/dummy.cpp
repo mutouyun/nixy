@@ -7,5 +7,4 @@
 
 void dummy(void)
 {
-    //int* pp = &(nx::singleton<int>());
 }

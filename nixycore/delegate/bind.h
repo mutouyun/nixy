@@ -587,7 +587,7 @@ inline nx::rvalue<private_bind::detail<F, private_bind::list<void(P...)>, R>, tr
 #endif/*NX_SP_CXX11_RVALUE_REF*/
 #else /*NX_SP_CXX11_TEMPLATES*/
 #ifdef NX_SP_CXX11_RVALUE_REF
-#define NX_BIND_(n) \
+#define NX_BIND_DEFINE_(n) \
 template <typename F, NX_PP_TYPE_1(n, typename P)> \
 inline private_bind::detail<F, private_bind::list<void(NX_PP_TYPE_1(n, P))> > \
     bind(nx_fref(F) f, NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
@@ -603,7 +603,7 @@ inline private_bind::detail<F, private_bind::list<void(NX_PP_TYPE_1(n, P))>, R> 
     return private_bind::detail<F, l_t, R>(nx_forward(F, f), l_t(NX_PP_FORWARD(n, P, par))); \
 }
 #else /*NX_SP_CXX11_RVALUE_REF*/
-#define NX_BIND_(n) \
+#define NX_BIND_DEFINE_(n) \
 template <typename F, NX_PP_TYPE_1(n, typename P)> \
 inline nx::rvalue<private_bind::detail<F, private_bind::list<void(NX_PP_TYPE_1(n, P))> >, true> \
     bind(nx_fref(F) f, NX_PP_TYPE_2(n, P, NX_PP_FREF(par))) \
@@ -619,8 +619,8 @@ inline nx::rvalue<private_bind::detail<F, private_bind::list<void(NX_PP_TYPE_1(n
     return private_bind::detail<F, l_t, R>(nx_forward(F, f), l_t(NX_PP_FORWARD(n, P, par))); \
 }
 #endif/*NX_SP_CXX11_RVALUE_REF*/
-NX_PP_MULT_MAX(NX_BIND_)
-#undef NX_BIND_
+NX_PP_MULT_MAX(NX_BIND_DEFINE_)
+#undef NX_BIND_DEFINE_
 #endif/*NX_SP_CXX11_TEMPLATES*/
 
 //////////////////////////////////////////////////////////////////////////

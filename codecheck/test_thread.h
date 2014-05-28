@@ -28,7 +28,7 @@ void testAtomic(void)
     if (!a) a = true;
     strout << a << endl;
 
-    nx::atomic<int> b = 10;
+    nx::atomic<int> b(10);
     strout << (b++) << endl;
     strout << (b = 123) << endl;
 }

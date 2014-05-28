@@ -51,13 +51,19 @@ public:
 */
 
 template <typename T>
-inline refer<T>        ref(T& r)              { return refer<T>(r); }
+inline refer<T>         ref(T& r)               { return refer<T>(r); }
 template <typename T>
-inline refer<const T>  ref(const T& r)        { return refer<const T>(r); }
+inline refer<const T>   ref(const T& r)         { return refer<const T>(r); }
 template <typename T>
-inline refer<T>&       ref(refer<T>& r)       { return r; }
+inline refer<T>&        ref(refer<T>& r)        { return r; }
 template <typename T>
-inline const refer<T>& ref(const refer<T>& r) { return r; }
+inline const refer<T>&  ref(const refer<T>& r)  { return r; }
+#ifdef NX_SP_CXX11_RVALUE_REF
+template <typename T>
+inline refer<T>&&       ref(refer<T>&& r)       { return static_cast<refer<T>&&>(r); }
+template <typename T>
+inline const refer<T>&& ref(const refer<T>&& r) { return static_cast<const refer<T>&&>(r); }
+#endif/*NX_SP_CXX11_RVALUE_REF*/
 
 template <typename T>
 inline T&                               unref(T& r)              { return r; }
@@ -67,6 +73,12 @@ template <typename T>
 inline typename refer<T>::value_t&      unref(refer<T>& r)       { return (*r); }
 template <typename T>
 inline const typename refer<T>::type_t& unref(const refer<T>& r) { return (*r); }
+#ifdef NX_SP_CXX11_RVALUE_REF
+template <typename T>
+inline T&&                              unref(T&& r)             { return static_cast<T&&>(r); }
+template <typename T>
+inline const T&&                        unref(const T&& r)       { return static_cast<const T&&>(r); }
+#endif/*NX_SP_CXX11_RVALUE_REF*/
 
 /*
     Unwrap a reference wrapper

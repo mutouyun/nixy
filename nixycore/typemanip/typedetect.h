@@ -14,8 +14,6 @@
 #include "nixycore/typemanip/typequalifier.h"
 #include "nixycore/typemanip/typebehavior.h"
 
-#include "nixycore/utility/noncopyable.h" // for is_copyable
-
 #include "nixycore/general/general.h"
 #include "nixycore/preprocessor/preprocessor.h"
 
@@ -497,34 +495,6 @@ struct is_pod
                             <T
     >::type_t
     >
-{};
-#endif/*NX_SP_CXX11_TYPE_TRAITS*/
-
-/*
-    detect copyable
-*/
-
-#if defined(NX_SP_CXX11_TYPE_TRAITS) && \
-    /*
-        <MSVC 2013> std::is_copy_constructible doesn't work correctly.
-        See: http://connect.microsoft.com/VisualStudio/feedback/details/799732/
-             http://connect.microsoft.com/VisualStudio/feedback/details/800328/
-             http://connect.microsoft.com/VisualStudio/feedback/details/802032/
-    */ \
-    !(defined(NX_CC_MSVC) && (NX_CC_MSVC <= 1800)) && \
-    /*
-        <GCC> 4.7 and later support -std=c++11 and -std=gnu++11 as well.
-        See: http://gcc.gnu.org/projects/cxx0x.html
-    */ \
-    (!defined(NX_CC_GCC) || NX_CHECK_GNUC(4, 7, 0))
-template <typename T>
-struct is_copyable
-    : type_if<std::is_copy_constructible<T>::value>
-{};
-#else /*NX_SP_CXX11_TYPE_TRAITS*/
-template <typename T>
-struct is_copyable
-    : type_if<!nx::is_supersub<nx::noncopyable, T>::value>
 {};
 #endif/*NX_SP_CXX11_TYPE_TRAITS*/
 

@@ -268,7 +268,7 @@ template <typename T, typename U, typename T1, typename T2,
 template <typename, typename> class L_>
 struct types_replace<L_<T, U>, T1 , T2>
 {
-    typedef L_<T, typename types_replace<U, T1 , T2>::type_t> type_t;
+    typedef L_<T, typename types_replace<U, T1, T2>::type_t> type_t;
 };
 
 /*

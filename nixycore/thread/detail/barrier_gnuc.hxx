@@ -20,7 +20,11 @@ inline static void cc_barrier(void)
 
 inline static void mm_barrier(void)
 {
-#if NX_CHECK_GNUC(4, 1, 2)
+#if NX_CHECK_GNUC(4, 4, 0)
+    /*
+        <GNUC> Bug 36793 - x86-64 does not get __sync_synchronize right
+        See: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=36793
+    */
     __sync_synchronize();
 #elif defined(NX_PC_X86_64) || defined(NX_PC_SSE2)
     __asm__ __volatile__ ("mfence" ::: "memory");
