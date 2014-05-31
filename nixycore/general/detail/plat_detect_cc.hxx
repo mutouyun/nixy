@@ -31,12 +31,12 @@
 #if defined(NX_CC_MSVC)
 #   pragma warning(disable:4996)                // This function or variable may be unsafe
 #   pragma warning(disable:4101)                // The local variable is never used
-#   define NX_UNUSED
+#   define NX_UNUSED __pragma(warning(suppress:4100))
 #   ifndef NX__FUNCTION__
 #       define NX__FUNCTION__ __FUNCSIG__
 #   endif
 #elif defined(NX_CC_GNUC)
-#   define NX_UNUSED __attribute__((unused))
+#   define NX_UNUSED __attribute__((__unused__))
 #   ifndef NX__FUNCTION__
 #       define NX__FUNCTION__ __PRETTY_FUNCTION__
 #   endif

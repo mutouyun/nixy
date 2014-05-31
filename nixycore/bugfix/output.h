@@ -73,7 +73,7 @@ bool output(const char* fmt, ...)
     char* buf = static_cast<char*>(::malloc(::vsnprintf(NULL, 0, fmt, args) + 1));
     if (buf)
     {
-        if (vsprintf(buf, fmt, args) > 0)
+        if (::vsprintf(buf, fmt, args) > 0)
         {
             PolicyT::out(buf);
         }
