@@ -57,12 +57,12 @@ void testAll(void)
     //testBugFix();
     //testTypeManip();
     //testAlgorithm();
-    //testUtility();
+    testUtility();
     //testTime();
     //testRandom();
-    testDelegate();
+    //testDelegate();
     //testFinalizer();
-    testThread();
+    //testThread();
     //testMemory();
     //testString();
     //testStream();

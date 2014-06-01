@@ -31,12 +31,29 @@ void testAddressof(void)
 
 //////////////////////////////////////////////////////////////////////////
 
+namespace test_operator
+{
+    class Foo : public nx::alike<Foo>
+    {
+        int x_;
+
+    public:
+        Foo(int x) : x_(x) {}
+        bool operator<(const Foo& rhs) const { return x_ < rhs.x_; }
+    };
+}
+
 void testOperator(void)
 {
     TEST_CASE();
+    using namespace test_operator;
 
     strout << NX_PP_STR(nx_operator(T, nx::unequal, nx::comparable, nx::operable)) << endl;
     strout << NX_PP_STR(nx_operatorex(T, double, nx::unequal, nx::comparable, nx::operable)) << endl;
+
+    Foo foo(1), bar(2);
+    if (foo == bar) strout << "foo == bar" << endl;
+    if (foo != bar) strout << "foo != bar" << endl;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -539,14 +556,14 @@ void testUtility(void)
     TEST_FUNCTION();
 
     //testAddressof();
-    //testOperator();
+    testOperator();
     //testInitialize();
     //testCountOf();
     //testLimitOf();
     //testSafeBool();
     //testRefer();
     //testRvalue();
-    testForward();
+    //testForward();
     //testValid();
     //testTuple();
     //testAlignOf();

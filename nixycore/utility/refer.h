@@ -73,12 +73,6 @@ template <typename T>
 inline typename refer<T>::value_t&      unref(refer<T>& r)       { return (*r); }
 template <typename T>
 inline const typename refer<T>::type_t& unref(const refer<T>& r) { return (*r); }
-#ifdef NX_SP_CXX11_RVALUE_REF
-template <typename T>
-inline T&&                              unref(T&& r)             { return static_cast<T&&>(r); }
-template <typename T>
-inline const T&&                        unref(const T&& r)       { return static_cast<const T&&>(r); }
-#endif/*NX_SP_CXX11_RVALUE_REF*/
 
 /*
     Unwrap a reference wrapper

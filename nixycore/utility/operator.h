@@ -28,11 +28,10 @@ struct unequal : BaseT
 };
 
 template <typename T, typename BaseT = empty_t>
-struct alike : BaseT
+struct alike : unequal<T, BaseT>
 {
     // Need operator<
-    friend bool operator!=(const T& x, const T& y) { return (static_cast<bool>(x < y) && static_cast<bool>(y < x)); }
-    friend bool operator==(const T& x, const T& y) { return !(x != y); }
+    friend bool operator==(const T& x, const T& y) { return (!static_cast<bool>(x < y) && !static_cast<bool>(y < x)); }
 };
 
 template <typename T, typename BaseT = empty_t>
