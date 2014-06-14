@@ -230,8 +230,12 @@ struct cache_placer<AllocT, use::thread_single> : private_cache_placer::base<All
     Caching fixed pools
 */
 
+#ifndef NX_CACHEPOOL_SMALLINC   // The increment of every level
+#define NX_CACHEPOOL_SMALLINC   (sizeof(nx::pvoid) * 2)
+#endif
+
 #ifndef NX_CACHEPOOL_INITSIZE   // The init memory size of every pool
-#define NX_CACHEPOOL_INITSIZE   (sizeof(nx::pvoid) * 64)
+#define NX_CACHEPOOL_INITSIZE   (NX_CACHEPOOL_SMALLINC * 64)
 #endif
 
 #ifndef NX_CACHEPOOL_CLASSNUM   // The number of memory block size class
@@ -240,10 +244,6 @@ struct cache_placer<AllocT, use::thread_single> : private_cache_placer::base<All
 
 #ifndef NX_CACHEPOOL_LEVELNUM   // The number of levels in one class
 #define NX_CACHEPOOL_LEVELNUM   (64)
-#endif
-
-#ifndef NX_CACHEPOOL_SMALLINC   // The increment of every level
-#define NX_CACHEPOOL_SMALLINC   (sizeof(nx::pvoid))
 #endif
 
 #ifndef NX_CACHEPOOL_FACTOR     // The incremental factor
