@@ -37,8 +37,8 @@ void testTrace(void)
 {
     TEST_CASE();
 
-    nx_trace("I %x Sego")("love") << nx::endl;
-    nx_trace()("Sego ") << 123 << nx::endl<2>;
+    nx_trace("I %x seiko")("love") << nx::endl;
+    nx_trace()("seiko ") << 123 << nx::endl<2>;
 }
 
 //////////////////////////////////////////////////////////////////////////
