@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <ItemGroup>
+        <ClInclude Include="..\codecheck\test_algorithm.h"/>
+        <ClInclude Include="..\codecheck\test_bugfix.h"/>
+        <ClInclude Include="..\codecheck\test_delegate.h"/>
+        <ClInclude Include="..\codecheck\test_finalizer.h"/>
+        <ClInclude Include="..\codecheck\test_head.h"/>
+        <ClInclude Include="..\codecheck\test_memory.h"/>
+        <ClInclude Include="..\codecheck\test_preprocessor.h"/>
+        <ClInclude Include="..\codecheck\test_random.h"/>
+        <ClInclude Include="..\codecheck\test_stream.h"/>
+        <ClInclude Include="..\codecheck\test_string.h"/>
+        <ClInclude Include="..\codecheck\test_thread.h"/>
+        <ClInclude Include="..\codecheck\test_time.h"/>
+        <ClInclude Include="..\codecheck\test_typemanip.h"/>
+        <ClInclude Include="..\codecheck\test_utility.h"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ClCompile Include="..\codecheck\dummy.cpp"/>
+        <ClCompile Include="..\codecheck\main.cpp"/>
+    </ItemGroup>
+</Project>

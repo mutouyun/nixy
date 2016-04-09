@@ -43,13 +43,12 @@ public:
         See: http://connect.microsoft.com/VisualStudio/feedback/details/800243/
     */
     spin_lock(void)
-        : lc_()
     {
         lc_.clear(std::memory_order_relaxed);
     }
 #   else
     spin_lock(void)
-        : lc_(ATOMIC_FLAG_INIT)
+        : lc_ ATOMIC_FLAG_INIT
     {}
 #   endif
     ~spin_lock(void)

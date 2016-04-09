@@ -1,0 +1,295 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{23c0bebc-bb9d-4a10-86bf-1aa06909a1ed}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>nixycore_vc12</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Label="LocalAppDataPlatform" Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)!bin/$(Configuration)/$(PlatformName)/vc12\</OutDir>
+    <IntDir>$(SolutionDir)!tmp/$(Configuration)/$(PlatformName)/vc12\$(RootNamespace)\</IntDir>
+    <TargetName>$(RootNamespace)</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)../;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Label="LocalAppDataPlatform" Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)!bin/$(Configuration)/$(PlatformName)/vc12\</OutDir>
+    <IntDir>$(SolutionDir)!tmp/$(Configuration)/$(PlatformName)/vc12\$(RootNamespace)\</IntDir>
+    <TargetName>$(RootNamespace)</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN64;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)../;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Label="LocalAppDataPlatform" Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)!bin/$(Configuration)/$(PlatformName)/vc12\</OutDir>
+    <IntDir>$(SolutionDir)!tmp/$(Configuration)/$(PlatformName)/vc12\$(RootNamespace)\</IntDir>
+    <TargetName>$(RootNamespace)</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)../;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Label="LocalAppDataPlatform" Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)!bin/$(Configuration)/$(PlatformName)/vc12\</OutDir>
+    <IntDir>$(SolutionDir)!tmp/$(Configuration)/$(PlatformName)/vc12\$(RootNamespace)\</IntDir>
+    <TargetName>$(RootNamespace)</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN64;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)../;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\nixycore\general\plat_detect.h" />
+    <ClInclude Include="..\nixycore\general\general.h" />
+    <ClInclude Include="..\nixycore\preprocessor\pp_macros.h" />
+    <ClInclude Include="..\nixycore\preprocessor\pp_count.h" />
+    <ClInclude Include="..\nixycore\preprocessor\pp_arg.h" />
+    <ClInclude Include="..\nixycore\preprocessor\pp_repeat.h" />
+    <ClInclude Include="..\nixycore\preprocessor\pp_nest.h" />
+    <ClInclude Include="..\nixycore\preprocessor\pp_mult.h" />
+    <ClInclude Include="..\nixycore\preprocessor\preprocessor.h" />
+    <ClInclude Include="..\nixycore\bugfix\noexcept.h" />
+    <ClInclude Include="..\nixycore\bugfix\output.h" />
+    <ClInclude Include="..\nixycore\bugfix\assert_detail.h" />
+    <ClInclude Include="..\nixycore\bugfix\assert.h" />
+    <ClInclude Include="..\nixycore\bugfix\trace.h" />
+    <ClInclude Include="..\nixycore\bugfix\bugfix.h" />
+    <ClInclude Include="..\nixycore\typemanip\typedefs.h" />
+    <ClInclude Include="..\nixycore\typemanip\typetools.h" />
+    <ClInclude Include="..\nixycore\typemanip\typerelation.h" />
+    <ClInclude Include="..\nixycore\typemanip\typelist.h" />
+    <ClInclude Include="..\nixycore\typemanip\typeconcept.h" />
+    <ClInclude Include="..\nixycore\typemanip\typequalifier.h" />
+    <ClInclude Include="..\nixycore\typemanip\typebehavior.h" />
+    <ClInclude Include="..\nixycore\typemanip\typedetect.h" />
+    <ClInclude Include="..\nixycore\typemanip\typetraits.h" />
+    <ClInclude Include="..\nixycore\typemanip\typedecay.h" />
+    <ClInclude Include="..\nixycore\typemanip\typeof.h" />
+    <ClInclude Include="..\nixycore\typemanip\typemanip.h" />
+    <ClInclude Include="..\nixycore\utility\alignof.h" />
+    <ClInclude Include="..\nixycore\utility\addressof.h" />
+    <ClInclude Include="..\nixycore\utility\type_cast.h" />
+    <ClInclude Include="..\nixycore\utility\countof.h" />
+    <ClInclude Include="..\nixycore\utility\operator.h" />
+    <ClInclude Include="..\nixycore\utility\noncopyable.h" />
+    <ClInclude Include="..\nixycore\utility\final.h" />
+    <ClInclude Include="..\nixycore\utility\initialize.h" />
+    <ClInclude Include="..\nixycore\utility\max_min.h" />
+    <ClInclude Include="..\nixycore\utility\limit_of.h" />
+    <ClInclude Include="..\nixycore\utility\safe_bool.h" />
+    <ClInclude Include="..\nixycore\utility\refer.h" />
+    <ClInclude Include="..\nixycore\utility\rvalue.h" />
+    <ClInclude Include="..\nixycore\utility\forward.h" />
+    <ClInclude Include="..\nixycore\utility\valid.h" />
+    <ClInclude Include="..\nixycore\utility\tuple.h" />
+    <ClInclude Include="..\nixycore\utility\utility.h" />
+    <ClInclude Include="..\nixycore\algorithm\container.h" />
+    <ClInclude Include="..\nixycore\algorithm\foreach.h" />
+    <ClInclude Include="..\nixycore\algorithm\assign.h" />
+    <ClInclude Include="..\nixycore\algorithm\series.h" />
+    <ClInclude Include="..\nixycore\algorithm\algorithm.h" />
+    <ClInclude Include="..\nixycore\pattern\prototype.h" />
+    <ClInclude Include="..\nixycore\pattern\singleton.h" />
+    <ClInclude Include="..\nixycore\pattern\iterator.h" />
+    <ClInclude Include="..\nixycore\pattern\trackable.h" />
+    <ClInclude Include="..\nixycore\pattern\pattern.h" />
+    <ClInclude Include="..\nixycore\time\tickcount.h" />
+    <ClInclude Include="..\nixycore\time\stopwatch.h" />
+    <ClInclude Include="..\nixycore\time\time.h" />
+    <ClInclude Include="..\nixycore\random\rand_std.h" />
+    <ClInclude Include="..\nixycore\random\rand_mt19937.h" />
+    <ClInclude Include="..\nixycore\random\random.h" />
+    <ClInclude Include="..\nixycore\delegate\function_traits.h" />
+    <ClInclude Include="..\nixycore\delegate\functor.h" />
+    <ClInclude Include="..\nixycore\delegate\bind.h" />
+    <ClInclude Include="..\nixycore\delegate\delegate.h" />
+    <ClInclude Include="..\nixycore\delegate\signal.h" />
+    <ClInclude Include="..\nixycore\finalizer\scope_guard.h" />
+    <ClInclude Include="..\nixycore\finalizer\ref_counter.h" />
+    <ClInclude Include="..\nixycore\finalizer\holder.h" />
+    <ClInclude Include="..\nixycore\finalizer\gc.h" />
+    <ClInclude Include="..\nixycore\finalizer\finalizer.h" />
+    <ClInclude Include="..\nixycore\memory\construct.h" />
+    <ClInclude Include="..\nixycore\memory\alloc.h" />
+    <ClInclude Include="..\nixycore\memory\alloc_model.h" />
+    <ClInclude Include="..\nixycore\memory\std_alloc.h" />
+    <ClInclude Include="..\nixycore\memory\fixed_pool.h" />
+    <ClInclude Include="..\nixycore\memory\cache_pool.h" />
+    <ClInclude Include="..\nixycore\memory\mem_pool.h" />
+    <ClInclude Include="..\nixycore\memory\center_heap.h" />
+    <ClInclude Include="..\nixycore\memory\mem_alloc.h" />
+    <ClInclude Include="..\nixycore\memory\default_alloc.h" />
+    <ClInclude Include="..\nixycore\memory\mem_leak.h" />
+    <ClInclude Include="..\nixycore\memory\unfixed_pool.h" />
+    <ClInclude Include="..\nixycore\memory\object_pool.h" />
+    <ClInclude Include="..\nixycore\memory\pointer.h" />
+    <ClInclude Include="..\nixycore\memory\mem_guard.h" />
+    <ClInclude Include="..\nixycore\memory\memory.h" />
+    <ClInclude Include="..\nixycore\container\any.h" />
+    <ClInclude Include="..\nixycore\container\array.h" />
+    <ClInclude Include="..\nixycore\container\container.h" />
+    <ClInclude Include="..\nixycore\container\deque.h" />
+    <ClInclude Include="..\nixycore\container\list.h" />
+    <ClInclude Include="..\nixycore\container\map.h" />
+    <ClInclude Include="..\nixycore\container\priority.h" />
+    <ClInclude Include="..\nixycore\container\queue.h" />
+    <ClInclude Include="..\nixycore\container\set.h" />
+    <ClInclude Include="..\nixycore\container\stack.h" />
+    <ClInclude Include="..\nixycore\container\vector.h" />
+    <ClInclude Include="..\nixycore\container\forward_list.h" />
+    <ClInclude Include="..\nixycore\container\hash_map.h" />
+    <ClInclude Include="..\nixycore\container\hash_set.h" />
+    <ClInclude Include="..\nixycore\thread\barrier.h" />
+    <ClInclude Include="..\nixycore\thread\interlocked.h" />
+    <ClInclude Include="..\nixycore\thread\atomic.h" />
+    <ClInclude Include="..\nixycore\thread\spin_lock.h" />
+    <ClInclude Include="..\nixycore\thread\lock_guard.h" />
+    <ClInclude Include="..\nixycore\thread\mutex.h" />
+    <ClInclude Include="..\nixycore\thread\condition.h" />
+    <ClInclude Include="..\nixycore\thread\semaphore.h" />
+    <ClInclude Include="..\nixycore\thread\waiter.h" />
+    <ClInclude Include="..\nixycore\thread\blocking_queue.h" />
+    <ClInclude Include="..\nixycore\thread\tls_ptr.h" />
+    <ClInclude Include="..\nixycore\thread\thread_ops.h" />
+    <ClInclude Include="..\nixycore\thread\thread_model.h" />
+    <ClInclude Include="..\nixycore\thread\thread_detail.h" />
+    <ClInclude Include="..\nixycore\thread\thread_pool.h" />
+    <ClInclude Include="..\nixycore\thread\future.h" />
+    <ClInclude Include="..\nixycore\thread\promise.h" />
+    <ClInclude Include="..\nixycore\thread\task.h" />
+    <ClInclude Include="..\nixycore\thread\async.h" />
+    <ClInclude Include="..\nixycore\thread\thread.h" />
+    <ClInclude Include="..\nixycore\string\transform.h" />
+    <ClInclude Include="..\nixycore\string\string_detail.h" />
+    <ClInclude Include="..\nixycore\string\string.h" />
+    <ClInclude Include="..\nixycore\stream\printf_format.h" />
+    <ClInclude Include="..\nixycore\stream\stream_wrap.h" />
+    <ClInclude Include="..\nixycore\stream\stream_buffer.h" />
+    <ClInclude Include="..\nixycore\stream\stream_detail.h" />
+    <ClInclude Include="..\nixycore\stream\stream_ops.h" />
+    <ClInclude Include="..\nixycore\stream\stream.h" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

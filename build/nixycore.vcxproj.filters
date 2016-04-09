@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <ItemGroup>
+        <Filter Include="typemanip">
+            <UniqueIdentifier>{175f8137-b5e5-4a87-9f39-33eb456912c2}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="preprocessor">
+            <UniqueIdentifier>{10993a17-49d4-4fa7-8cdc-c6122c3453b0}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="thread">
+            <UniqueIdentifier>{a480e5c8-0e7d-4e64-9d0b-821c2600c2e8}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="bugfix">
+            <UniqueIdentifier>{ec9a9b3c-98db-4de0-89c2-9c09ab6394ae}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="time">
+            <UniqueIdentifier>{b1450bd2-0099-4a38-8372-bb67aaba3e44}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="stream">
+            <UniqueIdentifier>{bbdedc58-b384-4837-9783-d20faa83e4ef}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="delegate">
+            <UniqueIdentifier>{cc0d52db-cff6-4ac2-b103-01c19a886375}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="algorithm">
+            <UniqueIdentifier>{84a2fa81-b01b-45a8-8195-ed52726bbd6e}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="general">
+            <UniqueIdentifier>{00526450-1b9a-4875-b547-6ad7fb7f202d}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="container">
+            <UniqueIdentifier>{3ef44575-137c-4065-8d57-d909f2d33568}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="string">
+            <UniqueIdentifier>{d4a29675-5b34-41f3-b3c7-c43a988029f4}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="pattern">
+            <UniqueIdentifier>{758f97f0-15bf-476d-b713-9c79f4933375}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="utility">
+            <UniqueIdentifier>{3148d75e-4b25-463d-a446-92556c9fcc38}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="random">
+            <UniqueIdentifier>{1dbe8dc5-3f49-49f3-830e-6b366b965c65}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="finalizer">
+            <UniqueIdentifier>{1b3f5c31-0dbf-4bad-bd08-66b7584d6838}</UniqueIdentifier>
+        </Filter>
+        <Filter Include="memory">
+            <UniqueIdentifier>{3d4df96c-8eca-4079-bf47-5e4cd056ea28}</UniqueIdentifier>
+        </Filter>
+    </ItemGroup>
+    <ItemGroup>
+        <ClInclude Include="..\nixycore\algorithm\algorithm.h">
+            <Filter>algorithm</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\algorithm\assign.h">
+            <Filter>algorithm</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\algorithm\container.h">
+            <Filter>algorithm</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\algorithm\foreach.h">
+            <Filter>algorithm</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\algorithm\series.h">
+            <Filter>algorithm</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\bugfix\assert.h">
+            <Filter>bugfix</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\bugfix\assert_detail.h">
+            <Filter>bugfix</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\bugfix\bugfix.h">
+            <Filter>bugfix</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\bugfix\noexcept.h">
+            <Filter>bugfix</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\bugfix\output.h">
+            <Filter>bugfix</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\bugfix\trace.h">
+            <Filter>bugfix</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\container\any.h">
+            <Filter>container</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\container\array.h">
+            <Filter>container</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\container\container.h">
+            <Filter>container</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\container\deque.h">
+            <Filter>container</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\container\forward_list.h">
+            <Filter>container</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\container\hash_map.h">
+            <Filter>container</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\container\hash_set.h">
+            <Filter>container</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\container\list.h">
+            <Filter>container</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\container\map.h">
+            <Filter>container</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\container\priority.h">
+            <Filter>container</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\container\queue.h">
+            <Filter>container</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\container\set.h">
+            <Filter>container</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\container\stack.h">
+            <Filter>container</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\container\vector.h">
+            <Filter>container</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\delegate\bind.h">
+            <Filter>delegate</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\delegate\delegate.h">
+            <Filter>delegate</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\delegate\function_traits.h">
+            <Filter>delegate</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\delegate\functor.h">
+            <Filter>delegate</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\delegate\signal.h">
+            <Filter>delegate</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\finalizer\finalizer.h">
+            <Filter>finalizer</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\finalizer\gc.h">
+            <Filter>finalizer</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\finalizer\holder.h">
+            <Filter>finalizer</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\finalizer\ref_counter.h">
+            <Filter>finalizer</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\finalizer\scope_guard.h">
+            <Filter>finalizer</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\general\general.h">
+            <Filter>general</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\general\plat_detect.h">
+            <Filter>general</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\memory\alloc.h">
+            <Filter>memory</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\memory\alloc_model.h">
+            <Filter>memory</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\memory\cache_pool.h">
+            <Filter>memory</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\memory\center_heap.h">
+            <Filter>memory</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\memory\construct.h">
+            <Filter>memory</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\memory\default_alloc.h">
+            <Filter>memory</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\memory\fixed_pool.h">
+            <Filter>memory</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\memory\mem_alloc.h">
+            <Filter>memory</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\memory\mem_guard.h">
+            <Filter>memory</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\memory\mem_leak.h">
+            <Filter>memory</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\memory\mem_pool.h">
+            <Filter>memory</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\memory\memory.h">
+            <Filter>memory</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\memory\object_pool.h">
+            <Filter>memory</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\memory\pointer.h">
+            <Filter>memory</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\memory\std_alloc.h">
+            <Filter>memory</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\memory\unfixed_pool.h">
+            <Filter>memory</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\pattern\iterator.h">
+            <Filter>pattern</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\pattern\pattern.h">
+            <Filter>pattern</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\pattern\prototype.h">
+            <Filter>pattern</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\pattern\singleton.h">
+            <Filter>pattern</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\pattern\trackable.h">
+            <Filter>pattern</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\preprocessor\pp_arg.h">
+            <Filter>preprocessor</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\preprocessor\pp_count.h">
+            <Filter>preprocessor</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\preprocessor\pp_macros.h">
+            <Filter>preprocessor</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\preprocessor\pp_mult.h">
+            <Filter>preprocessor</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\preprocessor\pp_nest.h">
+            <Filter>preprocessor</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\preprocessor\pp_repeat.h">
+            <Filter>preprocessor</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\preprocessor\preprocessor.h">
+            <Filter>preprocessor</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\random\rand_mt19937.h">
+            <Filter>random</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\random\rand_std.h">
+            <Filter>random</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\random\random.h">
+            <Filter>random</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\stream\printf_format.h">
+            <Filter>stream</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\stream\stream.h">
+            <Filter>stream</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\stream\stream_buffer.h">
+            <Filter>stream</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\stream\stream_detail.h">
+            <Filter>stream</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\stream\stream_ops.h">
+            <Filter>stream</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\stream\stream_wrap.h">
+            <Filter>stream</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\string\string.h">
+            <Filter>string</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\string\string_detail.h">
+            <Filter>string</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\string\transform.h">
+            <Filter>string</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\thread\async.h">
+            <Filter>thread</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\thread\atomic.h">
+            <Filter>thread</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\thread\barrier.h">
+            <Filter>thread</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\thread\blocking_queue.h">
+            <Filter>thread</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\thread\condition.h">
+            <Filter>thread</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\thread\future.h">
+            <Filter>thread</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\thread\interlocked.h">
+            <Filter>thread</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\thread\lock_guard.h">
+            <Filter>thread</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\thread\mutex.h">
+            <Filter>thread</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\thread\promise.h">
+            <Filter>thread</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\thread\semaphore.h">
+            <Filter>thread</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\thread\spin_lock.h">
+            <Filter>thread</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\thread\task.h">
+            <Filter>thread</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\thread\thread.h">
+            <Filter>thread</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\thread\thread_detail.h">
+            <Filter>thread</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\thread\thread_model.h">
+            <Filter>thread</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\thread\thread_ops.h">
+            <Filter>thread</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\thread\thread_pool.h">
+            <Filter>thread</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\thread\tls_ptr.h">
+            <Filter>thread</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\thread\waiter.h">
+            <Filter>thread</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\time\stopwatch.h">
+            <Filter>time</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\time\tickcount.h">
+            <Filter>time</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\time\time.h">
+            <Filter>time</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\typemanip\typebehavior.h">
+            <Filter>typemanip</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\typemanip\typeconcept.h">
+            <Filter>typemanip</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\typemanip\typedecay.h">
+            <Filter>typemanip</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\typemanip\typedefs.h">
+            <Filter>typemanip</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\typemanip\typedetect.h">
+            <Filter>typemanip</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\typemanip\typelist.h">
+            <Filter>typemanip</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\typemanip\typemanip.h">
+            <Filter>typemanip</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\typemanip\typeof.h">
+            <Filter>typemanip</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\typemanip\typequalifier.h">
+            <Filter>typemanip</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\typemanip\typerelation.h">
+            <Filter>typemanip</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\typemanip\typetools.h">
+            <Filter>typemanip</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\typemanip\typetraits.h">
+            <Filter>typemanip</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\utility\addressof.h">
+            <Filter>utility</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\utility\alignof.h">
+            <Filter>utility</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\utility\countof.h">
+            <Filter>utility</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\utility\final.h">
+            <Filter>utility</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\utility\forward.h">
+            <Filter>utility</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\utility\initialize.h">
+            <Filter>utility</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\utility\limit_of.h">
+            <Filter>utility</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\utility\max_min.h">
+            <Filter>utility</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\utility\noncopyable.h">
+            <Filter>utility</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\utility\operator.h">
+            <Filter>utility</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\utility\refer.h">
+            <Filter>utility</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\utility\rvalue.h">
+            <Filter>utility</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\utility\safe_bool.h">
+            <Filter>utility</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\utility\tuple.h">
+            <Filter>utility</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\utility\type_cast.h">
+            <Filter>utility</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\utility\utility.h">
+            <Filter>utility</Filter>
+        </ClInclude>
+        <ClInclude Include="..\nixycore\utility\valid.h">
+            <Filter>utility</Filter>
+        </ClInclude>
+    </ItemGroup>
+    <ItemGroup/>
+</Project>
