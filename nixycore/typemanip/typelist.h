@@ -3,7 +3,7 @@
     Code covered by the MIT License
 
     Modified from The Loki Library
-    Modified by : mutouyun (http://darkc.at)
+    Modified by : mutouyun (http://orzz.org)
 
     Copyright (c) 2001 by Andrei Alexandrescu
 */

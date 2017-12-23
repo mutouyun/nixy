@@ -3,7 +3,7 @@
     Code covered by the MIT License
 
     Modified from http://en.wikibooks.org/wiki/More_C++_Idioms/Safe_bool
-    Modified by : mutouyun (http://darkc.at)
+    Modified by : mutouyun (http://orzz.org)
 */
 
 #pragma once

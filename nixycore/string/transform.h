@@ -3,7 +3,7 @@
     Code covered by the MIT License
 
     Modified from UnicodeConverter
-    Modified by : mutouyun (http://darkc.at)
+    Modified by : mutouyun (http://orzz.org)
 
     Copyright (c) 2010. Jianhui Qin (http://blog.csdn.net/jhqin)
 */

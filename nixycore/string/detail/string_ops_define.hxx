@@ -3,7 +3,7 @@
     Code covered by the MIT License
 
     Modified from Extended STL string (http://www.gotroot.ca/ext_string)
-    Modified by : mutouyun (http://darkc.at)
+    Modified by : mutouyun (http://orzz.org)
 
     Copyright (c) 2005, Keenan Tims (ktims@gotroot.ca) All rights reserved.
 */

@@ -2,7 +2,7 @@
     The Nixy Library
     Code covered by the MIT License
 
-    Author: mutouyun (http://darkc.at)
+    Author: mutouyun (http://orzz.org)
 */
 
 #include <tlhelp32.h>

@@ -3,7 +3,7 @@
     Code covered by the MIT License
 
     Modified from StdExt - C++ STL Extensions (http://code.google.com/p/stdext/)
-    Modified by : mutouyun (http://darkc.at)
+    Modified by : mutouyun (http://orzz.org)
 
     Copyright (c) 2004 - 2008 xushiwei (xushiweizh@gmail.com)
 */

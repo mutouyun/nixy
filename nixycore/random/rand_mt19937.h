@@ -3,7 +3,7 @@
     Code covered by the MIT License
 
     Modified from http://en.wikipedia.org/wiki/Mersenne_twister
-    Modified by : mutouyun (http://darkc.at)
+    Modified by : mutouyun (http://orzz.org)
 */
 
 #pragma once
