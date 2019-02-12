@@ -7,7 +7,6 @@
 
 #if defined(NX_OS_WINCE) || (WINVER < 0x0600)
 #include "nixycore/thread/lock_guard.h"
-#include "nixycore/thread/spin_lock.h"
 #endif
 
 //////////////////////////////////////////////////////////////////////////
@@ -21,14 +20,15 @@ NX_BEG namespace private_condition {
 
 class detail
 {
-    HANDLE    sema_;
+    mutex     lock_;
+    HANDLE    sema_, handshake_;
     mutex&    cond_mutex_;
-    spin_lock lock_;
     long      counter_;
 
 public:
     detail(mutex& mx)
-        : sema_(CreateSemaphore(NULL, 0, LONG_MAX, NULL))
+        : sema_     (CreateSemaphore(NULL, 0, LONG_MAX, NULL))
+        , handshake_(CreateSemaphore(NULL, 0, LONG_MAX, NULL))
         , cond_mutex_(mx)
         , counter_(0)
     {}
@@ -36,6 +36,7 @@ public:
     ~detail(void)
     {
         broadcast();
+        CloseHandle(handshake_);
         CloseHandle(sema_);
     }
 
@@ -45,33 +46,37 @@ public:
         {
             nx_lock_scope(lock_);
             ++ counter_;
-            cond_mutex_.unlock();
         }
-        bool ret = (WaitForSingleObject(sema_, (tm_ms < 0) ? INFINITE : tm_ms) == WAIT_OBJECT_0);
+        cond_mutex_.unlock();
+        bool ret_s = (WaitForSingleObject(sema_, (tm_ms < 0) ? INFINITE : tm_ms) == WAIT_OBJECT_0);
+        bool ret_h = !!ReleaseSemaphore(handshake_, 1, NULL);
         cond_mutex_.lock();
-        return ret;
+        return ret_s && ret_h;
     }
 
     void notify(void)
     {
+        nx_lock_scope(lock_);
+        if (counter_ > 0)
         {
-            nx_lock_scope(lock_);
-            if (counter_ == 0) return;
+            ReleaseSemaphore(sema_, 1, NULL);
             -- counter_;
+            WaitForSingleObject(handshake_, INFINITE);
         }
-        ReleaseSemaphore(sema_, 1, NULL);
     }
 
     void broadcast(void)
     {
-        long all_count;
+        nx_lock_scope(lock_);
+        if (counter_ > 0)
         {
-            nx_lock_scope(lock_);
-            if (counter_ == 0) return;
-            all_count = counter_;
-            counter_ = 0;
+            ReleaseSemaphore(sema_, counter_, NULL);
+            do
+            {
+                -- counter_;
+                WaitForSingleObject(handshake_, INFINITE);
+            } while (counter_ > 0);
         }
-        ReleaseSemaphore(sema_, all_count, NULL);
     }
 };
 
